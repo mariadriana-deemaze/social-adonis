@@ -20,7 +20,15 @@ createInertiaApp({
   },
 
   // @ts-ignore
-  setup({ el, App, props }: { el: Element; App: JSXElementConstructor<PageProps>; props: PageProps }) {
+  setup({
+    el,
+    App,
+    props,
+  }: {
+    el: Element
+    App: JSXElementConstructor<PageProps>
+    props: PageProps
+  }) {
     hydrateRoot(el, <App {...props} />)
   },
 })
