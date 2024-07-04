@@ -1,28 +1,26 @@
 /// <reference path="../../adonisrc.ts" />
 /// <reference path="../../config/inertia.ts" />
 
-import '../css/app.css';
+import '../css/app.css'
 import { hydrateRoot } from 'react-dom/client'
-import { createInertiaApp } from '@inertiajs/react';
+import { createInertiaApp } from '@inertiajs/react'
 import { resolvePageComponent } from '@adonisjs/inertia/helpers'
+import { JSXElementConstructor } from 'react'
+import { PageProps } from '@adonisjs/inertia/types'
 
 const appName = import.meta.env.VITE_APP_NAME || 'AdonisJS'
 
 createInertiaApp({
   progress: { color: '#5468FF' },
 
-  title: (title) => `${title} - ${appName}`,
+  title: (title: string) => `${title} - ${appName}`,
 
-  resolve: (name) => {
-    return resolvePageComponent(
-      `../pages/${name}.tsx`,
-      import.meta.glob('../pages/**/*.tsx'),
-    )
+  resolve: (name: string) => {
+    return resolvePageComponent(`../pages/${name}.tsx`, import.meta.glob('../pages/**/*.tsx'))
   },
 
-  setup({ el, App, props }) {
-    
+  // @ts-ignore
+  setup({ el, App, props }: { el: Element; App: JSXElementConstructor<PageProps>; props: PageProps }) {
     hydrateRoot(el, <App {...props} />)
-    
   },
-});
+})

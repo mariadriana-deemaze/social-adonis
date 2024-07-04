@@ -3,9 +3,13 @@
   "compilerOptions": {
     "baseUrl": ".",
     "rootDir": "./",
+    "jsx": "react-jsx",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
     "outDir": "./build",
     "paths": {
       "@/*": ["./*"]
-    }
-  },
+    },
+    "types": ["vite/client"],
+  }
 }
