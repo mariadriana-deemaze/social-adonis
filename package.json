@@ -63,6 +63,7 @@
     "@adonisjs/static": "^1.1.1",
     "@adonisjs/vite": "^3.0.0",
     "@inertiajs/react": "^1.2.0",
+    "@radix-ui/react-label": "^2.1.0",
     "@radix-ui/react-slot": "^1.1.0",
     "@typescript-eslint/eslint-plugin": "^7.15.0",
     "@vinejs/vine": "^2.1.0",
