@@ -54,7 +54,7 @@
 
 "@adonisjs/auth@^9.2.3":
   version "9.2.3"
-  resolved "https://registry.npmjs.org/@adonisjs/auth/-/auth-9.2.3.tgz"
+  resolved "https://registry.yarnpkg.com/@adonisjs/auth/-/auth-9.2.3.tgz#bda83c564118670fd492ad7dc07144dc8da0c0fe"
   integrity sha512-my/dqQJo1LQRhT3bW0RuK/1BhDTWcY3tVrGZmVMedCRBfYGt91OAreMy0muukJcWr8AkXBtbBsju2D+myaDa4Q==
   dependencies:
     "@adonisjs/presets" "^2.5.1"
@@ -86,7 +86,7 @@
 
 "@adonisjs/core@^6.12.1":
   version "6.12.1"
-  resolved "https://registry.npmjs.org/@adonisjs/core/-/core-6.12.1.tgz"
+  resolved "https://registry.yarnpkg.com/@adonisjs/core/-/core-6.12.1.tgz#775b6ce095ca192923358b3bf063de1c6394439f"
   integrity sha512-SO3RoLw5KWZH2zVOFFAt9IRsbWiis5fycu1LaYCqau6YhiLWu14wgT+TAnWdr/WbsFm7eS1ojrC5kD/muu5S6Q==
   dependencies:
     "@adonisjs/ace" "^13.1.0"
@@ -1638,7 +1638,7 @@
 
 "@vinejs/vine@^2.1.0":
   version "2.1.0"
-  resolved "https://registry.npmjs.org/@vinejs/vine/-/vine-2.1.0.tgz"
+  resolved "https://registry.yarnpkg.com/@vinejs/vine/-/vine-2.1.0.tgz#2ab0c1f93edb130e1913415a3e364f5118e21f7e"
   integrity sha512-09aJ2OauxpblqiNqd8qC9RAzzm5SV6fTqZhE4e25j4cM7fmNoXRTjM7Oo8llFADMO4eSA44HqYEO3mkRRYdbYw==
   dependencies:
     "@poppinss/macroable" "^1.0.2"

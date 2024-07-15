@@ -4,15 +4,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../co
 import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
 
-export default function SignUp() {
-  const signUp = async () => {
-    const req = await fetch('/auth/sign-up', {
+export default function SignIn() {
+  const signIn = async () => {
+    const req = await fetch('/auth/sign-in', {
       method: 'post',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        fullName: 'Testing',
         email: 'testing@gmail.com',
         password: 'password',
       }),
@@ -29,15 +28,11 @@ export default function SignUp() {
       <div className="container gap-4">
         <Card className="mx-auto max-w-sm">
           <CardHeader>
-            <CardTitle className="text-xl">Sign Up</CardTitle>
-            <CardDescription>Enter your information to create an account</CardDescription>
+            <CardTitle className="text-xl">Sign in</CardTitle>
+            <CardDescription>Enter your account authentication credentials</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="fullname">Full name</Label>
-                <Input id="fullname" type="text" placeholder="John Doe" required />
-              </div>
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input id="email" type="email" placeholder="m@example.com" required />
@@ -46,18 +41,19 @@ export default function SignUp() {
                 <Label htmlFor="password">Password</Label>
                 <Input id="password" type="password" />
               </div>
-              <Button onClick={signUp} className="w-full">
-                Create an account
+              <Button onClick={signIn} className="w-full">
+                Login
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">
-              Already have an account?{' '}
-              <a href="/auth/sign-in" className="underline">
-                Sign in
+              Don't yet have an account?{' '}
+              <a href="/auth/sign-up" className="underline">
+                Sign up
               </a>
             </div>
           </CardContent>
         </Card>
+
         <a href="/posts" className="underline">
           Try to get posts
         </a>
