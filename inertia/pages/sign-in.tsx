@@ -3,8 +3,13 @@ import { Button } from '../components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
 import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
+import { useToast } from '../components/ui/use-toast'
+import { Toaster } from '../components/ui/toaster'
+import { useEffect } from 'react'
 
 export default function SignIn() {
+  const { toast } = useToast()
+
   const { data, setData, post, processing, errors } = useForm({
     email: '',
     password: '',
@@ -12,17 +17,19 @@ export default function SignIn() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    post('/auth/sign-in', {
-      onSuccess: () => console.log('profit?'),
-    })
+    post('/auth/sign-in')
   }
+
+  useEffect(() => {
+    if (Object.entries(errors).length) {
+      toast({ title: 'Error on signing in.', description: errors.email && errors.email[0] })
+    }
+  }, [errors])
 
   return (
     <>
       <Head title="Homepage" />
       <form className="container" onSubmit={handleSubmit}>
-        {processing && 'Hold up!'}
-        {errors && JSON.stringify(errors)}
         <div className="container gap-4">
           <Card className="mx-auto max-w-sm">
             <CardHeader>
@@ -38,7 +45,6 @@ export default function SignIn() {
                     type="email"
                     placeholder="m@example.com"
                     value={data.email}
-                    //@ts-ignore
                     onChange={(e) => setData('email', e.target.value)}
                     required
                   />
@@ -49,11 +55,10 @@ export default function SignIn() {
                     id="password"
                     type="password"
                     value={data.password}
-                    //@ts-ignore
                     onChange={(e) => setData('password', e.target.value)}
                   />
                 </div>
-                <Button type="submit" className="w-full">
+                <Button type="submit" className="w-full" disabled={processing}>
                   Login
                 </Button>
               </div>
@@ -71,6 +76,7 @@ export default function SignIn() {
           </a>
         </div>
       </form>
+      <Toaster />
     </>
   )
 }

@@ -1,10 +1,15 @@
+import { useEffect } from 'react'
 import { Head, useForm } from '@inertiajs/react'
 import { Button } from '../components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
 import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
+import { useToast } from '../components/ui/use-toast'
+import { Toaster } from '../components/ui/toaster'
 
 export default function SignUp() {
+  const { toast } = useToast()
+
   const { data, setData, post, processing, errors } = useForm({
     fullName: '',
     email: '',
@@ -13,17 +18,19 @@ export default function SignUp() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    post('/auth/sign-up', {
-      onSuccess: () => console.log('profit?'),
-    })
+    post('/auth/sign-up')
   }
+
+  useEffect(() => {
+    if (Object.entries(errors).length) {
+      toast({ title: 'Error on signing up.', description: errors.email && errors.email[0] })
+    }
+  }, [errors])
 
   return (
     <>
       <Head title="Homepage" />
       <form className="container" onSubmit={handleSubmit}>
-        {processing && 'Hold up!'}
-        {errors && JSON.stringify(errors)}
         <div className="container gap-4">
           <Card className="mx-auto max-w-sm">
             <CardHeader>
@@ -39,7 +46,6 @@ export default function SignUp() {
                     type="text"
                     placeholder="John Doe"
                     value={data.fullName}
-                    //@ts-ignore
                     onChange={(e) => setData('fullName', e.target.value)}
                     required
                   />
@@ -51,7 +57,6 @@ export default function SignUp() {
                     type="email"
                     placeholder="m@example.com"
                     value={data.email}
-                    //@ts-ignore
                     onChange={(e) => setData('email', e.target.value)}
                     required
                   />
@@ -62,11 +67,10 @@ export default function SignUp() {
                     id="password"
                     type="password"
                     value={data.password}
-                    //@ts-ignore
                     onChange={(e) => setData('password', e.target.value)}
                   />
                 </div>
-                <Button type="submit" className="w-full">
+                <Button type="submit" className="w-full" disabled={processing}>
                   Create an account
                 </Button>
               </div>
@@ -83,6 +87,7 @@ export default function SignUp() {
           </a>
         </div>
       </form>
+      <Toaster />
     </>
   )
 }

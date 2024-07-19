@@ -3,29 +3,34 @@ import { createAuthValidator } from '#validators/auth'
 import User from '#models/user'
 
 export default class AuthService {
-  async create({ request, response }: HttpContext) {
+  async create({ request, inertia }: HttpContext) {
     const payload = await request.validateUsing(createAuthValidator)
 
     const existant = await User.query().where('email', payload.email).first()
     if (existant) {
-      return response
-        .status(200)
-        .json({ message: 'An User with the provided email already exists.' })
+      return inertia.render('sign-up', {
+        errors: { email: ['An user with the provided email already exists.'] },
+      })
     }
 
     const user = new User()
     Object.assign(user, payload)
     await user.save()
-
-    return response.status(201).json({ message: 'User created successfully!' })
+    const tokens = await User.accessTokens.create(user)
+    return inertia.render('feed', { user: user.toJSON(), tokens })
   }
 
-  async show({ request, response }: HttpContext) {
+  async show({ request, inertia }: HttpContext) {
     const { email, password } = request.only(['email', 'password'])
-    const user = await User.verifyCredentials(email, password)
-    if (!user) {
-      return response.status(401).json({ message: 'Invalid credentials - Unauthorized.' })
+    try {
+      const user = await User.verifyCredentials(email, password)
+      const tokens = await User.accessTokens.create(user)
+      return inertia.render('feed', { user: user.toJSON(), tokens })
+    } catch (error) {
+      if (error.code === 'E_INVALID_CREDENTIALS') {
+        return inertia.render('sign-in', { errors: { email: ['Invalid credentials'] } })
+      }
+      return inertia.render('home')
     }
-    return await User.accessTokens.create(user)
   }
 }

@@ -24,6 +24,7 @@ router
 
 router
   .group(() => {
+    router.on('/feed').renderInertia('feed')
     router.on('/posts').renderInertia('posts')
   })
   .use(middleware.auth())
