@@ -9,8 +9,8 @@
     "outDir": "./build",
     "lib": ["DOM"],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./inertia/*"]
     },
     "types": ["vite/client"]
-  }
+  },
 }

@@ -1,11 +1,11 @@
-import { Head, useForm } from '@inertiajs/react'
-import { Button } from '../components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
-import { Input } from '../components/ui/input'
-import { Label } from '../components/ui/label'
-import { useToast } from '../components/ui/use-toast'
-import { Toaster } from '../components/ui/toaster'
 import { useEffect } from 'react'
+import { Head, Link, useForm } from '@inertiajs/react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { useToast } from '@/components/ui/use-toast'
+import { Toaster } from '@/components/ui/toaster'
 
 export default function SignIn() {
   const { toast } = useToast()
@@ -28,7 +28,7 @@ export default function SignIn() {
 
   return (
     <>
-      <Head title="Homepage" />
+      <Head title="Social Adonis | Sign in" />
       <form className="container" onSubmit={handleSubmit}>
         <div className="container gap-4">
           <Card className="mx-auto max-w-sm">
@@ -64,9 +64,9 @@ export default function SignIn() {
               </div>
               <div className="mt-4 text-center text-sm">
                 Don't yet have an account?{' '}
-                <a href="/auth/sign-up" className="underline">
+                <Link href="/auth/sign-up" className="underline">
                   Sign up
-                </a>
+                </Link>
               </div>
             </CardContent>
           </Card>
