@@ -4,7 +4,6 @@ import { compose } from '@adonisjs/core/helpers'
 import { BaseModel, column, computed } from '@adonisjs/lucid/orm'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { DbAccessTokensProvider } from '@adonisjs/auth/access_tokens'
-// import { randomUUID } from 'crypto'
 import type { UUID } from 'crypto'
 
 export enum AccountRole {
@@ -20,7 +19,7 @@ const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
 
 export default class User extends compose(BaseModel, AuthFinder) {
   @column({ isPrimary: true })
-  declare id: UUID // = randomUUID()
+  declare id: UUID
 
   @column()
   declare name: string | null

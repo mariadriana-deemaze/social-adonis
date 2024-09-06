@@ -82,9 +82,9 @@ export default function SignUp() {
               </div>
             </CardContent>
           </Card>
-          <a href="/posts" className="underline">
+          <Link href="/posts" className="underline">
             Try to get posts
-          </a>
+          </Link>
         </div>
       </form>
       <Toaster />
