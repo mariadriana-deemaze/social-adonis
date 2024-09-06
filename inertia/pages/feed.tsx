@@ -1,6 +1,7 @@
-import { Head, useForm, usePage } from '@inertiajs/react'
-import { Toaster } from '../components/ui/toaster'
+import { Head } from '@inertiajs/react'
+import { Toaster } from '@/components/ui/toaster'
 import { useEffect } from 'react'
+import UserNavBar from '@/components/users/nav'
 
 export default function Feed(props: unknown) {
   useEffect(() => {
@@ -9,7 +10,8 @@ export default function Feed(props: unknown) {
 
   return (
     <>
-      <Head title="Feed" />
+      <Head title="SocialAdonis | Feed" />
+      <UserNavBar user={{ id: 1, name: 'Hello' }} />
       <div className="container gap-4">Feed me!</div>
       <Toaster />
     </>
