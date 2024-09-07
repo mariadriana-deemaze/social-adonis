@@ -12,8 +12,9 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import User from '#models/user'
 
-export default function UserNavBar({ user }: { user: { id: number; name?: string } }) {
+export default function UserNavBar({ user }: { user: User }) {
   return (
     <div className="sticky top-0 bg-white w-full">
       <div className="border-b">
@@ -34,7 +35,7 @@ export default function UserNavBar({ user }: { user: { id: number; name?: string
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src="#" alt={`${user.name} avatar image`}/>
+                    <AvatarImage src="#" alt={`${user.name} avatar image`} />
                     <AvatarFallback>{user.name ? user.name[0] : '-'}</AvatarFallback>
                   </Avatar>
                 </Button>
@@ -42,8 +43,10 @@ export default function UserNavBar({ user }: { user: { id: number; name?: string
               <DropdownMenuContent className="w-56" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">shadcn</p>
-                    <p className="text-xs leading-none text-muted-foreground">m@example.com</p>
+                    <p className="text-sm font-medium leading-none">
+                      {user.name} {user.surname}
+                    </p>
+                    <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
@@ -56,11 +59,12 @@ export default function UserNavBar({ user }: { user: { id: number; name?: string
                     Settings
                     <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>New Team</DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
-                  Log out
+                  <Link as="button" href={'/auth/sign-out'} method="delete">
+                    Log out
+                  </Link>
                   <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
                 </DropdownMenuItem>
               </DropdownMenuContent>

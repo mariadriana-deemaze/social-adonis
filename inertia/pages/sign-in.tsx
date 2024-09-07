@@ -5,14 +5,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/components/ui/use-toast'
-import { Toaster } from '@/components/ui/toaster'
 
 export default function SignIn() {
   const { toast } = useToast()
 
   const { data, setData, post, processing, errors } = useForm({
-    email: '',
-    password: '',
+    email: 'admin_user@gmail.com',
+    password: 'take1WildGuess!',
   })
 
   function handleSubmit(e: React.FormEvent) {
@@ -76,7 +75,6 @@ export default function SignIn() {
           </a>
         </div>
       </form>
-      <Toaster />
     </>
   )
 }

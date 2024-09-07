@@ -5,7 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/components/ui/use-toast'
-import { Toaster } from '@/components/ui/toaster'
 
 export default function SignUp() {
   const { toast } = useToast()
@@ -87,7 +86,6 @@ export default function SignUp() {
           </Link>
         </div>
       </form>
-      <Toaster />
     </>
   )
 }

@@ -1,19 +1,13 @@
 import { Head } from '@inertiajs/react'
-import { Toaster } from '@/components/ui/toaster'
-import { useEffect } from 'react'
-import UserNavBar from '@/components/users/nav'
+import User from '#models/user'
 
-export default function Feed(props: unknown) {
-  useEffect(() => {
-    console.log('props ->', props)
-  }, [props])
-
+export default function Feed({ user }: { user: User | null }) {
   return (
     <>
       <Head title="SocialAdonis | Feed" />
-      <UserNavBar user={{ id: 1, name: 'Hello' }} />
-      <div className="container gap-4">Feed me!</div>
-      <Toaster />
+      <div className="container">
+        <p className='flex flex-wrap'>User feed for {user?.id}</p>
+      </div>
     </>
   )
 }
