@@ -5,15 +5,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/components/ui/use-toast'
-import { Toaster } from '@/components/ui/toaster'
 
 export default function SignUp() {
   const { toast } = useToast()
 
   const { data, setData, post, processing, errors } = useForm({
-    fullName: '',
+    name: '',
     email: '',
     password: '',
+    passwordConfirmation: '',
   })
 
   function handleSubmit(e: React.FormEvent) {
@@ -23,7 +23,7 @@ export default function SignUp() {
 
   useEffect(() => {
     if (Object.entries(errors).length) {
-      toast({ title: 'Error on signing up.', description: errors.email && errors.email[0] })
+      toast({ title: 'Error on signing up.', description: 'Check the fields.' })
     }
   }, [errors])
 
@@ -40,15 +40,16 @@ export default function SignUp() {
             <CardContent>
               <div className="grid gap-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="fullName">Full name</Label>
+                  <Label htmlFor="name">First name</Label>
                   <Input
-                    id="fullName"
+                    id="name"
                     type="text"
                     placeholder="John Doe"
-                    value={data.fullName}
-                    onChange={(e) => setData('fullName', e.target.value)}
+                    value={data.name}
+                    onChange={(e) => setData('name', e.target.value)}
                     required
                   />
+                  {errors.name && <p className="text-red-600">{errors.name}</p>}
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="email">Email</Label>
@@ -60,6 +61,7 @@ export default function SignUp() {
                     onChange={(e) => setData('email', e.target.value)}
                     required
                   />
+                  {errors.email && <p className="text-red-600 text-sm">{errors.email}</p>}
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="password">Password</Label>
@@ -69,6 +71,19 @@ export default function SignUp() {
                     value={data.password}
                     onChange={(e) => setData('password', e.target.value)}
                   />
+                  {errors.password && <p className="text-red-600">{errors.password}</p>}
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="confirmPassword">Confirm password</Label>
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    value={data.passwordConfirmation}
+                    onChange={(e) => setData('passwordConfirmation', e.target.value)}
+                  />
+                  {errors.passwordConfirmation && (
+                    <p className="text-red-600">{errors.passwordConfirmation}</p>
+                  )}
                 </div>
                 <Button type="submit" className="w-full" disabled={processing}>
                   Create an account
@@ -87,7 +102,6 @@ export default function SignUp() {
           </Link>
         </div>
       </form>
-      <Toaster />
     </>
   )
 }

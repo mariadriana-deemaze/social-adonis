@@ -5,14 +5,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/components/ui/use-toast'
-import { Toaster } from '@/components/ui/toaster'
 
 export default function SignIn() {
   const { toast } = useToast()
 
   const { data, setData, post, processing, errors } = useForm({
-    email: '',
-    password: '',
+    email: 'admin_user@gmail.com',
+    password: 'take1WildGuess!',
   })
 
   function handleSubmit(e: React.FormEvent) {
@@ -22,7 +21,7 @@ export default function SignIn() {
 
   useEffect(() => {
     if (Object.entries(errors).length) {
-      toast({ title: 'Error on signing in.', description: errors.email && errors.email[0] })
+      toast({ title: 'Error on signing in.', description: 'Check the fields.' })
     }
   }, [errors])
 
@@ -48,6 +47,7 @@ export default function SignIn() {
                     onChange={(e) => setData('email', e.target.value)}
                     required
                   />
+                  {errors.email && <p className="text-red-600">{errors.email}</p>}
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="password">Password</Label>
@@ -57,6 +57,7 @@ export default function SignIn() {
                     value={data.password}
                     onChange={(e) => setData('password', e.target.value)}
                   />
+                  {errors.password && <p className="text-red-600">{errors.password}</p>}
                 </div>
                 <Button type="submit" className="w-full" disabled={processing}>
                   Login
@@ -76,7 +77,6 @@ export default function SignIn() {
           </a>
         </div>
       </form>
-      <Toaster />
     </>
   )
 }
