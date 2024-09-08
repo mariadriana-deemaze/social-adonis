@@ -16,7 +16,7 @@ import User from '#models/user'
 
 export default function UserNavBar({ user }: { user: User }) {
   return (
-    <div className="sticky top-0 bg-white w-full">
+    <div className="sticky top-0 bg-white w-full z-10">
       <div className="border-b">
         <div className="flex h-16 items-center px-4">
           <nav className={cn('flex items-center space-x-4 lg:space-x-6')}>

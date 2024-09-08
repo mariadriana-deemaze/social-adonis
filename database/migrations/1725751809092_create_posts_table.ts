@@ -6,7 +6,7 @@ export default class extends BaseSchema {
   async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.uuid('id').primary().defaultTo(this.db.rawQuery('uuid_generate_v4()').knexQuery)
-      table.uuid('user_id').references('users.id')
+      table.uuid('user_id').references('users.id').notNullable()
       table.string('content')
       table.timestamp('created_at')
       table.timestamp('updated_at')
