@@ -5,7 +5,7 @@ import { BaseModel, column, computed, hasMany } from '@adonisjs/lucid/orm'
 import type { HasMany } from '@adonisjs/lucid/types/relations'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { DbRememberMeTokensProvider } from '@adonisjs/auth/session'
-import type { UUID } from 'crypto'
+import { randomUUID, type UUID } from 'crypto'
 import Session from '#models/session'
 import Post from '#models/post'
 
@@ -22,6 +22,9 @@ const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
 export default class User extends compose(BaseModel, AuthFinder) {
   @column({ isPrimary: true })
   declare id: UUID
+
+  @column()
+  username = `SOA_${randomUUID()}`
 
   @column()
   declare name: string | null
