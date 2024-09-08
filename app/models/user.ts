@@ -7,6 +7,7 @@ import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { DbRememberMeTokensProvider } from '@adonisjs/auth/session'
 import type { UUID } from 'crypto'
 import Session from '#models/session'
+import Post from '#models/post'
 
 export enum AccountRole {
   USER = 'USER',
@@ -17,7 +18,6 @@ const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
   passwordColumnName: 'password',
 })
-
 
 export default class User extends compose(BaseModel, AuthFinder) {
   @column({ isPrimary: true })
@@ -46,12 +46,14 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @hasMany(() => Session)
   declare sessions: HasMany<typeof Session>
 
+  @hasMany(() => Post)
+  declare posts: HasMany<typeof Post>
+
   static rememberMeTokens = DbRememberMeTokensProvider.forModel(User)
-  
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
-
 }
