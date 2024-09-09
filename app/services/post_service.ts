@@ -10,7 +10,7 @@ export default class PostService {
   }: {
     content: string
     userId: UUID
-  }): Promise<Post | { error: string }> {
+  }): Promise<Post> {
     try {
       const user = await User.findBy('id', userId)
       if (!user) throw new Error('User not found')
@@ -20,7 +20,7 @@ export default class PostService {
       })
       return post
     } catch (error) {
-      return { error: 'Error creating post.' }
+      throw new Error(error)
     }
   }
 
@@ -31,4 +31,6 @@ export default class PostService {
   async destroy(ctx: HttpContext) {
     //
   }
+
+  
 }
