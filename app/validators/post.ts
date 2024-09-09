@@ -1,11 +1,13 @@
 import vine, { SimpleMessagesProvider } from '@vinejs/vine'
 
+export const MAX_POST_CONTENT_SIZE = 256
+
 /**
  * Validates the post creation action payload
  */
 export const createPostValidator = vine.compile(
   vine.object({
-    content: vine.string().minLength(8).maxLength(32),
+    content: vine.string().minLength(8).maxLength(MAX_POST_CONTENT_SIZE),
   })
 )
 
