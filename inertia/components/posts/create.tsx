@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useForm, router, usePage } from '@inertiajs/react'
+import { Slot, Slottable } from '@radix-ui/react-slot'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -10,16 +11,18 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/components/ui/use-toast'
+import { MAX_POST_CONTENT_SIZE } from '#validators/post'
+import { cn } from '@/lib/utils'
 
 export function CreatePost() {
   const [open, setOpen] = useState(false)
 
   const { toast } = useToast()
 
-  const { data, setData, post, errors, hasErrors } = useForm({
+  const { data, setData, post, errors, hasErrors, processing } = useForm({
     content:
       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime, ut reiciendis animi maiores tempora ipsam ab aliquam quia magni unde totam vel id alias incidunt distinctio nemo excepturi necessitatibus laboriosam!',
   })
@@ -39,29 +42,37 @@ export function CreatePost() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">Create post</Button>
+        <Button className="bg-blue-500">Create post</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Create a post</DialogTitle>
           <DialogDescription>Be creative I guess</DialogDescription>
         </DialogHeader>
-        <form className="container" onSubmit={handleSubmit}>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="content" className="text-right">
-                Content
-              </Label>
-              <Input
-                id="content"
-                value={data.content}
-                onChange={(e) => setData('content', e.target.value)}
-                className="col-span-3"
-              />
-            </div>
+        <form onSubmit={handleSubmit}>
+          <div className="flex flex-col w-full mb-6 gap-2">
+            <Label htmlFor="content" className="text-left">
+              Post content
+            </Label>
+            <Textarea
+              id="content"
+              className="no-scrollbar"
+              value={data.content}
+              onChange={(e) => setData('content', e.target.value)}
+            />
+            <span
+              className={cn(
+                'text-xs',
+                data.content.length > MAX_POST_CONTENT_SIZE ? 'text-red-700' : 'text-gray-500'
+              )}
+            >
+              {data.content.length}/{MAX_POST_CONTENT_SIZE}
+            </span>
           </div>
           <DialogFooter>
-            <Button type="submit">Publish</Button>
+            <Button loading={processing} disabled={data.content.length > MAX_POST_CONTENT_SIZE} type="submit">
+              Publish
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
