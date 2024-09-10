@@ -6,7 +6,11 @@ import Post from '#models/post'
 export default class FeedController {
   constructor() {}
   async index(ctx: HttpContext) {
-    const posts = await Post.query().orderBy('updated_at', "desc").preload('user').paginate(1, 10)
+    const page = ctx.request.qs().page || 1
+    const posts = await Post.query()
+      .orderBy('updated_at', 'desc')
+      .preload('user')
+      .paginate(page, 10)
     return ctx.inertia.render('feed', { posts })
   }
 }
