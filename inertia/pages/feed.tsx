@@ -51,7 +51,7 @@ export default function Feed({ posts, user }: InferPageProps<FeedController, 'in
   return (
     <>
       <Head title="SocialAdonis | Feed" />
-      <div className="flex flex-col gap-2 w-full pb-20 border border-red-700">
+      <div className="feed-list flex flex-col gap-2 w-full pb-20 border border-red-700">
         <p>It works!</p>
         {!allPosts ? (
           <Loader2 className="h-5 w-5 mr-2 animate-spin text-muted" />
