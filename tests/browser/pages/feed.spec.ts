@@ -1,5 +1,4 @@
-import User from '#models/user'
-import { faker } from '@faker-js/faker'
+import { UserFactory } from '#database/factories/user_factory'
 import { test } from '@japa/runner'
 
 test.group('Acessing feed', () => {
@@ -7,18 +6,14 @@ test.group('Acessing feed', () => {
     const page = await visit('/feed')
     await page.assertTextContains('body', 'Sign in')
   })
-  test('Attempt to access the feed while authenticated', async ({
-    visit,
-    browserContext,
-  }) => {
-    const user = await User.create({
-      name: faker.person.firstName(),
-      surname: faker.person.lastName(),
-      email: faker.internet.email(),
-      password: faker.internet.password(),
-    })
+  test('Attempt to access the feed while authenticated', async ({ visit, browserContext }) => {
+    const user = await UserFactory.create()
+    await UserFactory.with('posts', 8).create()
     await browserContext.loginAs(user)
     const page = await visit('/feed')
     await page.assertTextContains('body', 'It works!')
+
+    const testing = await page.getAttribute('class', '.feed-list')
+    console.log('element ->', JSON.stringify(testing))
   })
 })
