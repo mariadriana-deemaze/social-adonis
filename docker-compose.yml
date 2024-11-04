@@ -1,0 +1,36 @@
+---
+services:
+  pg15:
+    image: postgres:15
+    container_name: pg15
+    environment:
+      POSTGRES_PASSWORD: root
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready --username postgres"]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - pg15:/var/lib/postgresql/data
+      - ./pg-init:/docker-entrypoint-initdb.d
+    ports:
+      - 127.0.0.1:5432:5432
+    networks:
+      - social-adonis
+
+  # redis7:
+  #   image: redis:7
+  #   container_name: redis7
+  #   hostname: redis
+  #   ports:
+  #     - 10179:6379
+  #   networks:
+  #     - social-adonis
+
+volumes:
+  pg15:
+
+networks:
+  social-adonis:
+    name: social-adonis
+    driver: bridge

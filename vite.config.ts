@@ -11,7 +11,7 @@ export default defineConfig({
        * Entrypoints of your application. Each entrypoint will
        * result in a separate bundle.
        */
-      entrypoints: ['resources/css/app.css', 'resources/js/app.js'],
+      entrypoints: ['inertia/css/app.css', 'inertia/app/app.tsx'],
 
       /**
        * Paths to watch and reload the browser on file change
@@ -20,11 +20,10 @@ export default defineConfig({
     }),
     inertia({ ssr: { enabled: true, entrypoint: 'inertia/app/ssr.tsx' } }),
     react(),
-    adonisjs({ entrypoints: ['inertia/app/app.tsx'], reload: ['resources/views/**/*.edge'] }),
   ],
-  resolve:{
-    alias:{
-      '@/': `${getDirname(import.meta.url)}/inertia/`
-    }
-  }
+  resolve: {
+    alias: {
+      '@/': `${getDirname(import.meta.url)}/inertia/`,
+    },
+  },
 })
