@@ -15,20 +15,35 @@ import { cn } from '@/lib/utils'
 import User from '#models/user'
 
 export default function UserNavBar({ user }: { user: User }) {
+  const LINKS: Record<'title' | 'link', string>[] = [
+    {
+      title: 'Home',
+      link: '/',
+    },
+    {
+      title: 'Feed',
+      link: '/feed',
+    },
+    /*  {
+      title: 'Groups',
+      link: '/groups',
+    }, */
+  ]
+
   return (
-    <div className="sticky top-0 bg-white w-full z-10">
+    <div className="fixed top-0 bg-white w-full z-10">
       <div className="border-b">
         <div className="flex h-16 items-center px-4">
           <nav className={cn('flex items-center space-x-4 lg:space-x-6')}>
-            <Link href="/feed" className="text-sm font-medium transition-colors hover:text-primary">
-              Feed
-            </Link>
-            <Link
-              href="/groups"
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-            >
-              Groups
-            </Link>
+            {LINKS.map(({ title, link }, index) => (
+              <Link
+                key={`link-${index}`}
+                href={link}
+                className="text-sm font-medium transition-colors hover:text-primary"
+              >
+                {title}
+              </Link>
+            ))}
           </nav>
           <div className="ml-auto flex items-center space-x-4">
             <DropdownMenu>

@@ -40,13 +40,9 @@ router
   .group(() => {
     router.delete('/auth/sign-out', [AuthController, 'destroy'])
     router.get('/feed', [FeedController, 'index'])
-
     router.post('/posts', [PostsController, 'create'])
     router.get('/posts/:id', [PostsController, 'show'])
     router.patch('/posts/:id', [PostsController, 'update'])
     router.delete('/posts/:id', [PostsController, 'destroy'])
-
-    // router.on('/feed').renderInertia('feed')
-    // router.get('me', [UsersController, 'show'])
   })
   .use(middleware.auth())

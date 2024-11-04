@@ -29,7 +29,9 @@ export function CreatePost() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    post('/posts')
+    post('/posts', {
+      preserveState: false,
+    })
     setOpen(false)
   }
 
@@ -44,7 +46,7 @@ export function CreatePost() {
       <DialogTrigger asChild>
         <Button className="bg-blue-500">Create post</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="default-dialog">
         <DialogHeader>
           <DialogTitle>Create a post</DialogTitle>
           <DialogDescription>Be creative I guess</DialogDescription>
@@ -70,7 +72,11 @@ export function CreatePost() {
             </span>
           </div>
           <DialogFooter>
-            <Button loading={processing} disabled={data.content.length > MAX_POST_CONTENT_SIZE} type="submit">
+            <Button
+              loading={processing}
+              disabled={data.content.length > MAX_POST_CONTENT_SIZE}
+              type="submit"
+            >
               Publish
             </Button>
           </DialogFooter>
