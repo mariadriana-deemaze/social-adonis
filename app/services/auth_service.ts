@@ -3,6 +3,7 @@ import { createAuthValidator } from '#validators/auth'
 import User from '#models/user'
 import Session from '#models/session'
 import { errors } from '@vinejs/vine'
+import { errorsReducer } from '#utils/index'
 
 export default class AuthService {
   async create(ctx: HttpContext) {
@@ -25,7 +26,7 @@ export default class AuthService {
       return await this.authenticate(ctx, user)
     } catch (error) {
       if (error instanceof errors.E_VALIDATION_ERROR) {
-        const reducedErrors = this.errorsReducer(error.messages)
+        const reducedErrors = errorsReducer(error.messages)
         session.flash('errors', reducedErrors)
       }
       return response.redirect().back()
@@ -71,18 +72,5 @@ export default class AuthService {
     session.put('session-token', session.sessionId)
 
     return response.redirect().toPath('/feed')
-  }
-
-  // TODO: Re-think of a better way to abstract this globally. https://vinejs.dev/docs/error_reporter
-  private errorsReducer(
-    error: { field: string; message: string }[]
-  ): Record<string, [{ message: string }]> {
-    const reducedErrors = error.reduce((acc: any, cur: any) => {
-      if (!acc[cur.field]) {
-        acc[cur.field] = cur.message
-      }
-      return acc
-    }, {})
-    return reducedErrors
   }
 }

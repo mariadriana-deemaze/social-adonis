@@ -1,11 +1,15 @@
-export default function NotFound() {
+export default function NotFound({
+  error: { title = 'Not found', message = 'Resource not found' },
+}: {
+  error: {
+    title: string
+    message: string
+  }
+}) {
   return (
-    <>
-      <div className="container">
-        <div className="title">Page not found</div>
-
-        <span>This page does not exist.</span>
-      </div>
-    </>
+    <div className="container">
+      <div className="title">{title}</div>
+      <span>{message}</span>
+    </div>
   )
 }

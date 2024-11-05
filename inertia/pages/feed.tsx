@@ -1,19 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Head, Link, router } from '@inertiajs/react'
+import { Head, router } from '@inertiajs/react'
 import { CreatePost } from '@/components/posts/create'
 import { useToast } from '@/components/ui/use-toast'
+import PostCard from '@/components/posts/post-card'
 import { useIntersectionObserver } from '@/hooks/use-intersection-observer'
-// import PostCard from '@/components/posts/post-card'
 import type { InferPageProps } from '@adonisjs/inertia/types'
 import type FeedController from '#controllers/feed_controller'
-import { Clock, EllipsisVertical, Loader2 } from 'lucide-react'
-import { UUID } from 'crypto'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
-import PostCard from '@/components/posts/post-card'
-
-const userFeedLink = (id: UUID) => `/feed/${id}`
-const postLink = (id: UUID) => `/posts/${id}`
+import { Loader2 } from 'lucide-react'
 
 export default function Feed({ posts, user }: InferPageProps<FeedController, 'index'>) {
   const [allPosts, setAllPosts] = useState(posts?.data)

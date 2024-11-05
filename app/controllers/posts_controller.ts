@@ -5,6 +5,7 @@ import PostService from '#services/post_service'
 import { createPostValidator, updatePostValidator } from '#validators/post'
 import PostPolicy from '#policies/post_policy'
 import Post from '#models/post'
+import { errorsReducer } from '#utils/index'
 
 @inject()
 export default class PostsController {
@@ -26,7 +27,7 @@ export default class PostsController {
       return ctx.response.redirect().back()
     } catch (error) {
       if (error instanceof errors.E_VALIDATION_ERROR) {
-        const reducedErrors = this.errorsReducer(error.messages)
+        const reducedErrors = errorsReducer(error.messages)
         ctx.session.flash('errors', reducedErrors)
       }
 
@@ -35,46 +36,40 @@ export default class PostsController {
   }
 
   async show(ctx: HttpContext) {
-    const post = await Post.query().where('id', ctx.params.id).preload('user');
-    return ctx.inertia.render('posts/show', { post: post[0] })
-  }
+    const post = await this.postService.findOne(ctx.params.id)
 
-  async update({ response, request, session, bouncer, params, inertia }: HttpContext) {
-    const [post] = await Post.query().where('id', params.id).preload('user');
-
-    console.log("action update 1 ->", post)
-
-    if (await bouncer.with(PostPolicy).denies('edit', post)) {
-      return response.forbidden('Not the author of this post.')
+    if (!post) {
+      return ctx.inertia.render('errors/not_found', { post: null, error: { title: 'Not found', message: 'We could not find the specified post.' } });
     }
 
-    console.log("action update 2 ->", post)
+    return ctx.inertia.render('posts/show', { post })
+  }
+
+  async update(ctx: HttpContext) {
+    const post = await this.postService.findOne(ctx.params.id)
+
+    if (!post) {
+      return ctx.inertia.render('errors/not_found', { post: null, error: { title: 'Not found', message: 'We could not find the specified post.' } });
+    }
+
+    if (await ctx.bouncer.with(PostPolicy).denies('edit', post!)) {
+      return ctx.response.forbidden('Not the author of this post.')
+    }
 
     try {
-
-
-      console.log("action update 3 || req ->", request)
-      
-      const payload = await request.validateUsing(updatePostValidator);
-
-      console.log("action update 4 || payload ->", payload)
-
+      const payload = await ctx.request.validateUsing(updatePostValidator);
       post.content = payload.content;
       post.save();
 
-      // TODO: Delegate to service.
-      // await this.postService
-
     } catch (error) {
       if (error instanceof errors.E_VALIDATION_ERROR) {
-        const reducedErrors = this.errorsReducer(error.messages)
-        session.flash('errors', reducedErrors)
+        const reducedErrors = errorsReducer(error.messages)
+        ctx.session.flash('errors', reducedErrors)
       }
-      return response.redirect().back()
+      return ctx.response.redirect().back()
     }
 
-    return inertia.render('posts/show', { post })
-
+    return ctx.inertia.render('posts/show', { post })
   }
 
   async destroy({ params, bouncer, response }: HttpContext) {
@@ -83,18 +78,5 @@ export default class PostsController {
       return response.forbidden('Not the author of this post.')
     }
     await post.delete();
-  }
-
-  // TODO: Re-think of a better way to abstract this globally. https://vinejs.dev/docs/error_reporter
-  private errorsReducer(
-    error: { field: string; message: string }[]
-  ): Record<string, [{ message: string }]> {
-    const reducedErrors = error.reduce((acc: any, cur: any) => {
-      if (!acc[cur.field]) {
-        acc[cur.field] = cur.message
-      }
-      return acc
-    }, {})
-    return reducedErrors
   }
 }

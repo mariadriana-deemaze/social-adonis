@@ -15,39 +15,45 @@ import { Label } from '@/components/ui/label'
 import { useToast } from '@/components/ui/use-toast'
 import { MAX_POST_CONTENT_SIZE } from '#validators/post'
 import { cn } from '@/lib/utils'
+import { ModelObject } from '@adonisjs/lucid/types/model'
+import { Pencil } from 'lucide-react'
 
-export function CreatePost() {
+export function UpdatePost({ post }: { post: ModelObject }) {
   const [open, setOpen] = useState(false)
 
   const { toast } = useToast()
 
-  const { data, setData, post, errors, hasErrors, processing } = useForm({
-    content:
-      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime, ut reiciendis animi maiores tempora ipsam ab aliquam quia magni unde totam vel id alias incidunt distinctio nemo excepturi necessitatibus laboriosam!',
+  const { data, setData, patch, errors, hasErrors, processing } = useForm({
+    content: post.content,
   })
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    post('/posts', {
+    patch(`/posts/${post.id}`, {
       preserveState: false,
     })
     setOpen(false)
   }
 
+  function handleOpenChange(nextState: boolean) {
+    if (nextState === false) setData({ content: post.content })
+    setOpen(nextState)
+  }
+
   useEffect(() => {
     if (hasErrors) {
-      toast({ title: 'There was an issue with publishing your post.', description: errors.content })
+      toast({ title: 'There was an issue with updating your post.', description: errors.content })
     }
   }, [errors])
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button className="bg-blue-500">Create post</Button>
+        <Pencil className="text-blue-500 h-5" />
       </DialogTrigger>
       <DialogContent className="default-dialog">
         <DialogHeader>
-          <DialogTitle>Create a post</DialogTitle>
+          <DialogTitle>Update post</DialogTitle>
           <DialogDescription>Be creative I guess</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
@@ -76,7 +82,7 @@ export function CreatePost() {
               disabled={data.content.length > MAX_POST_CONTENT_SIZE}
               type="submit"
             >
-              Publish
+              Update
             </Button>
           </DialogFooter>
         </form>

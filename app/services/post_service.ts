@@ -24,13 +24,8 @@ export default class PostService {
     }
   }
 
-  async show(ctx: HttpContext) {
-    //
+  async findOne(id: UUID): Promise<Post | null> {
+    const result: Post[] | null = await Post.query().where('id', id).preload('user');
+    return result[0];
   }
-
-  async destroy(ctx: HttpContext) {
-    //
-  }
-
-  
 }
