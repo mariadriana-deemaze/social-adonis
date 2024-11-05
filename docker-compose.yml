@@ -1,0 +1,35 @@
+services:
+  pg15:
+    image: postgres:15
+    container_name: pg15
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+    ports:
+      - '5432:5432'
+    networks:
+      - social-adonis-network
+
+  web:
+    image: social-adonis-web
+    container_name: social-adonis-web
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+      - /app/node_modules
+    restart: unless-stopped
+    command: node ace serve --watch
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env
+    depends_on:
+      - pg15
+    networks:
+      - social-adonis-network
+
+networks:
+  social-adonis-network:
