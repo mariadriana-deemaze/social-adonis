@@ -15,7 +15,7 @@ createInertiaApp({
   resolve: async (name: string) => {
     const page: any = await resolvePageComponent(
       `../pages/${name}.tsx`,
-      import.meta.glob('../pages/**/*.tsx')
+      import.meta.glob(['../pages/**/*.tsx', '../images/**'])
     )
     page.default.layout ??= (children: any) => <Layout children={children} />
     return page
