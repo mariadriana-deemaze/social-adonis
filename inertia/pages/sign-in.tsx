@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/components/ui/use-toast'
+import AdonisLogo from '@/components/svg/logo'
 
 export default function SignIn() {
   const { toast } = useToast()
@@ -28,8 +29,9 @@ export default function SignIn() {
   return (
     <>
       <Head title="Social Adonis | Sign in" />
-      <form className="container" onSubmit={handleSubmit}>
-        <div className="flex flex-col items-center gap-4">
+      <div className="container gap-10">
+        <AdonisLogo />
+        <form className="flex flex-col items-center gap-4" onSubmit={handleSubmit}>
           <Card className="w-full lg:mx-auto lg:max-w-sm">
             <CardHeader>
               <CardTitle className="text-xl">Sign in</CardTitle>
@@ -69,8 +71,8 @@ export default function SignIn() {
               </div>
             </CardContent>
           </Card>
-        </div>
-      </form>
+        </form>
+      </div>
     </>
   )
 }

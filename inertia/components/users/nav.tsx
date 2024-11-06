@@ -13,6 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import User from '#models/user'
+import AdonisLogo from '@/components/svg/logo'
 
 export default function UserNavBar({ user }: { user: User }) {
   const LINKS: Record<'title' | 'link', string>[] = [
@@ -35,6 +36,7 @@ export default function UserNavBar({ user }: { user: User }) {
       <div className="border-b">
         <div className="flex h-16 items-center px-4">
           <nav className={cn('flex items-center space-x-4 lg:space-x-6')}>
+            <AdonisLogo className="h-6 w-6" />
             {LINKS.map(({ title, link }, index) => (
               <Link
                 key={`link-${index}`}
