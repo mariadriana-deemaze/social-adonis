@@ -1,5 +1,6 @@
 import Post from '#models/post'
 import { createPostValidator, updatePostValidator } from '#validators/post'
+import { ModelPaginatorContract } from '@adonisjs/lucid/types/model'
 import type { UUID } from 'crypto'
 
 export default class PostsService {
@@ -44,5 +45,16 @@ export default class PostsService {
   async findOne(id: UUID): Promise<Post | null> {
     const result: Post[] | null = await Post.query().where('id', id).preload('user');
     return !!result ? result[0] : null;
+  }
+
+  /**
+   * Returns a paginated collection of posts, matching the search criteria.
+   */
+  async findMany(userId: UUID, { page, limit = 10 }: { page: number, limit?: number }): Promise<ModelPaginatorContract<Post>> {
+    return Post.query()
+      .where('user_id', userId)
+      .orderBy('updated_at', 'desc')
+      .preload('user')
+      .paginate(page, limit)
   }
 }

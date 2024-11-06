@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { ModelObject } from '@adonisjs/lucid/types/model'
 import { UpdatePost } from '@/components/posts/update'
 import { DeletePost } from '@/components/posts/delete'
+import { formatDistanceToNow } from 'date-fns'
 
 const userLink = (id: UUID) => `/users/${id}`
 const postLink = (id: UUID) => `/posts/${id}`
@@ -38,10 +39,10 @@ export default function PostCard({
 
         {showActions && (
           <div className="flex flex-row gap-2">
-            <Button className='update-post-trigger' variant="outline" size="sm-icon">
+            <Button className="update-post-trigger" variant="outline" size="sm-icon">
               <UpdatePost post={post} />
             </Button>
-            <Button className='delete-post-trigger' variant="outline" size="sm-icon">
+            <Button className="delete-post-trigger" variant="outline" size="sm-icon">
               <DeletePost post={post} />
             </Button>
           </div>
@@ -79,8 +80,11 @@ export default function PostCard({
         {post.updatedAt && (
           <span className="flex text-xs text-gray-500 gap-3 items-center">
             <Clock size={12} />
-            {new Date(post.createdAt).toUTCString()}
-            {/* {new Date(post.updatedAt).toUTCString()} */}
+            {formatDistanceToNow(
+              //new Date(2014, 6, 2)
+              new Date(post.createdAt)
+            )}{' '}
+            ago
           </span>
         )}
       </div>

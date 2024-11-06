@@ -69,7 +69,8 @@ export default function UserNavBar({ user }: { user: User }) {
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                   <DropdownMenuItem>
-                    Profile
+                    <Link href={`/users/${user.id}`}>Profile</Link>
+
                     <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
