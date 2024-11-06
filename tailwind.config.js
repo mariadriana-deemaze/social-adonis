@@ -78,7 +78,6 @@ module.exports = {
     },
   },
   plugins: [
-    // eslint-disable-next-line unicorn/prefer-module
     require('tailwindcss-animate'),
   ],
 }

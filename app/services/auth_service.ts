@@ -40,13 +40,10 @@ export default class AuthService {
       const user = await User.verifyCredentials(email, password)
       return await this.authenticate(ctx, user)
     } catch (error) {
-      if (error instanceof errors.E_VALIDATION_ERROR) {
-        session.flash('errors', {
-          email: 'Invalid credentials.',
-        })
-        return response.redirect().back()
-      }
-      return response.redirect().toRoute('feed.index')
+      session.flash('errors', {
+        email: 'Invalid authentication credentials.',
+      })
+      return response.redirect().back()
     }
   }
 

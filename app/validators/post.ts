@@ -1,5 +1,6 @@
-import vine, { SimpleMessagesProvider } from '@vinejs/vine'
+import vine from '@vinejs/vine'
 
+export const MIN_POST_CONTENT_SIZE = 8
 export const MAX_POST_CONTENT_SIZE = 256
 
 /**
@@ -7,20 +8,15 @@ export const MAX_POST_CONTENT_SIZE = 256
  */
 export const createPostValidator = vine.compile(
   vine.object({
-    content: vine.string().minLength(8).maxLength(MAX_POST_CONTENT_SIZE),
+    content: vine.string().minLength(MIN_POST_CONTENT_SIZE).maxLength(MAX_POST_CONTENT_SIZE),
   })
 )
 
 /**
- * Validates the post creation action payload
+ * Validates the post update action payload
  */
 export const updatePostValidator = vine.compile(
   vine.object({
-    content: vine.string().minLength(8).maxLength(MAX_POST_CONTENT_SIZE),
+    content: vine.string().minLength(MIN_POST_CONTENT_SIZE).maxLength(MAX_POST_CONTENT_SIZE),
   })
 )
-
-createPostValidator.messagesProvider = new SimpleMessagesProvider({
-  required: 'The {{ field }} field is required',
-  string: 'The value of {{ field }} field must be a string',
-})

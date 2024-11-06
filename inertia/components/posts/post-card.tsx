@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { Clock } from 'lucide-react'
 import type { UUID } from 'crypto'
 import { Link } from '@inertiajs/react'
@@ -21,8 +20,6 @@ export default function PostCard({
   } | null
   showActions?: boolean
 }) {
-  useEffect(() => {}, [post])
-
   return (
     <article className="flex flex-col w-full border pt-6 px-6 bg-white rounded-sm">
       {/* HEADER */}
@@ -33,7 +30,7 @@ export default function PostCard({
               <AvatarImage src="#" alt={`${post.user.name} avatar image`} />
               <AvatarFallback>{post.user.name ? post.user.name[0] : '-'}</AvatarFallback>
             </Avatar>
-            <p className="text-xs text-gray-500 self-center text-ellipsis truncate max-w-40">
+            <p className="text-xs text-gray-500 self-center text-ellipsis truncate max-w-60 lg:max-w-screen-lg">
               @{post.user.username}
             </p>
           </div>
@@ -41,10 +38,10 @@ export default function PostCard({
 
         {showActions && (
           <div className="flex flex-row gap-2">
-            <Button variant="outline" size="sm-icon">
+            <Button className='update-post-trigger' variant="outline" size="sm-icon">
               <UpdatePost post={post} />
             </Button>
-            <Button variant="outline" size="sm-icon">
+            <Button className='delete-post-trigger' variant="outline" size="sm-icon">
               <DeletePost post={post} />
             </Button>
           </div>
@@ -73,7 +70,7 @@ export default function PostCard({
             />
           </div>
 
-          <div className="py-4">{post.content}</div>
+          <div className="py-4 post-content">{post.content}</div>
         </Link>
       </div>
 

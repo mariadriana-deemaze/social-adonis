@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { useForm } from '@inertiajs/react'
+import { useEffect, useMemo, useState } from 'react'
+import { useForm, usePage } from '@inertiajs/react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -13,15 +13,17 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/components/ui/use-toast'
-import { MAX_POST_CONTENT_SIZE } from '#validators/post'
+import { MAX_POST_CONTENT_SIZE, MIN_POST_CONTENT_SIZE } from '#validators/post'
 import { cn } from '@/lib/utils'
 
 export function CreatePost() {
   const [open, setOpen] = useState(false)
 
+  const { errors } = usePage().props
+
   const { toast } = useToast()
 
-  const { data, setData, post, errors, hasErrors, processing } = useForm({
+  const { data, setData, post, processing } = useForm({
     content:
       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime, ut reiciendis animi maiores tempora ipsam ab aliquam quia magni unde totam vel id alias incidunt distinctio nemo excepturi necessitatibus laboriosam!',
   })
@@ -34,8 +36,14 @@ export function CreatePost() {
     setOpen(false)
   }
 
+  const invalidPostContent = useMemo(
+    () =>
+      data.content.length < MIN_POST_CONTENT_SIZE || data.content.length > MAX_POST_CONTENT_SIZE,
+    [data.content.length]
+  )
+
   useEffect(() => {
-    if (hasErrors) {
+    if (errors) {
       toast({ title: 'There was an issue with publishing your post.', description: errors.content })
     }
   }, [errors])
@@ -61,19 +69,14 @@ export function CreatePost() {
               value={data.content}
               onChange={(e) => setData('content', e.target.value)}
             />
-            <span
-              className={cn(
-                'text-xs',
-                data.content.length > MAX_POST_CONTENT_SIZE ? 'text-red-700' : 'text-gray-500'
-              )}
-            >
+            <span className={cn('text-xs', invalidPostContent ? 'text-red-700' : 'text-gray-500')}>
               {data.content.length}/{MAX_POST_CONTENT_SIZE}
             </span>
           </div>
           <DialogFooter>
             <Button
               loading={processing}
-              disabled={data.content.length > MAX_POST_CONTENT_SIZE}
+              disabled={invalidPostContent}
               type="submit"
             >
               Publish

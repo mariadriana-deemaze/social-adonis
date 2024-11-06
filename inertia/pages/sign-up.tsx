@@ -31,8 +31,8 @@ export default function SignUp() {
     <>
       <Head title="Social Adonis | Sign up" />
       <form className="container" onSubmit={handleSubmit}>
-        <div className="container gap-4">
-          <Card className="mx-auto max-w-sm">
+        <div className="flex flex-col items-center gap-4">
+          <Card className="w-full lg:mx-auto lg:max-w-sm">
             <CardHeader>
               <CardTitle className="text-xl">Sign Up</CardTitle>
               <CardDescription>Enter your information to create an account</CardDescription>
@@ -97,9 +97,6 @@ export default function SignUp() {
               </div>
             </CardContent>
           </Card>
-          <Link href="/posts" className="underline">
-            Try to get posts
-          </Link>
         </div>
       </form>
     </>

@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { useForm } from '@inertiajs/react'
+import { FormEvent, useEffect, useMemo, useState } from 'react'
+import { useForm, usePage } from '@inertiajs/react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -13,7 +13,7 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/components/ui/use-toast'
-import { MAX_POST_CONTENT_SIZE } from '#validators/post'
+import { MAX_POST_CONTENT_SIZE, MIN_POST_CONTENT_SIZE } from '#validators/post'
 import { cn } from '@/lib/utils'
 import { ModelObject } from '@adonisjs/lucid/types/model'
 import { Pencil } from 'lucide-react'
@@ -23,11 +23,13 @@ export function UpdatePost({ post }: { post: ModelObject }) {
 
   const { toast } = useToast()
 
-  const { data, setData, patch, errors, hasErrors, processing } = useForm({
+  const { errors } = usePage().props
+
+  const { data, setData, patch, processing } = useForm({
     content: post.content,
   })
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: FormEvent) {
     e.preventDefault()
     patch(`/posts/${post.id}`, {
       preserveState: false,
@@ -40,8 +42,15 @@ export function UpdatePost({ post }: { post: ModelObject }) {
     setOpen(nextState)
   }
 
+  const invalidPostContent = useMemo(
+    () =>
+      data.content.length < MIN_POST_CONTENT_SIZE || data.content.length > MAX_POST_CONTENT_SIZE,
+
+    [data.content.length]
+  )
+
   useEffect(() => {
-    if (hasErrors) {
+    if (errors) {
       toast({ title: 'There was an issue with updating your post.', description: errors.content })
     }
   }, [errors])
@@ -67,19 +76,14 @@ export function UpdatePost({ post }: { post: ModelObject }) {
               value={data.content}
               onChange={(e) => setData('content', e.target.value)}
             />
-            <span
-              className={cn(
-                'text-xs',
-                data.content.length > MAX_POST_CONTENT_SIZE ? 'text-red-700' : 'text-gray-500'
-              )}
-            >
+            <span className={cn('text-xs', invalidPostContent ? 'text-red-700' : 'text-gray-500')}>
               {data.content.length}/{MAX_POST_CONTENT_SIZE}
             </span>
           </div>
           <DialogFooter>
             <Button
               loading={processing}
-              disabled={data.content.length > MAX_POST_CONTENT_SIZE}
+              disabled={invalidPostContent}
               type="submit"
             >
               Update

@@ -38,6 +38,14 @@ export const runnerHooks: Required<Pick<Config, 'setup' | 'teardown'>> = {
 }
 
 /**
+ * Test reporters are used to collect test progress and display a summary after the tests have been executed.
+ * A test reporter can choose the format and the destination where it wants to display the progress and the summary.
+ */
+export const reporters: Config['reporters'] = {
+  activated: ['spec']
+}
+
+/**
  * Configure suites by tapping into the test suite instance.
  * Learn more - https://japa.dev/docs/test-suites#lifecycle-hooks
  */

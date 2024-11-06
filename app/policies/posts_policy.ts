@@ -3,7 +3,7 @@ import { AuthorizerResponse } from '@adonisjs/bouncer/types'
 import User from '#models/user'
 import Post from '#models/post'
 
-export default class PostPolicy extends BasePolicy {
+export default class PostsPolicy extends BasePolicy {
   /**
    * Every logged-in user can create a post
    */
