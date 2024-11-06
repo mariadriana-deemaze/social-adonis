@@ -11,8 +11,8 @@ import router from '@adonisjs/core/services/router'
 import { middleware } from '#start/kernel'
 import AuthController from '#controllers/auth_controller'
 import FeedController from '#controllers/feed_controller'
+import PostsController from '#controllers/posts_controller'
 // import AdminUsersController from '#controllers/admin/admin_users_controller'
-// import UsersFeedController from '#controllers/users_feed_controller'
 // import UsersController from '#controllers/users_controller'
 
 /**
@@ -39,9 +39,10 @@ router
 router
   .group(() => {
     router.delete('/auth/sign-out', [AuthController, 'destroy'])
-    router.on('/posts').renderInertia('posts')
     router.get('/feed', [FeedController, 'index'])
-    // router.on('/feed').renderInertia('feed')
-    // router.get('me', [UsersController, 'show'])
+    router.post('/posts', [PostsController, 'create'])
+    router.get('/posts/:id', [PostsController, 'show'])
+    router.patch('/posts/:id', [PostsController, 'update'])
+    router.delete('/posts/:id', [PostsController, 'destroy'])
   })
   .use(middleware.auth())

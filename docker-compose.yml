@@ -21,7 +21,7 @@ services:
       - .:/app
       - /app/node_modules
     restart: unless-stopped
-    command: node ace serve --watch
+    command: yarn dev
     ports:
       - '3000:3000'
     env_file:

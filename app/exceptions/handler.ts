@@ -21,12 +21,8 @@ export default class HttpExceptionHandler extends ExceptionHandler {
    * to return the HTML contents to send as a response.
    */
   protected statusPages: Record<StatusPageRange, StatusPageRenderer> = {
-    '404': (error, { view }) => {
-      return view.render('pages/errors/not_found', { error })
-    },
-    '500..599': (error, { view }) => {
-      return view.render('pages/errors/server_error', { error })
-    },
+    '404': (error, { inertia }) => inertia.render('errors/not_found', { error }),
+    '500..599': (error, { inertia }) => inertia.render('errors/server_error', { error }),
   }
 
   /**
@@ -47,7 +43,7 @@ export default class HttpExceptionHandler extends ExceptionHandler {
    * @note You should not attempt to send a response from this method.
    */
   async report(error: unknown, ctx: HttpContext) {
-    ctx.sentry.captureException(error)
+    if (app.inProduction && ctx.sentry) { ctx.sentry.captureException(error) }
     return super.report(error, ctx)
   }
 }

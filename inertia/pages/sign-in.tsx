@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/components/ui/use-toast'
+import AdonisLogo from '@/components/svg/logo'
 
 export default function SignIn() {
   const { toast } = useToast()
@@ -21,16 +22,17 @@ export default function SignIn() {
 
   useEffect(() => {
     if (Object.entries(errors).length) {
-      toast({ title: 'Error on signing in.', description: 'Check the fields.' })
+      toast({ title: 'Error signing in.', description: errors.email })
     }
   }, [errors])
 
   return (
     <>
       <Head title="Social Adonis | Sign in" />
-      <form className="container" onSubmit={handleSubmit}>
-        <div className="container gap-4">
-          <Card className="mx-auto max-w-sm">
+      <div className="container gap-10">
+        <AdonisLogo />
+        <form className="flex flex-col items-center gap-4" onSubmit={handleSubmit}>
+          <Card className="w-full lg:mx-auto lg:max-w-sm">
             <CardHeader>
               <CardTitle className="text-xl">Sign in</CardTitle>
               <CardDescription>Enter your account authentication credentials</CardDescription>
@@ -47,7 +49,6 @@ export default function SignIn() {
                     onChange={(e) => setData('email', e.target.value)}
                     required
                   />
-                  {errors.email && <p className="text-red-600">{errors.email}</p>}
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="password">Password</Label>
@@ -57,7 +58,6 @@ export default function SignIn() {
                     value={data.password}
                     onChange={(e) => setData('password', e.target.value)}
                   />
-                  {errors.password && <p className="text-red-600">{errors.password}</p>}
                 </div>
                 <Button type="submit" className="w-full" disabled={processing}>
                   Login
@@ -71,12 +71,8 @@ export default function SignIn() {
               </div>
             </CardContent>
           </Card>
-
-          <a href="/posts" className="underline">
-            Try to get posts
-          </a>
-        </div>
-      </form>
+        </form>
+      </div>
     </>
   )
 }

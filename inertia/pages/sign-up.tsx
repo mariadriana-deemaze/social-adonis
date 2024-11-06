@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/components/ui/use-toast'
+import AdonisLogo from '@/components/svg/logo'
 
 export default function SignUp() {
   const { toast } = useToast()
@@ -30,9 +31,10 @@ export default function SignUp() {
   return (
     <>
       <Head title="Social Adonis | Sign up" />
-      <form className="container" onSubmit={handleSubmit}>
-        <div className="container gap-4">
-          <Card className="mx-auto max-w-sm">
+      <div className="container gap-10">
+        <AdonisLogo />
+        <form className="flex flex-col items-center gap-4" onSubmit={handleSubmit}>
+          <Card className="w-full lg:mx-auto lg:max-w-sm">
             <CardHeader>
               <CardTitle className="text-xl">Sign Up</CardTitle>
               <CardDescription>Enter your information to create an account</CardDescription>
@@ -49,7 +51,7 @@ export default function SignUp() {
                     onChange={(e) => setData('name', e.target.value)}
                     required
                   />
-                  {errors.name && <p className="text-red-600">{errors.name}</p>}
+                  {errors.name && <p className="text-red-600 text-xs">{errors.name}</p>}
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="email">Email</Label>
@@ -61,7 +63,7 @@ export default function SignUp() {
                     onChange={(e) => setData('email', e.target.value)}
                     required
                   />
-                  {errors.email && <p className="text-red-600 text-sm">{errors.email}</p>}
+                  {errors.email && <p className="text-red-600 text-xs">{errors.email}</p>}
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="password">Password</Label>
@@ -71,7 +73,7 @@ export default function SignUp() {
                     value={data.password}
                     onChange={(e) => setData('password', e.target.value)}
                   />
-                  {errors.password && <p className="text-red-600">{errors.password}</p>}
+                  {errors.password && <p className="text-red-600 text-xs">{errors.password}</p>}
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="confirmPassword">Confirm password</Label>
@@ -82,7 +84,7 @@ export default function SignUp() {
                     onChange={(e) => setData('passwordConfirmation', e.target.value)}
                   />
                   {errors.passwordConfirmation && (
-                    <p className="text-red-600">{errors.passwordConfirmation}</p>
+                    <p className="text-red-600 text-xs">{errors.passwordConfirmation}</p>
                   )}
                 </div>
                 <Button type="submit" className="w-full" disabled={processing}>
@@ -97,11 +99,8 @@ export default function SignUp() {
               </div>
             </CardContent>
           </Card>
-          <Link href="/posts" className="underline">
-            Try to get posts
-          </Link>
-        </div>
-      </form>
+        </form>
+      </div>
     </>
   )
 }

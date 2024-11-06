@@ -12,7 +12,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   return (
     <>
       {user && <UserNavBar user={user} />}
-      {children}
+      <div className="container flex justify-start pt-20">{children}</div>
       <Toaster />
     </>
   )

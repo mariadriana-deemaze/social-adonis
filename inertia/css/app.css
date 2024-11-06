@@ -107,7 +107,27 @@ a {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
+  .feed-list {
+    @apply my-5 flex flex-col gap-2 w-full pb-20;
+  }
+
+  .default-dialog {
+    @apply max-w-[calc(100vw_-_20px)] md:max-w-[425px] rounded-lg
+  }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+		display: none;
+	}
+
+	.no-scrollbar {
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+	}
 }
