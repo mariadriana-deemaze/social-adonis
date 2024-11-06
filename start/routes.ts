@@ -17,7 +17,7 @@ import UsersController from '#controllers/users_controller'
 
 /**
  *
- * GUEST/PUBLIC
+ * Auth
  *
  * */
 router.on('/').renderInertia('home')
@@ -33,6 +33,14 @@ router
 
 /**
  *
+ * GUEST/PUBLIC
+ *
+ * */
+router.get('/users/:id', [UsersController, 'show'])
+
+
+/**
+ *
  * USER RELATED
  *
  **/
@@ -44,6 +52,5 @@ router
     router.get('/posts/:id', [PostsController, 'show'])
     router.patch('/posts/:id', [PostsController, 'update'])
     router.delete('/posts/:id', [PostsController, 'destroy'])
-    router.get('/users/:id', [UsersController, 'show'])
   })
   .use(middleware.auth())

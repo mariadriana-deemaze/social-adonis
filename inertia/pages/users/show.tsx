@@ -9,7 +9,7 @@ import { CalendarHeart, FilePen } from 'lucide-react'
 import { CreatePost } from '@/components/posts/create'
 
 export default function Show({ user, posts, profile }: InferPageProps<UsersController, 'show'>) {
-  if (!user || !posts || !profile) return <>Loading..</>
+  if (!posts || !profile) return <>Loading..</>
   return (
     <>
       <Head title={`SocialAdonis | @${profile.username}`} />
@@ -55,7 +55,7 @@ export default function Show({ user, posts, profile }: InferPageProps<UsersContr
                 </div>
               </div>
 
-              {user.id === profile.id && (
+              {user?.id === profile.id && (
                 <div className="flex w-full p-3 justify-center">
                   <CreatePost />
                 </div>
