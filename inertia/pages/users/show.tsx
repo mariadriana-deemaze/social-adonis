@@ -14,8 +14,8 @@ export default function Show({ user, posts, profile }: InferPageProps<UsersContr
     <>
       <Head title={`SocialAdonis | @${profile.username}`} />
       <div className="relative flex flex-col lg:flex-row gap-2">
-        <div className="sticky top-0 w-full max-w-full lg:max-w-96">
-          <Card className="flex flex-row w-full align-middle">
+        <div className="h-full w-full max-w-full lg:max-w-96">
+          <Card className="user-profile-card sticky top-20 flex flex-row w-full align-middle rounded-sm">
             <CardContent className="relative w-full flex flex-col text-center divide-y divide-dashed">
               <div className="relative w-full flex flex-col gap-4 items-center p-5">
                 <div className="flex flex-row gap-3">
@@ -35,7 +35,7 @@ export default function Show({ user, posts, profile }: InferPageProps<UsersContr
               <div className="flex w-full p-3 justify-center">
                 <div className="flex flex-row gap-2">
                   <FilePen className="w-4 text-gray-400" />
-                  <p className="text-sm">
+                  <p className="user-profile-card-total-posts text-sm">
                     Total posts
                     <span className="text-muted-foreground"> {posts?.meta?.total}</span>
                   </p>
