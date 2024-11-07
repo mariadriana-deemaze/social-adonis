@@ -15,6 +15,7 @@ import { Label } from '@/components/ui/label'
 import { useToast } from '@/components/ui/use-toast'
 import { MAX_POST_CONTENT_SIZE, MIN_POST_CONTENT_SIZE } from '#validators/post'
 import { cn } from '@/lib/utils'
+import FileUploadPreview from '@/components/generic/file-upload-preview'
 
 export function CreatePost() {
   const [open, setOpen] = useState(false)
@@ -23,9 +24,13 @@ export function CreatePost() {
 
   const { toast } = useToast()
 
-  const { data, setData, post, processing } = useForm({
+  const { data, setData, post, processing, progress } = useForm<{
+    content: string
+    attachments: FileList | null
+  }>({
     content:
       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime, ut reiciendis animi maiores tempora ipsam ab aliquam quia magni unde totam vel id alias incidunt distinctio nemo excepturi necessitatibus laboriosam!',
+    attachments: null,
   })
 
   function handleSubmit(e: React.FormEvent) {
@@ -47,6 +52,10 @@ export function CreatePost() {
       toast({ title: 'There was an issue with publishing your post.', description: errors.content })
     }
   }, [errors])
+
+  useEffect(() => {
+    console.log('form data ->', data)
+  }, [data])
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -73,12 +82,24 @@ export function CreatePost() {
               {data.content.length}/{MAX_POST_CONTENT_SIZE}
             </span>
           </div>
+
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={(e) => setData('attachments', e.target.files)}
+          />
+
+          <FileUploadPreview fileList={data.attachments} />
+
+          {progress && (
+            <progress value={progress.percentage} max="100">
+              {progress.percentage}%
+            </progress>
+          )}
+
           <DialogFooter>
-            <Button
-              loading={processing}
-              disabled={invalidPostContent}
-              type="submit"
-            >
+            <Button loading={processing} disabled={invalidPostContent} type="submit">
               Publish
             </Button>
           </DialogFooter>
