@@ -31,6 +31,13 @@ export default class PostsController {
 
     const payload = ctx.request.body()
 
+    const attachments = ctx.request.files('attachments', {
+      size: '2mb',
+      extnames: ['jpeg', 'jpg', 'png'],
+    })
+
+    console.log("attachments ?? ->", attachments)
+
     try {
       await this.service.create({
         userId: ctx.auth.user?.id!,
