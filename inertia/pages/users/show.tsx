@@ -46,7 +46,7 @@ export default function Show({ user, posts, profile }: InferPageProps<UsersContr
                 <div className="flex flex-row gap-2">
                   <CalendarHeart className="w-4 text-gray-400" />
                   <p className="text-sm">
-                    Joined at
+                    Joined on
                     <span className="text-muted-foreground">
                       {' '}
                       {lightFormat(new Date(profile.createdAt), 'yyyy-MM-dd')}

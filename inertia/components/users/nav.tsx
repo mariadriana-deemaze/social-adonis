@@ -71,7 +71,6 @@ export default function UserNavBar({ user }: { user: User | null }) {
                   <DropdownMenuGroup>
                     <DropdownMenuItem>
                       <Link href={`/users/${user.id}`}>Profile</Link>
-
                       <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
                     </DropdownMenuItem>
                     <DropdownMenuItem>
@@ -90,7 +89,7 @@ export default function UserNavBar({ user }: { user: User | null }) {
               </DropdownMenu>
             ) : (
               <Link href='/auth/sign-in'>
-                <Button size="sm">Login</Button>
+                <Button size="sm">Sign in</Button>
               </Link>
             )}
           </div>

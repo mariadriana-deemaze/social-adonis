@@ -12,19 +12,14 @@ const inertiaConfig = defineConfig({
    * Data that should be shared with all rendered pages
    */
   sharedData: {
-    user: async (ctx): Promise<User | null> => {
-      if (!ctx?.auth?.user) {
-        return null
-      }
-      return ctx.auth.user
-    },
+    user: async (ctx): Promise<User | null> => ctx?.auth?.user || null,
     errors: (ctx) => ctx.session?.flashMessages.get('errors'),
   },
 
   /**
    * Options for the server-side rendering
    */
-   ssr: {
+  ssr: {
     enabled: true,
     entrypoint: 'inertia/app/ssr.tsx',
   },
@@ -33,5 +28,5 @@ const inertiaConfig = defineConfig({
 export default inertiaConfig
 
 declare module '@adonisjs/inertia/types' {
-  export interface SharedProps extends InferSharedProps<typeof inertiaConfig> {}
+  export interface SharedProps extends InferSharedProps<typeof inertiaConfig> { }
 }
