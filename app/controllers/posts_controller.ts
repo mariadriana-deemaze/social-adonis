@@ -5,7 +5,7 @@ import service from '#services/posts_service'
 import policy from '#policies/posts_policy'
 import Post from '#models/post'
 import { errorsReducer } from '#utils/index'
-
+import { cuid } from '@adonisjs/core/helpers'
 @inject()
 export default class PostsController {
   constructor(private service: service) {}
@@ -37,6 +37,19 @@ export default class PostsController {
     })
 
     console.log("attachments ?? ->", attachments)
+
+
+    for (const attachment of attachments) {
+      const key = `uploads/${cuid()}.${attachment.extname}`
+      console.log("key ->", key)
+
+      const moved = await attachment.moveToDisk(key)
+
+      console.log("moved ->", moved)
+
+      // const url = await drive.use().getUrl(key);
+
+    }
 
     try {
       await this.service.create({

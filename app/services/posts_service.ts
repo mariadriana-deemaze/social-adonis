@@ -3,8 +3,9 @@ import { createPostValidator, updatePostValidator } from '#validators/post'
 import { ModelObject } from '@adonisjs/lucid/types/model'
 import { PostResponse } from 'app/interfaces/post'
 import LinkParserService from '#services/link_parser_service'
-import type { UUID } from 'crypto'
+import drive from '@adonisjs/drive/services/main'
 import { PaginatedResponse } from 'app/interfaces/pagination'
+import type { UUID } from 'crypto'
 
 export default class PostsService {
   private readonly linkService: LinkParserService
@@ -84,11 +85,20 @@ export default class PostsService {
 
     const link = await this.linkService.show(post.link)
 
+    // WIP: TESTING
+
+    const disk = drive.use()
+
+    const key = 'uploads/gu0nj7lrt94xs0xg0x9iu3fm.jpeg'
+
+    const contents = await disk.getSignedUrl(key)
+
     const resource: PostResponse = {
       id: data.id,
       content: data.content,
       user: data.user,
       link,
+      attachments: [contents],
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
     }

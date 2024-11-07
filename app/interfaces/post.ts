@@ -17,6 +17,7 @@ export interface LinkResponse {
 export interface PostResponse extends BaseEntity {
   id: UUID
   content: string
+  attachments: string[]
   user: UserResponse
   link: LinkResponse | null
 }
