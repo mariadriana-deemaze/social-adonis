@@ -10,7 +10,7 @@ test.group('Acessing user profile feed', (group) => {
     const user = await UserFactory.create();
     const page = await visit(`/users/${user.id}`)
     await page.assertTextContains('body', 'Sign in')
-  }).skip() // FIX-ME: Failing due to middleware redirect issue
+  })
 
   test('Successfully acesses own user profile feed while authenticated', async ({ visit, browserContext }) => {
     const user = await UserFactory.with('posts', 2).create()
