@@ -21,6 +21,9 @@ export default function PostCard({
   } | null
   showActions?: boolean
 }) {
+  const image =
+    'https://socialadonisweb.s3.eu-north-1.amazonaws.com/uploads/gu0nj7lrt94xs0xg0x9iu3fm.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIARFAXXG6LR2ZE7KLB%2F20241107%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20241107T175436Z&X-Amz-Expires=1800&X-Amz-Signature=f0e3e1041df17fdc0f9ff5cb7cd7798c134b52e1eae27d1abd30be80b5ae81f9&X-Amz-SignedHeaders=host&x-id=GetObject'
+
   return (
     <article className="flex flex-col w-full border pt-6 px-6 bg-white rounded-sm">
       {/* HEADER */}
@@ -60,15 +63,14 @@ export default function PostCard({
               // Landscape
               // src="https://images.unsplash.com/photo-1632283875841-9258f69d4a22?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw2fHx8ZW58MHx8fHx8"
               // Portrait
-              src="https://plus.unsplash.com/premium_photo-1715030289409-5e81652149e7?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw0fHx8ZW58MHx8fHx8"
+
+              // src="https://plus.unsplash.com/premium_photo-1715030289409-5e81652149e7?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw0fHx8ZW58MHx8fHx8"
+              src={image}
               className="z-[1] rounded-lg max-w-full"
             />
 
             {/* // BG BACKDROP */}
-            <img
-              src="https://plus.unsplash.com/premium_photo-1715030289409-5e81652149e7?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw0fHx8ZW58MHx8fHx8"
-              className="absolute w-full blur-md opacity-50"
-            />
+            <img src={image} className="absolute w-full blur-md opacity-50" />
           </div>
 
           <div className="py-4 post-content">{post.content}</div>

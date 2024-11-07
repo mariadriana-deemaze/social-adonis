@@ -5,10 +5,11 @@ import { Head } from '@inertiajs/react'
 import { MoveLeft } from 'lucide-react'
 
 export default function Show({ post, user }: InferPageProps<PostsController, 'show'>) {
+  console.log('post ->', post)
   if (!post) return <>loading...</>
   return (
     <>
-      <Head title={`SocialAdonis | Post ${post.id}`} />
+      <Head title={`SocialAdonis | Post`} />
       <div className="w-full flex flex-col items-start pb-4">
         <div className="my-6">
           <div className="flex flex-row gap-2" onClick={() => window.history.back()}>
@@ -16,7 +17,8 @@ export default function Show({ post, user }: InferPageProps<PostsController, 'sh
             Go back to feed
           </div>
         </div>
-        <PostCard user={user} post={post} showActions={post.user.id === user?.id} />
+
+        <PostCard user={user} post={post} /* showActions={post.user.id === user?.id}  *//>
       </div>
     </>
   )
