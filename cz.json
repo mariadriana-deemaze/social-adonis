@@ -1,0 +1,86 @@
+{
+  "commitizen": {
+    "name": "cz_customize",
+    "tag_format": "$version",
+    "version_scheme": "semver",
+    "version_provider": "npm",
+    "customize": {
+      "message_template": "{{change_type}} {% if context %}({{context}}){% endif %}: {{ message }}",
+      "example": "feat(ui): add a shiny new feature",
+      "schema": "<type>(<context>): <body>",
+      "schema_pattern": "(feat|fix|styles|refactor|perf|test|chore):(\\s.*)",
+      "bump_pattern": "^(break|new|fix|hotfix)",
+      "bump_map": {
+        "break": "MAJOR",
+        "new": "MINOR",
+        "fix": "PATCH"
+      },
+      "change_type_order": [
+        "BREAKING CHANGE",
+        "feat",
+        "fix",
+        "refactor",
+        "perf",
+        "chore"
+      ],
+      "info_path": "cz_customize_info.txt",
+      "info": "This is customized info",
+      "commit_parser": "^(?P<change_type>feat|fix|styles|refactor|perf|test|chore(deps)|chore(config)):\\s(?P<message>.*)?",
+      "change_type_map": {
+        "feat": "Feat",
+        "fix": "Fix",
+        "refactor": "Refactor",
+        "perf": "Performance",
+        "test": "Test",
+        "chore": "Chore"
+      },
+      "questions": [
+        {
+          "type": "list",
+          "name": "change_type",
+          "choices": [
+            {
+              "value": "feat 🎸",
+              "name": "feat 🎸: added a new feature."
+            },
+            {
+              "value": "fix ✅",
+              "name": "fix ✅: added a bug fix."
+            },
+            {
+              "value": "styles 💅",
+              "name": "styles 💅: edited some UI styles or other general styling config."
+            },
+            {
+              "value": "refactor ✨",
+              "name": "refactor: refactored code that does not affect feature."
+            },
+            {
+              "value": "perf ⚡️",
+              "name": "perf ⚡️: made a performance inprovement."
+            },
+            {
+              "value": "test 🧪",
+              "name": "test 🧪: added tests."
+            },
+            {
+              "value": "chore 🏗️",
+              "name": "chore 🏗️: added or bumped dependencies."
+            }
+          ],
+          "message": "Select the type of change you are committing"
+        },
+        {
+          "type": "input",
+          "name": "context",
+          "message": "Do you want to add additional context?"
+        },
+        {
+          "type": "input",
+          "name": "message",
+          "message": "Body."
+        }
+      ]
+    }
+  }
+}
