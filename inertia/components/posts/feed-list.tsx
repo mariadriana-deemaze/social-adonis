@@ -54,19 +54,27 @@ export default function FeedList({
   }, [isIntersecting])
 
   return (
-    <div className="feed-list">
+    <div className="feed-list w-full">
       {!allPosts ? (
         <Loader2 className="h-5 w-5 mr-2 animate-spin text-muted" />
       ) : (
         allPosts?.map((post, index) => <PostCard user={currentUser} post={post} key={index} />)
       )}
-      <div className="flex justify-center py-5">
-        {hasMorePosts ? (
-          <p ref={ref} className="text-sm text-gray-600 self-center cursor-pointer">
-            fetch more around here
-          </p>
+      <div className="flex justify-center py-5 w-full min-w-full">
+        {posts?.data?.length > 0 ? (
+          <>
+            {hasMorePosts ? (
+              <p ref={ref} className="text-sm text-gray-600 self-center cursor-pointer">
+                fetch more around here
+              </p>
+            ) : (
+              <p className="text-sm text-gray-600 self-center">Go touch grass outside.</p>
+            )}
+          </>
         ) : (
-          <p className="text-sm text-gray-600 self-center">Go touch grass outside.</p>
+          <div className="flex w-full hn-screen items-center justify-center">
+            <p className="text-sm text-gray-600 self-center">Nothing to see here. 🍃</p>
+          </div>
         )}
       </div>
     </div>
