@@ -31,7 +31,7 @@ export default class HttpExceptionHandler extends ExceptionHandler {
    */
   async handle(error: unknown & { name: string }, ctx: HttpContext) {
     if (error.name === 'E_UNAUTHORIZED_ACCESS') {
-      return ctx.response.redirect('auth/sign-in')
+      return ctx.response.redirect('/auth/sign-in')
     }
     return super.handle(error, ctx)
   }

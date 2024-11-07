@@ -7,9 +7,6 @@ tmp
 *.env*
 !.env.example
 
-# Frontend assets compiled code
-public/assets
-
 # Build tools specific
 npm-debug.log
 yarn-error.log

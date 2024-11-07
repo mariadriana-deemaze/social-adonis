@@ -12,15 +12,22 @@ import { middleware } from '#start/kernel'
 import AuthController from '#controllers/auth_controller'
 import FeedController from '#controllers/feed_controller'
 import PostsController from '#controllers/posts_controller'
+import UsersController from '#controllers/users_controller'
 // import AdminUsersController from '#controllers/admin/admin_users_controller'
-// import UsersController from '#controllers/users_controller'
+
+
+/**
+*
+* GUEST/PUBLIC
+*
+**/
+router.on('/').renderInertia('home') // TODO: Contextualize `ctx.auth.authenticate` via middleware.
 
 /**
  *
- * GUEST/PUBLIC
+ * Auth
  *
  * */
-router.on('/').renderInertia('home')
 router
   .group(() => {
     router.post('/sign-up', [AuthController, 'store'])
@@ -31,15 +38,18 @@ router
   .prefix('auth')
   .use(middleware.guest())
 
+
+
 /**
  *
- * USER RELATED
+ * PRIVATE AND USER RELATED
  *
  **/
 router
   .group(() => {
     router.delete('/auth/sign-out', [AuthController, 'destroy'])
     router.get('/feed', [FeedController, 'index'])
+    router.get('/users/:id', [UsersController, 'show']) // TODO: Make public, and contextualize `ctx.auth.authenticate` via middleware.
     router.post('/posts', [PostsController, 'create'])
     router.get('/posts/:id', [PostsController, 'show'])
     router.patch('/posts/:id', [PostsController, 'update'])
