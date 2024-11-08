@@ -22,12 +22,12 @@ export default class extends BaseSchema {
         })
         .notNullable()
         .comment(`Points as belongs to other models.`)
-      table.uuid('model_id').comment(`Connects to unique identifier of the belonging model.`)
+      table.uuid('model_id').notNullable().comment(`Connects to unique identifier of the belonging model.`)
       table.string('external_key').notNullable()
       table.string('provider').defaultTo(AttachmentProvider.S3).notNullable()
       table.jsonb('metadata').notNullable()
-      table.timestamp('created_at')
-      table.timestamp('updated_at')
+      table.timestamp('created_at').notNullable()
+      table.timestamp('updated_at').nullable()
     })
   }
 
