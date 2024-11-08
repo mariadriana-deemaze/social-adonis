@@ -92,8 +92,21 @@ export default class PostsService {
       extnames: ['jpeg', 'jpg', 'png'],
     })
 
+    const audios = ctx.request.files('audios', {
+      size: '2mb',
+      extnames: ['wav', 'mp3'],
+    })
+
+    const documents = ctx.request.files('documents', {
+      size: '2mb',
+      extnames: ['pdf', 'doc'],
+    })
+
+
     return this.attachmentService.store({
-      images
+      images,
+      audios,
+      documents,
     }, AttachmentModel.POST, id)
   }
 
