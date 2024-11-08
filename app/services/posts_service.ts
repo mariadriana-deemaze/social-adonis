@@ -1,18 +1,23 @@
 import Post from '#models/post'
+import { AttachmentModel } from '#models/attachment'
+import AttachmentService from '#services/attachment_service'
 import { createPostValidator, updatePostValidator } from '#validators/post'
 import { ModelObject } from '@adonisjs/lucid/types/model'
 import { PostResponse } from 'app/interfaces/post'
 import LinkParserService from '#services/link_parser_service'
-import drive from '@adonisjs/drive/services/main'
 import { PaginatedResponse } from 'app/interfaces/pagination'
+import type { HttpContext } from '@adonisjs/core/http'
 import type { UUID } from 'crypto'
 
 export default class PostsService {
   private readonly linkService: LinkParserService
+  private readonly attachmentService: AttachmentService;
 
   constructor() {
     this.linkService = new LinkParserService()
+    this.attachmentService = new AttachmentService();
   }
+
 
   /**
    * Validates the create action payload, and persist to record.
@@ -53,10 +58,7 @@ export default class PostsService {
   /**
    * Returns a paginated collection of posts, matching the search criteria.
    */
-  async findMany(
-    userId: UUID,
-    { page, limit = 10 }: { page: number; limit?: number }
-  ): Promise<PaginatedResponse<PostResponse>> {
+  async findMany(userId: UUID, { page, limit = 10 }: { page: number, limit?: number }): Promise<PaginatedResponse<PostResponse>> {
     const result = await Post.query()
       .where('user_id', userId)
       .orderBy('updated_at', 'desc')
@@ -78,31 +80,36 @@ export default class PostsService {
   }
 
   /**
+   * Deals with the post attachments extraction from request, as well as apply the necessary validations. 
+   * Thereafter, delegates to the service responsible of handling the attachment providers.
+   */
+  async storeAttachments(ctx: HttpContext, id: UUID): Promise<void> {
+    const images = ctx.request.files('images', {
+      size: '2mb',
+      extnames: ['jpeg', 'jpg', 'png'],
+    })
+    return this.attachmentService.store({
+      images
+    }, AttachmentModel.POST, id)
+  }
+
+
+  /**
    * Handles the process on serializing the post data, and aggregatin gits many attachments.
    */
   async serialize(post: Post): Promise<PostResponse> {
-    const data: ModelObject = post.toJSON()
-
-    const link = await this.linkService.show(post.link)
-
-    // WIP: TESTING
-
-    const disk = drive.use()
-
-    const key = 'uploads/gu0nj7lrt94xs0xg0x9iu3fm.jpeg'
-
-    const contents = await disk.getSignedUrl(key)
-
+    const data: ModelObject = post.toJSON();
+    const attachments = await this.attachmentService.findMany(AttachmentModel.POST, post.id);
+    const link = await this.linkService.show(post.link);
     const resource: PostResponse = {
       id: data.id,
       content: data.content,
       user: data.user,
       link,
-      attachments: [contents],
+      attachments,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
     }
-
-    return resource
+    return resource;
   }
 }

@@ -1,6 +1,7 @@
 import { BaseEntity } from 'app/interfaces/base-entity'
 import { UUID } from 'crypto'
 import { UserResponse } from './user'
+import { AttachmentResponse } from 'app/interfaces/attachment'
 
 export interface LinkMetadataJSONResponse {
   title: string
@@ -17,7 +18,9 @@ export interface LinkResponse {
 export interface PostResponse extends BaseEntity {
   id: UUID
   content: string
-  attachments: string[]
+  attachments: { 
+    images: AttachmentResponse[] 
+  }
   user: UserResponse
   link: LinkResponse | null
 }
