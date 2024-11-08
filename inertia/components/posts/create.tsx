@@ -26,19 +26,19 @@ export function CreatePost() {
 
   const { data, setData, post, processing, progress } = useForm<{
     content: string
-    attachments: FileList | null
+    images: FileList | null
   }>({
     content:
       'Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime, ut reiciendis animi maiores tempora ipsam ab aliquam quia magni unde totam vel id alias incidunt distinctio nemo excepturi necessitatibus laboriosam!',
-    attachments: null,
+    images: null,
   })
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     post('/posts', {
       preserveState: false,
+      onFinish: () => setOpen(false),
     })
-    setOpen(false)
   }
 
   const invalidPostContent = useMemo(
@@ -49,13 +49,12 @@ export function CreatePost() {
 
   useEffect(() => {
     if (errors) {
-      toast({ title: 'There was an issue with publishing your post.', description: errors.content })
+      toast({
+        title: 'There was an issue with publishing your post.',
+        description: errors.content || errors.images,
+      })
     }
   }, [errors])
-
-  useEffect(() => {
-    console.log('form data ->', data)
-  }, [data])
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -67,7 +66,7 @@ export function CreatePost() {
           <DialogTitle>Create a post</DialogTitle>
           <DialogDescription>Be creative I guess</DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className={cn(processing ? 'opacity-20 pointer-events-none' : 'opacity-100')}>
           <div className="flex flex-col w-full mb-6 gap-2">
             <Label htmlFor="content" className="text-left">
               Post content
@@ -83,14 +82,15 @@ export function CreatePost() {
             </span>
           </div>
 
+          {/* // TODO: Different uploaders per file type. Abstract to single button, and apply swith to input accordingly. */}
           <input
             type="file"
             accept="image/*"
             multiple
-            onChange={(e) => setData('attachments', e.target.files)}
+            onChange={(e) => setData('images', e.target.files)}
           />
 
-          <FileUploadPreview fileList={data.attachments} />
+          <FileUploadPreview fileList={data.images} />
 
           {progress && (
             <progress value={progress.percentage} max="100">

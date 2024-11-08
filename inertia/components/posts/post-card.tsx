@@ -1,29 +1,70 @@
 import { Clock } from 'lucide-react'
-import type { UUID } from 'crypto'
 import { Link } from '@inertiajs/react'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { ModelObject } from '@adonisjs/lucid/types/model'
 import { UpdatePost } from '@/components/posts/update'
 import { DeletePost } from '@/components/posts/delete'
+import { PostResponse } from 'app/interfaces/post'
+import { AttachmentResponse } from 'app/interfaces/attachment'
 import { formatDistanceToNow } from 'date-fns'
+import type { UUID } from 'crypto'
 
 const userLink = (id: UUID) => `/users/${id}`
 const postLink = (id: UUID) => `/posts/${id}`
+
+function PostImage({ image }: { image: AttachmentResponse }) {
+  return (
+    <div className="flex flex-row justify-center aspect-auto h-[calc(100vh_-_300px)] relative rounded-lg overflow-hidden">
+      <div className="absolute top-4 left-4 bg-gray-800">
+        {/* ON HOVER */}
+        {/* {Object.entries(image.metadata).map(([attribute, value]) => (
+  <p key={`${image.id}_${attribute}`} className="text-white min-w-20 text-wrap">
+    {value}
+  </p>
+))} */}
+      </div>
+      <img src={image.link} className="z-[1] rounded-lg max-w-full" />
+      <img src={image.link} className="absolute w-full blur-md opacity-50" />
+    </div>
+  )
+}
+
+function PostGallery({ attachments }: { attachments: AttachmentResponse[] }) {
+  const bento = attachments.length > 1
+
+  // TODO: Improve.
+  return bento ? (
+    <div className="mt-10 grid gap-4 sm:mt-16 lg:grid-cols-3">
+      <div className="relative bg-red-500 col-span-2">
+        <PostImage image={attachments[0]} />
+      </div>
+      <div className="relative bg-green-500 flex flex-col">
+        <div>
+          <PostImage image={attachments[1]} />
+        </div>
+        <div>
+          <PostImage image={attachments[1]} />
+        </div>
+        <div>
+          <PostImage image={attachments[1]} />
+        </div>
+      </div>
+    </div>
+  ) : (
+    <PostImage image={attachments[0]} />
+  )
+}
 
 export default function PostCard({
   post,
   showActions = false,
 }: {
-  post: ModelObject
+  post: PostResponse
   user: {
     [x: string]: any
   } | null
   showActions?: boolean
 }) {
-  const image =
-    'https://socialadonisweb.s3.eu-north-1.amazonaws.com/uploads/gu0nj7lrt94xs0xg0x9iu3fm.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIARFAXXG6LR2ZE7KLB%2F20241107%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20241107T175436Z&X-Amz-Expires=1800&X-Amz-Signature=f0e3e1041df17fdc0f9ff5cb7cd7798c134b52e1eae27d1abd30be80b5ae81f9&X-Amz-SignedHeaders=host&x-id=GetObject'
-
   return (
     <article className="flex flex-col w-full border pt-6 px-6 bg-white rounded-sm">
       {/* HEADER */}
@@ -55,24 +96,10 @@ export default function PostCard({
       <hr />
 
       <div className="py-4">
-        {/* CONTENT */}
         <Link href={postLink(post.id)}>
-          {/* GALLERY CONTAINER */}
-          <div className="flex flex-row justify-center aspect-auto h-[calc(100vh_-_300px)] relative rounded-lg overflow-hidden">
-            <img
-              // Landscape
-              // src="https://images.unsplash.com/photo-1632283875841-9258f69d4a22?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw2fHx8ZW58MHx8fHx8"
-              // Portrait
-
-              // src="https://plus.unsplash.com/premium_photo-1715030289409-5e81652149e7?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw0fHx8ZW58MHx8fHx8"
-              src={image}
-              className="z-[1] rounded-lg max-w-full"
-            />
-
-            {/* // BG BACKDROP */}
-            <img src={image} className="absolute w-full blur-md opacity-50" />
-          </div>
-
+          {post.attachments.images.length > 0 && (
+            <PostGallery attachments={post.attachments.images} />
+          )}
           <div className="py-4 post-content">{post.content}</div>
         </Link>
       </div>
@@ -82,11 +109,7 @@ export default function PostCard({
         {post.updatedAt && (
           <span className="flex text-xs text-gray-500 gap-3 items-center">
             <Clock size={12} />
-            {formatDistanceToNow(
-              //new Date(2014, 6, 2)
-              new Date(post.createdAt)
-            )}{' '}
-            ago
+            {formatDistanceToNow(new Date(post.createdAt))} ago
           </span>
         )}
       </div>
