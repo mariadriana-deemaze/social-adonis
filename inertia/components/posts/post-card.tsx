@@ -1,13 +1,22 @@
-import { useMemo } from 'react'
-import { Clock, Link as LinkIcon } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { ArrowLeft, ArrowRight, Clock, Link as LinkIcon, EllipsisVerticalIcon } from 'lucide-react'
 import { Link } from '@inertiajs/react'
 import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+} from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { UpdatePost } from '@/components/posts/update'
 import { DeletePost } from '@/components/posts/delete'
 import { PostResponse } from 'app/interfaces/post'
 import { AttachmentResponse } from 'app/interfaces/attachment'
 import { formatDistanceToNow } from 'date-fns'
+import { DropdownMenuLabel } from '@radix-ui/react-dropdown-menu'
 import type { UUID } from 'crypto'
 
 const userLink = (id: UUID) => `/users/${id}`
@@ -23,7 +32,7 @@ function PostContentParser({ post }: { post: PostResponse }) {
     }
     return post.content
   }, [post])
-  return <div dangerouslySetInnerHTML={{ __html: content }} />
+  return <div className="pb-5 post-content" dangerouslySetInnerHTML={{ __html: content }} />
 }
 
 function LinkPreview({ preview }: { preview: NonNullable<PostResponse['link']> }) {
@@ -57,7 +66,7 @@ function LinkPreview({ preview }: { preview: NonNullable<PostResponse['link']> }
 
 function PostImage({ image }: { image: AttachmentResponse }) {
   return (
-    <div className="flex flex-row justify-center aspect-auto h-[calc(100vh_-_300px)] relative rounded-lg overflow-hidden">
+    <div className="flex flex-row justify-center aspect-auto min-h-[calc(100vh_-_300px)] relative rounded-lg overflow-hidden">
       <div className="absolute top-4 left-4 bg-gray-800">
         {/* ON HOVER */}
         {/* {Object.entries(image.metadata).map(([attribute, value]) => (
@@ -73,41 +82,98 @@ function PostImage({ image }: { image: AttachmentResponse }) {
 }
 
 function PostGallery({ attachments }: { attachments: AttachmentResponse[] }) {
-  const bento = attachments.length > 1
+  const [imageIndex, setImageIndex] = useState(0)
 
-  // TODO: Improve.
-  return bento ? (
-    <div className="mt-10 grid gap-4 sm:mt-16 lg:grid-cols-3">
-      <div className="relative bg-red-500 col-span-2">
+  function slide(direction: 'left' | 'right') {
+    const range = attachments.length - 1
+
+    let next = imageIndex
+
+    if (direction === 'left') {
+      next--
+    } else {
+      next++
+    }
+
+    if (next > range) {
+      next = 0
+    }
+
+    if (next < 0) {
+      next = range
+    }
+
+    setImageIndex(next)
+  }
+
+  return (
+    <div>
+      {attachments.length > 1 ? (
+        <div className="grid gap-4">
+          <div className="flex flex-row justify-center aspect-auto h-[calc(100vh_-_300px)] relative rounded-lg overflow-hidden">
+            <Button
+              size="icon"
+              variant="outline"
+              className="absolute left-0 lg:left-5 z-[5] top-[calc(50vh_-_170px)]"
+              onClick={() => slide('left')}
+            >
+              <ArrowLeft />
+            </Button>
+            <Button
+              size="icon"
+              variant="outline"
+              className="absolute right-0 lg:right-5 z-[5] top-[calc(50vh_-_170px)]"
+              onClick={() => slide('right')}
+            >
+              <ArrowRight />
+            </Button>
+            {attachments.map((attachment, index) => (
+              <div
+                key={`principal_${attachment.id}_${index}`}
+                className={`w-full absolute ${index === imageIndex ? 'opacity-100' : 'opacity-0'}`}
+              >
+                <PostImage key={`principal_${attachment.id}_${index}`} image={attachment} />
+              </div>
+            ))}
+          </div>
+          <div className="flex flex-row gap-4 h-36 w-full overflow-hidden overflow-x-scroll">
+            {attachments.map((attachment, index) => (
+              <div
+                className={`relative overflow-hidden h-36 w-36 rounded-md border ${index === imageIndex && 'border-gray-200'}`}
+                key={`${attachment.id}_${index}`}
+              >
+                <img
+                  className="h-auto max-w-full hover:opacity-50 duration-700"
+                  src={attachment.link}
+                  alt={attachment.metadata.filename}
+                  onClick={() => setImageIndex(index)}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
         <PostImage image={attachments[0]} />
-      </div>
-      <div className="relative bg-green-500 flex flex-col">
-        <div>
-          <PostImage image={attachments[1]} />
-        </div>
-        <div>
-          <PostImage image={attachments[1]} />
-        </div>
-        <div>
-          <PostImage image={attachments[1]} />
-        </div>
-      </div>
+      )}
     </div>
-  ) : (
-    <PostImage image={attachments[0]} />
   )
 }
 
 export default function PostCard({
   post,
-  showActions = false,
+  user,
+  actions = true,
+  redirect = false,
 }: {
   post: PostResponse
   user: {
     [x: string]: any
   } | null
-  showActions?: boolean
+  actions?: boolean
+  redirect?: boolean
 }) {
+  const displayActions = useMemo(() => actions && post.user.id === user?.id, [user])
+
   return (
     <article className="flex flex-col w-full border pt-6 px-6 bg-white rounded-sm">
       {/* HEADER */}
@@ -118,38 +184,60 @@ export default function PostCard({
               <AvatarImage src="#" alt={`${post.user.name} avatar image`} />
               <AvatarFallback>{post.user.name ? post.user.name[0] : '-'}</AvatarFallback>
             </Avatar>
-            <p className="text-xs text-gray-500 self-center text-ellipsis truncate max-w-60 lg:max-w-screen-lg">
+            <p className="text-xs text-gray-500 self-center text-ellipsis truncate max-w-40 md:max-w-screen-lg">
               @{post.user.username}
             </p>
           </div>
         </Link>
 
-        {showActions && (
-          <div className="flex flex-row gap-2">
-            <Button className="update-post-trigger" variant="outline" size="sm-icon">
-              <UpdatePost post={post} />
-            </Button>
-            <Button className="delete-post-trigger" variant="outline" size="sm-icon">
-              <DeletePost post={post} />
-            </Button>
-          </div>
+        {displayActions && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm-icon">
+                <EllipsisVerticalIcon className="h-6 w-6 text-gray-500" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56" align="end" forceMount>
+              <DropdownMenuGroup>
+                <DropdownMenuItem
+                  className="flex flex-row gap-4"
+                  onSelect={(e) => e.preventDefault()}
+                >
+                  <Button className="update-post-trigger" variant="ghost" size="sm-icon">
+                    <UpdatePost post={post} />
+                  </Button>
+                  <DropdownMenuLabel className="font-normal">Update</DropdownMenuLabel>
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="flex flex-row gap-4"
+                onSelect={(e) => e.preventDefault()}
+              >
+                <Button className="delete-post-trigger" variant="ghost" size="sm-icon">
+                  <DeletePost post={post} />
+                </Button>
+                <DropdownMenuLabel className="font-normal">Delete</DropdownMenuLabel>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         )}
       </div>
 
       <hr />
 
       <div className="py-4">
-        <div className="pb-5">
-          <PostContentParser post={post} />
-        </div>
-
         {post.attachments.images.length > 0 && (
           <PostGallery attachments={post.attachments.images} />
         )}
 
-        <Link href={postLink(post.id)}>
-          <div className="py-4 post-content">{post.content}</div>
-        </Link>
+        {redirect ? (
+          <Link href={postLink(post.id)}>
+            <PostContentParser post={post} />
+          </Link>
+        ) : (
+          <PostContentParser post={post} />
+        )}
 
         {post.link && <LinkPreview preview={post.link} />}
       </div>
