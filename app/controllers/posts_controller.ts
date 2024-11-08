@@ -5,12 +5,16 @@ import service from '#services/posts_service'
 import policy from '#policies/posts_policy'
 import Post from '#models/post'
 import { errorsReducer } from '#utils/index'
+import { PostResponse } from 'app/interfaces/post'
+import { PageObject } from '@adonisjs/inertia/types'
 
 @inject()
 export default class PostsController {
   constructor(private service: service) { }
 
-  async show(ctx: HttpContext) {
+  async show(ctx: HttpContext): Promise<string | PageObject<{
+    post: PostResponse;
+  } | { post: null }>> {
     const post = await this.service.findOne(ctx.params.id)
     if (!post) {
       return ctx.inertia.render('errors/not_found', {

@@ -43,7 +43,7 @@ export default class AttachmentService {
 
 
   async store(
-    { images }: { images: MultipartFile[] },
+    { images, audios, documents }: Record<'images' | 'audios' | 'documents', MultipartFile[]>,
     model: AttachmentModel,
     modelId: UUID,
   ): Promise<void> {
@@ -68,7 +68,7 @@ export default class AttachmentService {
       attachment.external_key = key;
       attachment.save();
     }
-    
+
     // NOTE: Videos could be handed over here to a different provider.
   }
 
