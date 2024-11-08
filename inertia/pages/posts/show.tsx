@@ -16,11 +16,7 @@ export default function Show({ post, user }: InferPageProps<PostsController, 'sh
             Go back to feed
           </div>
         </div>
-        <PostCard
-          user={user}
-          post={post}
-          showActions={post.user.id === user?.id}
-        />
+        <PostCard user={user} post={post} />
       </div>
     </>
   )

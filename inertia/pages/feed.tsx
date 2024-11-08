@@ -9,7 +9,7 @@ export default function Feed({ posts, user }: InferPageProps<FeedController, 'in
     <>
       <Head title="SocialAdonis | Feed" />
       <FeedList url={'/feed'} currentUser={user} posts={posts} />
-      <div className="z-10 flex fixed justify-center w-full bottom-0 py-2 bg-white border">
+      <div className="z-10 fixed left-5 bottom-5">
         <CreatePost />
       </div>
     </>
