@@ -1,5 +1,5 @@
-import { Loader2 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
+import { Loader2 } from 'lucide-react'
 
 function PreviewThumbnail({ file }: { file: File }) {
   const [isLoading, setIsLoading] = useState(true)
