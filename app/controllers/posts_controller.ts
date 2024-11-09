@@ -8,16 +8,20 @@ import { errorsReducer } from '#utils/index'
 
 @inject()
 export default class PostsController {
-  constructor(private service: service) { }
+  constructor(private service: service) {}
 
   async show(ctx: HttpContext) {
     const post = await this.service.findOne(ctx.params.id)
-
     if (!post) {
-      return ctx.inertia.render('errors/not_found', { post: null, error: { title: 'Not found', message: 'We could not find the specified post.' } });
+      return ctx.inertia.render('errors/not_found', {
+        post: null,
+        error: { title: 'Not found', message: 'We could not find the specified post.' },
+      })
     }
-
-    return ctx.inertia.render('posts/show', { post })
+    const resource = await this.service.serialize(post)
+    return ctx.inertia.render('posts/show', {
+      post: resource,
+    })
   }
 
   async create(ctx: HttpContext) {
@@ -25,13 +29,13 @@ export default class PostsController {
       return ctx.response.forbidden('Cannot create a post.')
     }
 
-    const payload = ctx.request.body();
+    const payload = ctx.request.body()
 
     try {
       await this.service.create({
         userId: ctx.auth.user?.id!,
         payload,
-      });
+      })
     } catch (error) {
       if (error instanceof errors.E_VALIDATION_ERROR) {
         const reducedErrors = errorsReducer(error.messages)
@@ -46,14 +50,17 @@ export default class PostsController {
     const post = await this.service.findOne(ctx.params.id)
 
     if (!post) {
-      return ctx.inertia.render('errors/not_found', { post: null, error: { title: 'Not found', message: 'We could not find the specified post.' } });
+      return ctx.inertia.render('errors/not_found', {
+        post: null,
+        error: { title: 'Not found', message: 'We could not find the specified post.' },
+      })
     }
 
     if (await ctx.bouncer.with(policy).denies('edit', post)) {
       return ctx.response.forbidden('Not the author of this post.')
     }
 
-    const payload = ctx.request.body();
+    const payload = ctx.request.body()
 
     try {
       await this.service.update({
@@ -68,7 +75,8 @@ export default class PostsController {
       return ctx.response.redirect().back()
     }
 
-    return ctx.inertia.render('posts/show', { post })
+    const resource = await this.service.serialize(post)
+    return ctx.inertia.render('posts/show', { post: resource })
   }
 
   async destroy({ params, bouncer, response }: HttpContext) {
@@ -78,6 +86,6 @@ export default class PostsController {
       return response.forbidden('Not the author of this post.')
     }
 
-    await post.delete();
+    await post.delete()
   }
 }

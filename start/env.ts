@@ -41,5 +41,6 @@ export default await Env.create(new URL('../', import.meta.url), {
   | Variables for configuring @rlanz/sentry package
   |----------------------------------------------------------
   */
-  SENTRY_DSN: Env.schema.string()
+  SENTRY_DSN: Env.schema.string(),
+  LINK_PREVIEW_API: Env.schema.string()
 })
