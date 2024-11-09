@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { Clock, Link as LinkIcon } from 'lucide-react'
 import { Link } from '@inertiajs/react'
 import { Button } from '@/components/ui/button'
@@ -11,14 +12,26 @@ import type { UUID } from 'crypto'
 const userLink = (id: UUID) => `/users/${id}`
 const postLink = (id: UUID) => `/posts/${id}`
 
+function PostContentParser({ post }: { post: PostResponse }) {
+  const content = useMemo(() => {
+    if (post.link) {
+      return post.content.replace(
+        post.link.link,
+        `<a class="text-cyan-600" href=${post.link.link} target="_blank">${post.link.link}</a>`
+      )
+    }
+    return post.content
+  }, [post])
+  return <div dangerouslySetInnerHTML={{ __html: content }} />
+}
+
 function LinkPreview({ preview }: { preview: NonNullable<PostResponse['link']> }) {
   return (
-    <div className="flex flex-col lg:flex-row gap-2 h-96 lg:h-48 w-full max-w-[600px] bg-slate-100 hover:bg-slate-200 duration-500 border border-slate-200 p-3 rounded-md">
-      <div className="flex-shrink-0 relative block w-40 h-40 rounded-md overflow-hidden">
+    <div className="flex flex-col lg:flex-row gap-2 h-auto lg:h-48 w-full max-w-[600px] bg-slate-100 hover:bg-slate-200 duration-500 border border-slate-200 p-3 rounded-md">
+      <div className="flex flex-row max-w-56 justify-center aspect-auto flex-shrink-0 relative rounded-lg">
         <img
-          className="absolute h-full w-full"
           src={preview.metadata.thumbnail}
-          alt={preview.metadata.description}
+          className="z-[1] rounded-lg max-w-full aspect-auto w-60 object-cover"
         />
       </div>
       <div className="relative flex flex-col gap-2 lg:px-5 w-full overflow-hidden">
@@ -29,13 +42,13 @@ function LinkPreview({ preview }: { preview: NonNullable<PostResponse['link']> }
             target="_blank"
             className="flex flex-row underline font-medium text-sm text-cyan-600 items-center truncate text-ellipsis"
           >
-            {preview.link}
             <span className="relative">
               <LinkIcon className="h-3" />
             </span>
+            {preview.link}
           </a>
         </div>
-        <p className="text-sm truncate text-wrap">{preview.metadata.description}</p>
+        <p className="text-sm truncate text-wrap line-clamp-5">{preview.metadata.description}</p>
       </div>
     </div>
   )
@@ -85,7 +98,7 @@ export default function PostCard({
         {/* CONTENT */}
 
         {/* GALLERY CONTAINER */}
-        <div className="flex flex-row justify-center aspect-auto h-[calc(100vh_-_300px)] relative rounded-lg overflow-hidden">
+        {/* <div className="flex flex-row justify-center aspect-auto h-[calc(100vh_-_300px)] relative rounded-lg overflow-hidden">
           <img
             // Landscape
             // src="https://images.unsplash.com/photo-1632283875841-9258f69d4a22?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw2fHx8ZW58MHx8fHx8"
@@ -93,20 +106,19 @@ export default function PostCard({
             src="https://plus.unsplash.com/premium_photo-1715030289409-5e81652149e7?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw0fHx8ZW58MHx8fHx8"
             className="z-[1] rounded-lg max-w-full"
           />
-
-          {/* // BG BACKDROP */}
           <img
             src="https://plus.unsplash.com/premium_photo-1715030289409-5e81652149e7?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw0fHx8ZW58MHx8fHx8"
             className="absolute w-full blur-md opacity-50"
           />
-        </div>
-        
+        </div> */}
+
         <Link href={postLink(post.id)}>
-          <div className="py-4 post-content">{post.content}</div>
+          <div className="pb-5">
+            <PostContentParser post={post} />
+          </div>
         </Link>
-        
+
         {post.link && <LinkPreview preview={post.link} />}
-      
       </div>
 
       {/* FOOTER */}
@@ -114,11 +126,7 @@ export default function PostCard({
         {post.updatedAt && (
           <span className="flex text-xs text-gray-500 gap-3 items-center">
             <Clock size={12} />
-            {formatDistanceToNow(
-              //new Date(2014, 6, 2)
-              new Date(post.createdAt)
-            )}{' '}
-            ago
+            {formatDistanceToNow(new Date(post.createdAt))} ago
           </span>
         )}
       </div>
