@@ -1,8 +1,9 @@
 import { DateTime } from 'luxon'
-import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
+import { BaseModel, belongsTo, column, computed } from '@adonisjs/lucid/orm'
+import User from '#models/user'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import type { UUID } from 'crypto'
-import User from '#models/user'
+import { extractFirstLink } from '#utils/index'
 
 export default class Post extends BaseModel {
   @column({ isPrimary: true })
@@ -22,4 +23,9 @@ export default class Post extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
+
+  @computed()
+  get link(): string | null {
+    return extractFirstLink(this.content)
+  }
 }
