@@ -8,7 +8,7 @@ import { errorsReducer } from '#utils/index'
 
 @inject()
 export default class PostsController {
-  constructor(private service: service) { }
+  constructor(private service: service) {}
 
   async show(ctx: HttpContext) {
     const post = await this.service.findOne(ctx.params.id)
@@ -75,7 +75,8 @@ export default class PostsController {
       return ctx.response.redirect().back()
     }
 
-    return ctx.inertia.render('posts/show', { post })
+    const resource = await this.service.serialize(post)
+    return ctx.inertia.render('posts/show', { post: resource })
   }
 
   async destroy({ params, bouncer, response }: HttpContext) {
