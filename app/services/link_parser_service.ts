@@ -1,7 +1,7 @@
 import LinkMetadata from '#models/link-metadata'
-import env from '#start/env'
 import { LinkResponse } from 'app/interfaces/post'
 import { differenceInHours } from 'date-fns'
+import env from '#start/env'
 
 export default class LinkParserService {
   private API_Link: string
@@ -61,22 +61,22 @@ export default class LinkParserService {
     return this.serialize(record)
   }
 
-  async update(link: LinkMetadata): Promise<LinkResponse | null> {
-    const record = await LinkMetadata.findBy('link', link)
-    if (!record) return null
+  async update(record: LinkMetadata): Promise<LinkResponse | null> {
+    const data = await this.get(record.link)
+    record.metadata.thumbnail = data?.image || record.metadata.thumbnail
+    record.metadata.title = data?.title || record.metadata.title
+    record.metadata.description = data?.description || record.metadata.description
+    record.enableForceUpdate()
+    await record.save()
     return this.serialize(record)
   }
 
   async show(link: string | null): Promise<LinkResponse | null> {
     if (!link) return null
-
-    const record = await LinkMetadata.findBy({
-      link,
-    })
-
+    const record = await LinkMetadata.findBy('link', link)
     let resource: LinkResponse | null
     if (record) {
-      if (differenceInHours(record?.updatedAt.toJSDate(), new Date()) >= 12) {
+      if (differenceInHours(new Date(), record?.updatedAt.toJSDate()) >= 12) {
         resource = await this.update(record)
       } else {
         resource = this.serialize(record)
@@ -84,7 +84,6 @@ export default class LinkParserService {
     } else {
       resource = await this.store(link)
     }
-
     return resource
   }
 

@@ -8,8 +8,8 @@ export default class extends BaseSchema {
       table.uuid('id').primary().defaultTo(this.db.rawQuery('uuid_generate_v4()').knexQuery)
       table.string('link').unique().notNullable()
       table.jsonb('metadata').notNullable()
-      table.timestamp('created_at')
-      table.timestamp('updated_at')
+      table.timestamp('created_at', { useTz: false })
+      table.timestamp('updated_at', { useTz: false })
     })
   }
 
