@@ -19,3 +19,16 @@ export function extractFirstLink(content: string): string | null {
   const matches = content.match(urlRegex)
   return matches ? matches[0] : null
 }
+
+/**
+ *
+ */
+export function sanitizePostContent(content: string): string {
+  const map = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+  }
+  // @ts-ignore
+  return content.replace(/[&<>]/g, (m) => map[m])
+}
