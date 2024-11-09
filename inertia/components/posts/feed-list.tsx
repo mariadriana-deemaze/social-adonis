@@ -4,7 +4,7 @@ import { useToast } from '@/components/ui/use-toast'
 import PostCard from '@/components/posts/post-card'
 import { useIntersectionObserver } from '@/hooks/use-intersection-observer'
 import { Loader2 } from 'lucide-react'
-import { ModelObject } from '@adonisjs/lucid/types/model'
+import { PostResponse } from 'app/interfaces/post'
 
 export default function FeedList({
   url,
@@ -14,7 +14,7 @@ export default function FeedList({
   url: string
   posts: {
     meta: any
-    data: ModelObject[]
+    data: PostResponse[]
   }
   currentUser: {
     [x: string]: any

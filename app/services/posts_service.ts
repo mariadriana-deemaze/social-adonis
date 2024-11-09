@@ -1,6 +1,6 @@
 import Post from '#models/post'
 import { createPostValidator, updatePostValidator } from '#validators/post'
-import { ModelObject, ModelPaginatorContract } from '@adonisjs/lucid/types/model'
+import { ModelObject } from '@adonisjs/lucid/types/model'
 import { PostResponse } from 'app/interfaces/post'
 import LinkParserService from '#services/link_parser_service'
 import type { UUID } from 'crypto'
