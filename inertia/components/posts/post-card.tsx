@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Link } from '@inertiajs/react'
+import { Link, useForm } from '@inertiajs/react'
 import {
   ArrowLeft,
   ArrowRight,
@@ -26,6 +26,8 @@ import { PostResponse } from 'app/interfaces/post'
 import { AttachmentResponse } from 'app/interfaces/attachment'
 import { formatDistanceToNow } from 'date-fns'
 import type { UUID } from 'crypto'
+import { PostReactionType } from '#enums/post'
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card'
 
 const userLink = (id: UUID) => `/users/${id}`
 const postLink = (id: UUID) => `/posts/${id}`
@@ -184,6 +186,72 @@ function PostGallery({ attachments }: { attachments: AttachmentResponse[] }) {
   )
 }
 
+function PostReaction({
+  post,
+  currentUser,
+}: {
+  post: PostResponse
+  currentUser: {
+    [x: string]: any
+  } | null
+}) {
+  const {
+    data,
+    setData,
+    post: postReact,
+  } = useForm({
+    user_id: currentUser?.id || null,
+    post_id: post.id,
+    reaction: PostReactionType.LIKE,
+  })
+
+  function reactToPost(react: PostReactionType) {
+    if (!currentUser) return
+    postReact('/posts/:id/react', {
+      preserveState: true,
+      data: {
+        ...data,
+        reaction: react,
+      },
+    })
+  }
+
+  const REACTIONS: Record<PostReactionType, string> = {
+    [PostReactionType.LIKE]: '👍',
+    [PostReactionType.THANKFUL]: '🙌',
+    [PostReactionType.FUNNY]: '🤣',
+    [PostReactionType.CONGRATULATIONS]: '🎉',
+    [PostReactionType.ANGRY]: '😡',
+    [PostReactionType.LOVE]: '😍',
+  }
+
+  return (
+    <HoverCard>
+      <HoverCardTrigger>
+        <button className="border border-slate-400 rounded-full max-w-20 px-6  cursor-pointer hover:bg-slate-200">
+          + {REACTIONS[data.reaction]}
+        </button>
+      </HoverCardTrigger>
+      <HoverCardContent align="start">
+        <div className="flex flex-row gap-2">
+          {Object.entries(REACTIONS).map(([key, value]: [key: string, value: string]) => (
+            <button
+              key={`reaction_${key}`}
+              type="button"
+              onClick={() => {
+                setData('reaction', key as PostReactionType)
+                reactToPost(key as PostReactionType)
+              }}
+            >
+              <p className="text-lg">{value}</p>
+            </button>
+          ))}
+        </div>
+      </HoverCardContent>
+    </HoverCard>
+  )
+}
+
 export default function PostCard({
   post,
   user,
@@ -284,12 +352,9 @@ export default function PostCard({
         {post.link && <LinkPreview preview={post.link} />}
       </div>
 
-      {/* TODO: FOOTER Reactions, comments, and so on*/}
       <div className="py-4 opacity-70 border-t border-t-gray-200">
         <div className="flex flex-row gap-2 items-center">
-          <Button variant="outline" size="sm-icon" className="rounded-full w-auto p-2" disabled>
-            <p className="text-xs">React</p>
-          </Button>
+          <PostReaction post={post} currentUser={user} />
           <p className="text-xs text-slate-500">0 Reactions</p>
         </div>
       </div>
