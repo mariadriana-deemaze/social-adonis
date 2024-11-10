@@ -13,6 +13,7 @@ import AuthController from '#controllers/auth_controller'
 import FeedController from '#controllers/feed_controller'
 import PostsController from '#controllers/posts_controller'
 import UsersController from '#controllers/users_controller'
+import PostReactionsController from '#controllers/post_reactions_controller'
 // import AdminUsersController from '#controllers/admin/admin_users_controller'
 
 /**
@@ -51,5 +52,7 @@ router
     router.get('/posts/:id', [PostsController, 'show'])
     router.patch('/posts/:id', [PostsController, 'update'])
     router.delete('/posts/:id', [PostsController, 'destroy'])
+    router.post('/posts/:id/react', [PostReactionsController, 'create'])
+    router.delete('/posts/:id/react', [PostReactionsController, 'destroy'])
   })
   .use(middleware.auth())
