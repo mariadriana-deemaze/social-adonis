@@ -58,7 +58,9 @@ export default function FeedList({
       {!allPosts ? (
         <Loader2 className="h-5 w-5 mr-2 animate-spin text-muted" />
       ) : (
-        allPosts?.map((post, index) => <PostCard user={currentUser} post={post} key={index} />)
+        allPosts?.map((post, index) => (
+          <PostCard key={index} user={currentUser} post={post} redirect />
+        ))
       )}
       <div className="flex justify-center py-5 w-full min-w-full">
         {posts?.data?.length > 0 ? (

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import { useForm } from '@inertiajs/react'
 import { Button } from '@/components/ui/button'
 import {
@@ -13,9 +13,8 @@ import {
 import { useToast } from '@/components/ui/use-toast'
 import { ModelObject } from '@adonisjs/lucid/types/model'
 import { router } from '@inertiajs/react'
-import { Trash2 } from 'lucide-react'
 
-export function DeletePost({ post }: { post: ModelObject }) {
+export function DeletePost({ post, trigger }: { post: ModelObject; trigger: ReactNode }) {
   const [open, setOpen] = useState(false)
 
   const { toast } = useToast()
@@ -42,9 +41,7 @@ export function DeletePost({ post }: { post: ModelObject }) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Trash2 className="text-red-500 h-5" />
-      </DialogTrigger>
+      <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="default-dialog">
         <DialogHeader>
           <DialogTitle>Are you sure?</DialogTitle>
