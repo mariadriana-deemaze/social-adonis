@@ -117,21 +117,21 @@ a {
   }
 
   .default-dialog {
-    @apply max-w-[calc(100vw_-_20px)] md:max-w-[425px] rounded-lg
+    @apply max-w-[calc(100vw_-_20px)] md:max-w-[425px] rounded-lg;
   }
 
   .hn-screen {
-    @apply h-[calc(100vh_-_120px)]
+    @apply h-[calc(100vh_-_120px)];
   }
 }
 
 @layer utilities {
   .no-scrollbar::-webkit-scrollbar {
-		display: none;
-	}
+    display: none;
+  }
 
-	.no-scrollbar {
-		-ms-overflow-style: none;
-		scrollbar-width: none;
-	}
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }

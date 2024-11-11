@@ -17,7 +17,7 @@ if (process.env.DATABASE_URL) {
   }
 }
 
-;(async() => {
+;(async () => {
   // launch application
   await exec(process.argv.slice(2).join(' '))
 })()
@@ -25,7 +25,7 @@ if (process.env.DATABASE_URL) {
 function exec(command) {
   const child = spawn(command, { shell: true, stdio: 'inherit', env })
   return new Promise((resolve, reject) => {
-    child.on('exit', code => {
+    child.on('exit', (code) => {
       if (code === 0) {
         resolve()
       } else {

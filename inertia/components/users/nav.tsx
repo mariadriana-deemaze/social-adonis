@@ -64,7 +64,9 @@ export default function UserNavBar({ user }: { user: User | null }) {
                       <p className="text-sm font-medium leading-none">
                         {user.name} {user.surname}
                       </p>
-                      <p className="text-xs truncate leading-none text-muted-foreground">{user.email}</p>
+                      <p className="text-xs truncate leading-none text-muted-foreground">
+                        {user.email}
+                      </p>
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
@@ -88,7 +90,7 @@ export default function UserNavBar({ user }: { user: User | null }) {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Link href='/auth/sign-in'>
+              <Link href="/auth/sign-in">
                 <Button size="sm">Sign in</Button>
               </Link>
             )}

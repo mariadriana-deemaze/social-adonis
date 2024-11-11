@@ -8,10 +8,10 @@ import type { HttpContext } from '@adonisjs/core/http'
 
 @inject()
 export default class FeedController {
-  constructor(
-    private readonly postsService: PostsService
-  ) { }
-  async index(ctx: HttpContext): Promise<string | PageObject<{ posts: PaginatedResponse<PostResponse> }>> {
+  constructor(private readonly postsService: PostsService) {}
+  async index(
+    ctx: HttpContext
+  ): Promise<string | PageObject<{ posts: PaginatedResponse<PostResponse> }>> {
     const page = ctx.request.qs().page || 1
 
     const posts = await Post.query()
@@ -19,20 +19,19 @@ export default class FeedController {
       .preload('user')
       .paginate(page, 10)
 
-
     const data: PostResponse[] = []
     for (const post of posts) {
-      const resource = await this.postsService.serialize(post);
+      const resource = await this.postsService.serialize(post)
       data.push(resource)
     }
 
-    const { meta } = posts.toJSON();
+    const { meta } = posts.toJSON()
 
     return ctx.inertia.render('feed', {
       posts: {
         data,
-        meta
-      }
+        meta,
+      },
     })
   }
 }

@@ -15,7 +15,6 @@ export default function Show({ user, posts, profile }: InferPageProps<UsersContr
       <Head title={`SocialAdonis | @${profile.username}`} />
       <div className="relative flex flex-col lg:flex-row gap-2 w-full">
         <div className="h-full w-full max-w-full lg:max-w-72">
-
           {/* TODO: Make sticky on mobile scroll, as a nav. */}
           <Card className="user-profile-card sticky top-20 flex flex-row w-full align-middle rounded-sm">
             <CardContent className="relative w-full flex flex-col text-center pt-5 divide-y divide-dashed">
@@ -63,7 +62,7 @@ export default function Show({ user, posts, profile }: InferPageProps<UsersContr
         </div>
         <div className="w-full">
           <FeedList url={`/users/${profile.id}`} currentUser={user} posts={posts} />
-          
+
           {user?.id === profile.id && (
             <div className="z-10 fixed left-5 bottom-5">
               <CreatePost />

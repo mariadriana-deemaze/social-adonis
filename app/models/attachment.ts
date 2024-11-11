@@ -1,38 +1,39 @@
 import { DateTime } from 'luxon'
 import { BaseModel, column } from '@adonisjs/lucid/orm'
-import type { UUID } from 'crypto';
-import { AttachmentMetadataJSON } from 'app/interfaces/attachment';
+import type { UUID } from 'crypto'
+import { AttachmentMetadataJSON } from 'app/interfaces/attachment'
 
 export enum AttachmentProvider {
-  S3 = "S3",
+  S3 = 'S3',
 }
 
 export enum AttachmentType {
-  IMAGE = "Image",
-  AUDIO = "Audio",
-  DOCUMENT = "Document",
-  VIDEO = "Video",
+  IMAGE = 'Image',
+  AUDIO = 'Audio',
+  DOCUMENT = 'Document',
+  VIDEO = 'Video',
 }
 
 export enum AttachmentModel {
-  USER = "User",
-  POST = "Post",
+  USER = 'User',
+  POST = 'Post',
 }
 
 export class MetadataJSON {
   // TODO: Could benefit in adding class-validator?
-  declare filename: string;
-  declare size: number;
-  declare mimetype: string;
-  declare extension: string;
+  declare filename: string
+  declare size: number
+  declare mimetype: string
+  declare extension: string
 
   constructor(data: AttachmentMetadataJSON) {
-
-    if ((!data.filename && typeof data.filename !== 'string') ||
+    if (
+      (!data.filename && typeof data.filename !== 'string') ||
       (!data.size && typeof data.size !== 'number') ||
       (!data.mimetype && typeof data.mimetype !== 'string') ||
-      (!data.extension && typeof data.extension !== 'string')) {
-      throw new Error("Invalid file.")
+      (!data.extension && typeof data.extension !== 'string')
+    ) {
+      throw new Error('Invalid file.')
     }
 
     Object.assign(this, data)
@@ -59,7 +60,7 @@ export default class Attachment extends BaseModel {
   provider: AttachmentProvider = AttachmentProvider.S3
 
   @column({})
-  declare metadata: MetadataJSON;
+  declare metadata: MetadataJSON
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

@@ -27,7 +27,7 @@ export default class extends BaseSeeder {
     for (const user of createdUsers) {
       const posts = [...Array(5)].map(() => {
         return {
-          content: faker.lorem.paragraph()
+          content: faker.lorem.paragraph(),
         }
       })
       await user.related('posts').createMany(posts)

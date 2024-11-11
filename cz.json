@@ -15,14 +15,7 @@
         "new": "MINOR",
         "fix": "PATCH"
       },
-      "change_type_order": [
-        "BREAKING CHANGE",
-        "feat",
-        "fix",
-        "refactor",
-        "perf",
-        "chore"
-      ],
+      "change_type_order": ["BREAKING CHANGE", "feat", "fix", "refactor", "perf", "chore"],
       "info_path": "cz_customize_info.txt",
       "info": "This is customized info",
       "commit_parser": "^(?P<change_type>feat|fix|styles|refactor|perf|test|chore(deps)|chore(config)):\\s(?P<message>.*)?",

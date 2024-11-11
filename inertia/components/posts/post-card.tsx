@@ -9,8 +9,6 @@ import {
   Loader2,
   Pencil,
   Trash2,
-  X,
-  PlusIcon,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -225,7 +223,7 @@ export default function PostCard({
         {displayActions && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button className='trigger-user-post-actions' variant="outline" size="sm-icon">
+              <Button className="trigger-user-post-actions" variant="outline" size="sm-icon">
                 <EllipsisVerticalIcon className="h-4 w-4 text-gray-500" />
               </Button>
             </DropdownMenuTrigger>
