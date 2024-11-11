@@ -41,9 +41,24 @@ export default class AttachmentService {
     return resources
   }
 
+  /**
+   * Polymorphic find of many attachments to a specified model.
+   */
+  async deleteMany(model: AttachmentModel, model_id: string): Promise<void> {
+    const attachments = await Attachment.findManyBy({
+      model,
+      model_id
+    })
+
+    for (const attachment of attachments) {
+      await this.disk.delete(attachment.external_key);
+      await attachment.delete()
+    }
+  }
+
 
   async store(
-    { images, audios, documents }: Record<'images' | 'audios' | 'documents', MultipartFile[]>,
+    { images, /* audios, documents */ }: Record<'images' | 'audios' | 'documents', MultipartFile[]>,
     model: AttachmentModel,
     modelId: UUID,
   ): Promise<void> {

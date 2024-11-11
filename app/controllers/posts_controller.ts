@@ -79,6 +79,16 @@ export default class PostsController {
         post,
         payload,
       })
+      await this.service.deleteAttachments(post.id);
+      try {
+        await this.service.storeAttachments(ctx, post.id);
+      } catch (error) {
+        await post.delete()
+        ctx.session.flash('errors', {
+          images: "Invalid file."
+        })
+      }
+
     } catch (error) {
       if (error instanceof errors.E_VALIDATION_ERROR) {
         const reducedErrors = errorsReducer(error.messages)
@@ -90,11 +100,13 @@ export default class PostsController {
     return ctx.inertia.render('posts/show', { post: resource })
   }
 
-  async destroy({ params, bouncer, response }: HttpContext) {
-    const post = await Post.findOrFail(params.id)
-    if (await bouncer.with(policy).denies('delete', post)) {
-      return response.forbidden('Not the author of this post.')
+  async destroy(ctx: HttpContext) {
+    const post = await Post.findOrFail(ctx.params.id)
+    if (await ctx.bouncer.with(policy).denies('delete', post)) {
+      return ctx.response.forbidden('Not the author of this post.')
     }
+    await this.service.deleteAttachments(post.id);
     await post.delete()
+    return ctx.response.redirect().back()
   }
 }

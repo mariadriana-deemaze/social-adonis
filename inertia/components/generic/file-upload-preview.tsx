@@ -14,12 +14,9 @@ function PreviewThumbnail({ file }: { file: File }) {
     fileReader.onload = () => {
       const { result } = fileReader
       if (!result) return
-
-      setTimeout(() => {
-        // @ts-ignore
-        thumbnailRef.current.src = String(result)
-        setIsLoading(false)
-      }, 2000)
+      // @ts-ignore
+      thumbnailRef.current.src = String(result)
+      setIsLoading(false)
     }
 
     fileReader.readAsDataURL(file)

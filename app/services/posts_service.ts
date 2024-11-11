@@ -106,6 +106,15 @@ export default class PostsService {
     }, AttachmentModel.POST, id)
   }
 
+  /**
+   * Deals with the post attachments extraction from request, as well as apply the necessary validations. 
+   * Thereafter, delegates to the service responsible of handling the attachment providers.
+   */
+  async deleteAttachments(id: UUID): Promise<void> {
+    return this.attachmentService.deleteMany(
+      AttachmentModel.POST, id);
+  }
+
 
   /**
    * Handles the process on serializing the post data, and aggregatin gits many attachments.
