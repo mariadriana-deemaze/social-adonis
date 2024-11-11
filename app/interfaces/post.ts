@@ -2,6 +2,7 @@ import { BaseEntity } from 'app/interfaces/base-entity'
 import { UUID } from 'crypto'
 import { UserResponse } from './user'
 import { AttachmentResponse } from 'app/interfaces/attachment'
+import { PostReactionType } from '#enums/post'
 
 export interface LinkMetadataJSONResponse {
   title: string
@@ -23,4 +24,9 @@ export interface PostResponse extends BaseEntity {
   }
   user: UserResponse
   link: LinkResponse | null
+  reactions: {
+    reacted: PostReactionType | null,
+    reactionsCounts: Record<PostReactionType, number>
+    total:number;
+  }
 }

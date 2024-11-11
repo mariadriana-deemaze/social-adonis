@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Link, useForm } from '@inertiajs/react'
+import { Link } from '@inertiajs/react'
 import {
   ArrowLeft,
   ArrowRight,
@@ -195,25 +195,42 @@ function PostReaction({
     [x: string]: any
   } | null
 }) {
-  const {
-    data,
-    setData,
-    post: postReact,
-  } = useForm({
-    user_id: currentUser?.id || null,
-    post_id: post.id,
-    reaction: PostReactionType.LIKE,
+  const counts = {
+    liked: post.reactions.reacted ? post.reactions.total : post.reactions.total + 1,
+    unliked: post.reactions.reacted ? post.reactions.total - 1 : post.reactions.total,
+  }
+
+  const [isSubmitting, setIsSubmitiing] = useState(false)
+  const [reaction, setReaction] = useState<{ type: PostReactionType | null; count: number }>({
+    type: post.reactions?.reacted,
+    count: post.reactions.total,
   })
 
-  function reactToPost(react: PostReactionType) {
+  async function reactToPost(react: PostReactionType) {
     if (!currentUser) return
-    postReact('/posts/:id/react', {
-      preserveState: true,
-      data: {
-        ...data,
-        reaction: react,
+    setIsSubmitiing(true)
+
+    const isDelete = react === reaction.type
+
+    const request = await fetch(`/posts/${post.id}/react`, {
+      method: isDelete ? 'delete' : 'post',
+      headers: {
+        'content-type': 'application/json',
       },
+      ...(!isDelete && {
+        body: JSON.stringify({
+          reaction: react,
+        }),
+      }),
     })
+
+    if (request.status === 200 || request.status === 201) {
+      setReaction({ type: react, count: counts.liked })
+    } else if (request.status === 204) {
+      setReaction({ type: null, count: counts.unliked })
+    }
+
+    setIsSubmitiing(false)
   }
 
   const REACTIONS: Record<PostReactionType, string> = {
@@ -226,29 +243,37 @@ function PostReaction({
   }
 
   return (
-    <HoverCard>
-      <HoverCardTrigger>
-        <button className="border border-slate-400 rounded-full max-w-20 px-6  cursor-pointer hover:bg-slate-200">
-          + {REACTIONS[data.reaction]}
-        </button>
-      </HoverCardTrigger>
-      <HoverCardContent align="start">
-        <div className="flex flex-row gap-2">
-          {Object.entries(REACTIONS).map(([key, value]: [key: string, value: string]) => (
-            <button
-              key={`reaction_${key}`}
-              type="button"
-              onClick={() => {
-                setData('reaction', key as PostReactionType)
-                reactToPost(key as PostReactionType)
-              }}
-            >
-              <p className="text-lg">{value}</p>
-            </button>
-          ))}
-        </div>
-      </HoverCardContent>
-    </HoverCard>
+    <div className="flex flex-row gap-2 items-center">
+      <HoverCard>
+        <HoverCardTrigger>
+          <button
+            className="border border-slate-400 rounded-full px-2  cursor-pointer hover:bg-slate-200"
+            disabled={isSubmitting}
+          >
+            {reaction.type ? REACTIONS[reaction.type] : '+'}
+          </button>
+        </HoverCardTrigger>
+        <HoverCardContent align="start">
+          <div className="flex flex-row gap-2">
+            {Object.entries(REACTIONS).map(([key, value]: [key: string, value: string]) => (
+              <button
+                key={`reaction_${key}`}
+                type="button"
+                onClick={() => {
+                  reactToPost(key as PostReactionType)
+                }}
+              >
+                <p className="text-lg">{value}</p>
+              </button>
+            ))}
+          </div>
+        </HoverCardContent>
+      </HoverCard>
+
+      <p className="text-xs text-slate-500">
+        {reaction.count} {reaction.count > 1 ? 'reactions' : 'reaction'}
+      </p>
+    </div>
   )
 }
 
@@ -353,10 +378,7 @@ export default function PostCard({
       </div>
 
       <div className="py-4 opacity-70 border-t border-t-gray-200">
-        <div className="flex flex-row gap-2 items-center">
-          <PostReaction post={post} currentUser={user} />
-          <p className="text-xs text-slate-500">0 Reactions</p>
-        </div>
+        <PostReaction post={post} currentUser={user} />
       </div>
     </article>
   )

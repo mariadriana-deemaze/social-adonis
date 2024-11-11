@@ -10,17 +10,18 @@ import { PageObject } from '@adonisjs/inertia/types'
 
 @inject()
 export default class PostsController {
-  constructor(private service: service) {}
+  constructor(private service: service) { }
 
   async show(ctx: HttpContext): Promise<
     | string
     | PageObject<
-        | {
-            post: PostResponse
-          }
-        | { post: null }
-      >
+      | {
+        post: PostResponse
+      }
+      | { post: null }
+    >
   > {
+    const currentUserId = ctx.auth.user?.id!;
     const post = await this.service.findOne(ctx.params.id)
     if (!post) {
       return ctx.inertia.render('errors/not_found', {
@@ -28,7 +29,7 @@ export default class PostsController {
         error: { title: 'Not found', message: 'We could not find the specified post.' },
       })
     }
-    const resource = await this.service.serialize(post)
+    const resource = await this.service.serialize(currentUserId, post)
     return ctx.inertia.render('posts/show', {
       post: resource,
     })
@@ -64,6 +65,7 @@ export default class PostsController {
   }
 
   async update(ctx: HttpContext) {
+    const currentUserId = ctx.auth.user?.id!;
     const post = await this.service.findOne(ctx.params.id)
     if (!post) {
       return ctx.inertia.render('errors/not_found', {
@@ -99,7 +101,7 @@ export default class PostsController {
       }
       return ctx.response.redirect().back()
     }
-    const resource = await this.service.serialize(post)
+    const resource = await this.service.serialize(currentUserId, post)
     return ctx.inertia.render('posts/show', { post: resource })
   }
 
