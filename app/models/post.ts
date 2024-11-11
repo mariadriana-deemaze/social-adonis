@@ -1,5 +1,12 @@
 import { DateTime } from 'luxon'
-import { BaseModel, beforeSave, beforeUpdate, belongsTo, column, computed } from '@adonisjs/lucid/orm'
+import {
+  BaseModel,
+  beforeSave,
+  beforeUpdate,
+  belongsTo,
+  column,
+  computed,
+} from '@adonisjs/lucid/orm'
 import User from '#models/user'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import type { UUID } from 'crypto'

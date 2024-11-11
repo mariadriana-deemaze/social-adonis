@@ -12,5 +12,5 @@
       "@/*": ["./inertia/*"]
     },
     "types": ["vite/client"]
-  },
+  }
 }

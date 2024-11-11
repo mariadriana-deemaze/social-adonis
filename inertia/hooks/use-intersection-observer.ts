@@ -85,15 +85,7 @@ export function useIntersectionObserver({
     return () => {
       observer.disconnect()
     }
-
-  }, [
-    ref,
-    JSON.stringify(threshold),
-    root,
-    rootMargin,
-    frozen,
-    freezeOnceVisible,
-  ])
+  }, [ref, JSON.stringify(threshold), root, rootMargin, frozen, freezeOnceVisible])
 
   const prevRef = useRef<Element | null>(null)
 

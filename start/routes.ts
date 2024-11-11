@@ -15,12 +15,11 @@ import PostsController from '#controllers/posts_controller'
 import UsersController from '#controllers/users_controller'
 // import AdminUsersController from '#controllers/admin/admin_users_controller'
 
-
 /**
-*
-* GUEST/PUBLIC
-*
-**/
+ *
+ * GUEST/PUBLIC
+ *
+ **/
 router.on('/').renderInertia('home') // TODO: Contextualize `ctx.auth.authenticate` via middleware.
 
 /**
@@ -37,8 +36,6 @@ router
   })
   .prefix('auth')
   .use(middleware.guest())
-
-
 
 /**
  *

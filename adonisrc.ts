@@ -10,7 +10,11 @@ export default defineConfig({
   | will be scanned automatically from the "./commands" directory.
   |
   */
-  commands: [() => import('@adonisjs/core/commands'), () => import('@adonisjs/lucid/commands'), () => import('@adonisjs/bouncer/commands')],
+  commands: [
+    () => import('@adonisjs/core/commands'),
+    () => import('@adonisjs/lucid/commands'),
+    () => import('@adonisjs/bouncer/commands'),
+  ],
 
   /*
   |--------------------------------------------------------------------------
@@ -39,7 +43,7 @@ export default defineConfig({
     () => import('@adonisjs/inertia/inertia_provider'),
     () => import('@rlanz/sentry/provider'),
     () => import('@adonisjs/bouncer/bouncer_provider'),
-    () => import('@adonisjs/drive/drive_provider')
+    () => import('@adonisjs/drive/drive_provider'),
   ],
 
   /*
@@ -78,12 +82,10 @@ export default defineConfig({
         timeout: 30000,
       },
       {
-        files: [
-          'tests/browser/**/*.spec(.ts|.js)'
-        ],
+        files: ['tests/browser/**/*.spec(.ts|.js)'],
         name: 'browser',
-        timeout: 300000
-      }
+        timeout: 300000,
+      },
     ],
     forceExit: false,
   },

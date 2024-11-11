@@ -12,9 +12,9 @@ module.exports = {
     container: {
       center: true,
       padding: {
-        DEFAULT: '1rem',
-        sm: '1rem',
-        '2xl': '2rem'
+        'DEFAULT': '1rem',
+        'sm': '1rem',
+        '2xl': '2rem',
       },
       screens: {
         '2xl': '1400px',
@@ -77,7 +77,5 @@ module.exports = {
       },
     },
   },
-  plugins: [
-    require('tailwindcss-animate'),
-  ],
+  plugins: [require('tailwindcss-animate')],
 }

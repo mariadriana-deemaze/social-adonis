@@ -4,7 +4,7 @@ import type { UUID } from 'crypto'
 
 export default class Session extends BaseModel {
   @column({ isPrimary: true })
-  declare id: UUID;
+  declare id: UUID
 
   @column()
   declare userId: string
