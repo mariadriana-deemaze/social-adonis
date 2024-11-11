@@ -26,12 +26,14 @@ export default class extends BaseSchema {
       table.string('external_key').notNullable()
       table.string('provider').defaultTo(AttachmentProvider.S3).notNullable()
       table.jsonb('metadata').notNullable()
-      table.timestamp('created_at').notNullable()
-      table.timestamp('updated_at').nullable()
+      table.timestamp('created_at', { useTz: false }).notNullable()
+      table.timestamp('updated_at', { useTz: false }).nullable()
     })
   }
 
   async down() {
     this.schema.dropTable(this.tableName)
+    this.schema.raw('DROP TYPE IF EXISTS "attachment_type"')
+    this.schema.raw('DROP TYPE IF EXISTS "attachment_model"')
   }
 }
