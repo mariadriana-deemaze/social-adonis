@@ -16,7 +16,7 @@ export function CreatePost() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="icon" className="rounded-full bg-blue-500">
+        <Button size="icon" className="create-post rounded-full bg-blue-500">
           <PlusIcon />
         </Button>
       </DialogTrigger>

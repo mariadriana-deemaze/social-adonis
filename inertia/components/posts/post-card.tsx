@@ -225,7 +225,7 @@ export default function PostCard({
         {displayActions && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm-icon">
+              <Button className='trigger-user-post-actions' variant="outline" size="sm-icon">
                 <EllipsisVerticalIcon className="h-4 w-4 text-gray-500" />
               </Button>
             </DropdownMenuTrigger>
