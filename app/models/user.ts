@@ -38,11 +38,6 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column()
   role: AccountRole = AccountRole.USER
 
-  @computed()
-  get isAdmin() {
-    return this.role === AccountRole.ADMIN
-  }
-
   @column({ serializeAs: null })
   declare password: string
 
