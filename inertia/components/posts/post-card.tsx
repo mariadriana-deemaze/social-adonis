@@ -42,7 +42,9 @@ function PostContentParser({ post }: { post: PostResponse }) {
     }
     return post.content
   }, [post])
-  return <div className="pb-5 post-content" dangerouslySetInnerHTML={{ __html: content }} />
+  return (
+    <div className="pb-5 break-words post-content" dangerouslySetInnerHTML={{ __html: content }} />
+  )
 }
 
 function LinkPreview({ preview }: { preview: NonNullable<PostResponse['link']> }) {
@@ -195,20 +197,29 @@ function PostReaction({
     [x: string]: any
   } | null
 }) {
-  const counts = {
-    liked: post.reactions.reacted ? post.reactions.total : post.reactions.total + 1,
-    unliked: post.reactions.reacted ? post.reactions.total - 1 : post.reactions.total,
-  }
-
-  const [isSubmitting, setIsSubmitiing] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [reaction, setReaction] = useState<{ type: PostReactionType | null; count: number }>({
     type: post.reactions?.reacted,
     count: post.reactions.total,
   })
 
+  const counts = {
+    liked: post.reactions.reacted ? post.reactions.total : post.reactions.total + 1,
+    unliked: post.reactions.reacted ? post.reactions.total - 1 : post.reactions.total,
+  }
+
+  const REACTIONS: Record<PostReactionType, string> = {
+    [PostReactionType.LIKE]: '👍',
+    [PostReactionType.THANKFUL]: '🙌',
+    [PostReactionType.FUNNY]: '🤣',
+    [PostReactionType.CONGRATULATIONS]: '🎉',
+    [PostReactionType.ANGRY]: '😡',
+    [PostReactionType.LOVE]: '😍',
+  }
+
   async function reactToPost(react: PostReactionType) {
     if (!currentUser) return
-    setIsSubmitiing(true)
+    setIsSubmitting(true)
 
     const isDelete = react === reaction.type
 
@@ -230,49 +241,70 @@ function PostReaction({
       setReaction({ type: null, count: counts.unliked })
     }
 
-    setIsSubmitiing(false)
+    setIsSubmitting(false)
   }
 
-  const REACTIONS: Record<PostReactionType, string> = {
-    [PostReactionType.LIKE]: '👍',
-    [PostReactionType.THANKFUL]: '🙌',
-    [PostReactionType.FUNNY]: '🤣',
-    [PostReactionType.CONGRATULATIONS]: '🎉',
-    [PostReactionType.ANGRY]: '😡',
-    [PostReactionType.LOVE]: '😍',
-  }
+  const countStatus = useMemo(() => {
+    if (reaction.type === null) {
+      if (reaction.count === 0) {
+        return 'No reactions.'
+      } else {
+        return `${post.reactions.reacted ? post.reactions.total - 1 : post.reactions.total} other reacted.`
+      }
+    } else {
+      if (reaction.count === 1) {
+        return `You reacted.`
+      } else {
+        return `You and ${post.reactions.reacted ? post.reactions.total - 1 : post.reactions.total} other reacted.`
+      }
+    }
+  }, [reaction.type])
+
+  const reactionCounts = useMemo(() => {
+    const counts = { ...post.reactions.reactionsCounts }
+    if (reaction.type && post.reactions.reacted) {
+      counts[reaction.type] = counts[reaction.type] + 1
+      counts[post.reactions.reacted] = counts[post.reactions.reacted] - 1
+    } else if (reaction.type && !post.reactions.reacted) {
+      counts[reaction.type] = counts[reaction.type] + 1
+    } else if (!reaction.type && post.reactions.reacted) {
+      counts[post.reactions.reacted] = counts[post.reactions.reacted] - 1
+    }
+    return counts
+  }, [reaction.type])
 
   return (
     <div className="flex flex-row gap-2 items-center">
       <HoverCard>
         <HoverCardTrigger>
           <button
-            className="border border-slate-400 rounded-full px-2  cursor-pointer hover:bg-slate-200"
+            className={`border rounded-full px-2 cursor-pointer ${!!reaction.type ? 'bg-blue-100 border-blue-400 hover:bg-blue-400-200' : 'bg-slate-50 border-slate-400 hover:bg-slate-200'}`}
             disabled={isSubmitting}
           >
             {reaction.type ? REACTIONS[reaction.type] : '+'}
           </button>
         </HoverCardTrigger>
-        <HoverCardContent align="start">
-          <div className="flex flex-row gap-2">
-            {Object.entries(REACTIONS).map(([key, value]: [key: string, value: string]) => (
-              <button
-                key={`reaction_${key}`}
-                type="button"
-                onClick={() => {
-                  reactToPost(key as PostReactionType)
-                }}
-              >
-                <p className="text-lg">{value}</p>
-              </button>
-            ))}
-          </div>
+        <HoverCardContent
+          align="start"
+          side="top"
+          className="flex flex-row divide-x divide-dashed gap-2 px-2 py-1 w-auto"
+        >
+          {Object.entries(REACTIONS).map(([key, value]: [key: string, value: string]) => (
+            <button
+              key={`reaction_${key}`}
+              type="button"
+              className="flex flex-row gap-1 p-1 justify-center items-center"
+              onClick={() => reactToPost(key as PostReactionType)}
+            >
+              <p className="text-md hover:scale-110 duration-150">{value}</p>
+              <span className="text-xs text-gray-700">
+                {reactionCounts[key as PostReactionType]}
+              </span>
+            </button>
+          ))}
         </HoverCardContent>
       </HoverCard>
-
-      <p className="text-xs text-slate-500">
-        {reaction.count} {reaction.count > 1 ? 'reactions' : 'reaction'}
-      </p>
+      <p className="text-xs text-slate-500">{countStatus}</p>
     </div>
   )
 }

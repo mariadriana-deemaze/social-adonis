@@ -63,6 +63,7 @@ export default class PostsService {
    * Returns a paginated collection of posts, matching the search criteria.
    */
   async findMany(
+    currentUserId: UUID,
     userId: UUID,
     { page, limit = 10 }: { page: number; limit?: number }
   ): Promise<PaginatedResponse<PostResponse>> {
@@ -77,7 +78,7 @@ export default class PostsService {
 
     const data: PostResponse[] = []
     for (const post of result) {
-      const resource = await this.serialize(userId, post)
+      const resource = await this.serialize(currentUserId, post)
       data.push(resource)
     }
 
@@ -127,7 +128,7 @@ export default class PostsService {
   }
 
   /**
-   * Handles the process on serializing the post data, and aggregatin gits many attachments.
+   * Handles the process on serializing the post data, and aggregating it's many associations.
    */
   async serialize(currentUserId: UUID, post: Post): Promise<PostResponse> {
     const data = post.toJSON() as ModelObject & { reactions: PostReaction[] }
@@ -142,6 +143,7 @@ export default class PostsService {
       [PostReactionType.ANGRY]: 0,
       [PostReactionType.LOVE]: 0,
     }
+
     const reactionsCounts: Record<PostReactionType, number> =
       data?.reactions?.reduce((acc, next) => {
         if (!next) return acc

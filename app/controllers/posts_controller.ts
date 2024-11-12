@@ -16,9 +16,8 @@ export default class PostsController {
     | string
     | PageObject<
       | {
-        post: PostResponse
+        post: PostResponse | null
       }
-      | { post: null }
     >
   > {
     const currentUserId = ctx.auth.user?.id!;
