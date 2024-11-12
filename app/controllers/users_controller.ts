@@ -1,18 +1,44 @@
-import User from '#models/user'
-import PostsService from '#services/posts_service'
 import { inject } from '@adonisjs/core'
-import type { HttpContext } from '@adonisjs/core/http'
+import { HttpContext } from '@adonisjs/core/http'
+import { updateUserValidator } from '#validators/user'
+import { errors } from '@vinejs/vine'
+import { errorsReducer } from '#utils/index'
+import { UserService } from '#services/user_service'
 
 @inject()
 export default class UsersController {
-  constructor(public readonly service: PostsService) { }
+  constructor(public readonly service: UserService) {}
 
-  async show(ctx: HttpContext) {
-    const currentUserId = ctx.auth.user?.id!;
-    const profileId = ctx.params.id
-    const page = ctx.request.qs().page || 1
-    const posts = await this.service.findMany(currentUserId, profileId, { page })
-    const profile = await User.find(profileId)
-    return ctx.inertia.render('users/show', { posts, profile })
+  async update(ctx: HttpContext) {
+    const user = ctx.auth.user!
+    const payload = ctx.request.body()
+
+    try {
+      const data = await updateUserValidator.validate(payload, {
+        meta: {
+          userId: user.id,
+        },
+      })
+
+      await this.service.update(user, {
+        name: data.name,
+        surname: data.surname,
+        username: data.username,
+        email: data.email,
+      })
+
+      await this.service.storeAttachments(ctx)
+      return ctx.inertia.render('users/settings')
+    } catch (error) {
+      if (error instanceof errors.E_VALIDATION_ERROR) {
+        const reducedErrors = errorsReducer(error.messages)
+        ctx.session.flash('errors', reducedErrors)
+      }
+      return ctx.response.redirect().back()
+    }
+  }
+
+  async delete() {
+    // TODO: Implement.
   }
 }

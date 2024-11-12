@@ -5,14 +5,15 @@ import { PostResponse } from 'app/interfaces/post'
 import { PageObject } from '@adonisjs/inertia/types'
 import { PaginatedResponse } from 'app/interfaces/pagination'
 import type { HttpContext } from '@adonisjs/core/http'
+import User from '#models/user'
 
 @inject()
 export default class FeedController {
-  constructor(private readonly postsService: PostsService) { }
+  constructor(private readonly postsService: PostsService) {}
   async index(
     ctx: HttpContext
   ): Promise<string | PageObject<{ posts: PaginatedResponse<PostResponse> }>> {
-    const currentUserId = ctx.auth.user?.id!;
+    const currentUserId = ctx.auth.user?.id!
     const page = ctx.request.qs().page || 1
 
     const posts = await Post.query()
@@ -35,5 +36,14 @@ export default class FeedController {
         meta,
       },
     })
+  }
+
+  async show(ctx: HttpContext) {
+    const currentUserId = ctx.auth.user?.id!
+    const profileId = ctx.params.id
+    const page = ctx.request.qs().page || 1
+    const posts = await this.postsService.findMany(currentUserId, profileId, { page })
+    const profile = await User.find(profileId)
+    return ctx.inertia.render('users/show', { posts, profile })
   }
 }
