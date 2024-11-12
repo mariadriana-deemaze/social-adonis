@@ -7,14 +7,13 @@ import { UserService } from '#services/user_service'
 
 @inject()
 export default class UsersController {
-  constructor(public readonly service: UserService) {}
+  constructor(public readonly service: UserService) { }
 
   async update(ctx: HttpContext) {
     const user = ctx.auth.user!
-    const payload = ctx.request.body()
 
     try {
-      const data = await updateUserValidator.validate(payload, {
+      const data = await ctx.request.validateUsing(updateUserValidator, {
         meta: {
           userId: user.id,
         },
