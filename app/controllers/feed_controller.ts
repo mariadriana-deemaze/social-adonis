@@ -8,20 +8,22 @@ import type { HttpContext } from '@adonisjs/core/http'
 
 @inject()
 export default class FeedController {
-  constructor(private readonly postsService: PostsService) {}
+  constructor(private readonly postsService: PostsService) { }
   async index(
     ctx: HttpContext
   ): Promise<string | PageObject<{ posts: PaginatedResponse<PostResponse> }>> {
+    const currentUserId = ctx.auth.user?.id!;
     const page = ctx.request.qs().page || 1
 
     const posts = await Post.query()
       .orderBy('updated_at', 'desc')
       .preload('user')
+      .preload('reactions')
       .paginate(page, 10)
 
     const data: PostResponse[] = []
     for (const post of posts) {
-      const resource = await this.postsService.serialize(post)
+      const resource = await this.postsService.serialize(currentUserId, post)
       data.push(resource)
     }
 

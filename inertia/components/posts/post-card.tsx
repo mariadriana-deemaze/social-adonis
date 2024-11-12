@@ -25,6 +25,8 @@ import { DeletePost } from '@/components/posts/delete'
 import { PostResponse } from 'app/interfaces/post'
 import { AttachmentResponse } from 'app/interfaces/attachment'
 import { formatDistanceToNow } from 'date-fns'
+import { PostReactionType } from '#enums/post'
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card'
 import type { UUID } from 'crypto'
 
 const userLink = (id: UUID) => `/users/${id}`
@@ -40,7 +42,9 @@ function PostContentParser({ post }: { post: PostResponse }) {
     }
     return post.content
   }, [post])
-  return <div className="pb-5 post-content" dangerouslySetInnerHTML={{ __html: content }} />
+  return (
+    <div className="pb-5 break-words post-content" dangerouslySetInnerHTML={{ __html: content }} />
+  )
 }
 
 function LinkPreview({ preview }: { preview: NonNullable<PostResponse['link']> }) {
@@ -184,6 +188,127 @@ function PostGallery({ attachments }: { attachments: AttachmentResponse[] }) {
   )
 }
 
+function PostReaction({
+  post,
+  currentUser,
+}: {
+  post: PostResponse
+  currentUser: {
+    [x: string]: any
+  } | null
+}) {
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [reaction, setReaction] = useState<{ type: PostReactionType | null; count: number }>({
+    type: post.reactions?.reacted,
+    count: post.reactions.total,
+  })
+
+  const counts = {
+    liked: post.reactions.reacted ? post.reactions.total : post.reactions.total + 1,
+    unliked: post.reactions.reacted ? post.reactions.total - 1 : post.reactions.total,
+  }
+
+  const REACTIONS: Record<PostReactionType, string> = {
+    [PostReactionType.LIKE]: '👍',
+    [PostReactionType.THANKFUL]: '🙌',
+    [PostReactionType.FUNNY]: '🤣',
+    [PostReactionType.CONGRATULATIONS]: '🎉',
+    [PostReactionType.ANGRY]: '😡',
+    [PostReactionType.LOVE]: '😍',
+  }
+
+  async function reactToPost(react: PostReactionType) {
+    if (!currentUser) return
+    setIsSubmitting(true)
+
+    const isDelete = react === reaction.type
+
+    const request = await fetch(`/posts/${post.id}/react`, {
+      method: isDelete ? 'delete' : 'post',
+      headers: {
+        'content-type': 'application/json',
+      },
+      ...(!isDelete && {
+        body: JSON.stringify({
+          reaction: react,
+        }),
+      }),
+    })
+
+    if (request.status === 200 || request.status === 201) {
+      setReaction({ type: react, count: counts.liked })
+    } else if (request.status === 204) {
+      setReaction({ type: null, count: counts.unliked })
+    }
+
+    setIsSubmitting(false)
+  }
+
+  const countStatus = useMemo(() => {
+    if (reaction.type === null) {
+      if (reaction.count === 0) {
+        return 'No reactions.'
+      } else {
+        return `${post.reactions.reacted ? post.reactions.total - 1 : post.reactions.total} other reacted.`
+      }
+    } else {
+      if (reaction.count === 1) {
+        return `You reacted.`
+      } else {
+        return `You and ${post.reactions.reacted ? post.reactions.total - 1 : post.reactions.total} other reacted.`
+      }
+    }
+  }, [reaction.type])
+
+  const reactionCounts = useMemo(() => {
+    const counts = { ...post.reactions.reactionsCounts }
+    if (reaction.type && post.reactions.reacted) {
+      counts[reaction.type] = counts[reaction.type] + 1
+      counts[post.reactions.reacted] = counts[post.reactions.reacted] - 1
+    } else if (reaction.type && !post.reactions.reacted) {
+      counts[reaction.type] = counts[reaction.type] + 1
+    } else if (!reaction.type && post.reactions.reacted) {
+      counts[post.reactions.reacted] = counts[post.reactions.reacted] - 1
+    }
+    return counts
+  }, [reaction.type])
+
+  return (
+    <div className="flex flex-row gap-2 items-center">
+      <HoverCard>
+        <HoverCardTrigger>
+          <button
+            className={`trigger-user-post-react border rounded-full px-2 cursor-pointer ${!!reaction.type ? 'bg-blue-100 border-blue-400 hover:bg-blue-400-200' : 'bg-slate-50 border-slate-400 hover:bg-slate-200'}`}
+            disabled={isSubmitting}
+          >
+            {reaction.type ? REACTIONS[reaction.type] : '+'}
+          </button>
+        </HoverCardTrigger>
+        <HoverCardContent
+          align="start"
+          side="top"
+          className="flex flex-row divide-x divide-dashed gap-2 px-2 py-1 w-auto"
+        >
+          {Object.entries(REACTIONS).map(([key, value]: [key: string, value: string]) => (
+            <button
+              key={`reaction_${key}`}
+              type="button"
+              className={`react-${key.toLowerCase()} flex flex-row gap-1 p-1 justify-center items-center`}
+              onClick={() => reactToPost(key as PostReactionType)}
+            >
+              <p className="text-md hover:scale-110 duration-150">{value}</p>
+              <span className="text-xs text-gray-700">
+                {reactionCounts[key as PostReactionType]}
+              </span>
+            </button>
+          ))}
+        </HoverCardContent>
+      </HoverCard>
+      <p className="user-post-react-status text-xs text-slate-500">{countStatus}</p>
+    </div>
+  )
+}
+
 export default function PostCard({
   post,
   user,
@@ -284,14 +409,8 @@ export default function PostCard({
         {post.link && <LinkPreview preview={post.link} />}
       </div>
 
-      {/* TODO: FOOTER Reactions, comments, and so on*/}
       <div className="py-4 opacity-70 border-t border-t-gray-200">
-        <div className="flex flex-row gap-2 items-center">
-          <Button variant="outline" size="sm-icon" className="rounded-full w-auto p-2" disabled>
-            <p className="text-xs">React</p>
-          </Button>
-          <p className="text-xs text-slate-500">0 Reactions</p>
-        </div>
+        <PostReaction post={post} currentUser={user} />
       </div>
     </article>
   )

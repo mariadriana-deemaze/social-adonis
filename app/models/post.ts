@@ -6,11 +6,13 @@ import {
   belongsTo,
   column,
   computed,
+  hasMany,
 } from '@adonisjs/lucid/orm'
 import User from '#models/user'
-import type { BelongsTo } from '@adonisjs/lucid/types/relations'
-import type { UUID } from 'crypto'
 import { extractFirstLink, sanitizePostContent } from '#utils/index'
+import PostReaction from '#models/post_reaction'
+import type { UUID } from 'crypto'
+import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 
 export default class Post extends BaseModel {
   @column({ isPrimary: true })
@@ -19,11 +21,14 @@ export default class Post extends BaseModel {
   @column()
   declare content: string
 
+  @belongsTo(() => User)
+  declare user: BelongsTo<typeof User>
+
   @column()
   declare userId: UUID
 
-  @belongsTo(() => User)
-  declare user: BelongsTo<typeof User>
+  @hasMany(() => PostReaction)
+  declare reactions: HasMany<typeof PostReaction>
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

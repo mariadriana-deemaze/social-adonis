@@ -2,10 +2,12 @@ import Post from '#models/post'
 import { AttachmentModel } from '#models/attachment'
 import AttachmentService from '#services/attachment_service'
 import { createPostValidator, updatePostValidator } from '#validators/post'
-import { ModelObject } from '@adonisjs/lucid/types/model'
 import { PostResponse } from 'app/interfaces/post'
 import LinkParserService from '#services/link_parser_service'
 import { PaginatedResponse } from 'app/interfaces/pagination'
+import { PostReactionType } from '#enums/post'
+import PostReaction from '#models/post_reaction'
+import { ModelObject } from '@adonisjs/lucid/types/model'
 import type { HttpContext } from '@adonisjs/core/http'
 import type { UUID } from 'crypto'
 
@@ -50,7 +52,10 @@ export default class PostsService {
    * Finds a post and it's author, by record id.
    */
   async findOne(id: UUID): Promise<Post | null> {
-    const result: Post[] | null = await Post.query().where('id', id).preload('user')
+    const result: Post[] | null = await Post.query()
+      .where('id', id)
+      .preload('user')
+      .preload('reactions')
     return !!result ? result[0] : null
   }
 
@@ -58,6 +63,7 @@ export default class PostsService {
    * Returns a paginated collection of posts, matching the search criteria.
    */
   async findMany(
+    currentUserId: UUID,
     userId: UUID,
     { page, limit = 10 }: { page: number; limit?: number }
   ): Promise<PaginatedResponse<PostResponse>> {
@@ -65,13 +71,14 @@ export default class PostsService {
       .where('user_id', userId)
       .orderBy('updated_at', 'desc')
       .preload('user')
+      .preload('reactions')
       .paginate(page, limit)
 
     const { meta } = result.toJSON()
 
     const data: PostResponse[] = []
     for (const post of result) {
-      const resource = await this.serialize(post)
+      const resource = await this.serialize(currentUserId, post)
       data.push(resource)
     }
 
@@ -121,21 +128,46 @@ export default class PostsService {
   }
 
   /**
-   * Handles the process on serializing the post data, and aggregatin gits many attachments.
+   * Handles the process on serializing the post data, and aggregating it's many associations.
    */
-  async serialize(post: Post): Promise<PostResponse> {
-    const data: ModelObject = post.toJSON()
+  async serialize(currentUserId: UUID, post: Post): Promise<PostResponse> {
+    const data = post.toJSON() as ModelObject & { reactions: PostReaction[] }
     const attachments = await this.attachmentService.findMany(AttachmentModel.POST, post.id)
     const link = await this.linkService.show(post.link)
+
+    let accumulator: Record<PostReactionType, number> = {
+      [PostReactionType.LIKE]: 0,
+      [PostReactionType.THANKFUL]: 0,
+      [PostReactionType.FUNNY]: 0,
+      [PostReactionType.CONGRATULATIONS]: 0,
+      [PostReactionType.ANGRY]: 0,
+      [PostReactionType.LOVE]: 0,
+    }
+
+    const reactionsCounts: Record<PostReactionType, number> =
+      data?.reactions?.reduce((acc, next) => {
+        if (!next) return acc
+        acc[next.type] = acc[next.type] + 1
+        return acc
+      }, accumulator) || accumulator
+
     const resource: PostResponse = {
       id: data.id,
       content: data.content,
       user: data.user,
       link,
       attachments,
+      reactions: {
+        reacted:
+          data?.reactions?.find((reaction: PostReaction) => reaction.userId === currentUserId)
+            ?.type || null,
+        reactionsCounts,
+        total: Object.values(reactionsCounts).reduce((prev, next) => prev + next, 0),
+      },
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
     }
+
     return resource
   }
 }
