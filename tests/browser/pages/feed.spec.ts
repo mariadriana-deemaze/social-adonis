@@ -79,4 +79,30 @@ test.group('Acessing feed', (group) => {
     const actionsBtn = page.locator('button.trigger-user-post-actions')
     await page.assertNotExists(actionsBtn)
   })
+
+  test('Successfully reacts to a post', async ({ visit, browserContext }) => {
+    //const user = await UserFactory.with('posts', 1, (post) => post.with('reactions', 3)).create()
+    const user = await UserFactory.with('posts', 1).create()
+    const otherUser = await UserFactory.with('posts', 8).create()
+
+    await browserContext.loginAs(user)
+    const page = await visit(`/posts/${otherUser.posts[0].id}`)
+
+    const reactButton = page.locator('button.trigger-user-post-react')
+    await reactButton.hover()
+    const funnyReaction = page.locator('button.react-funny')
+    const funnyCount = page.locator('button.react-funny > span')
+
+    // React
+    await funnyReaction.click()
+    const status = page.locator('p.user-post-react-status')
+    await page.assertElementsText(status, ['You reacted.'])
+    await page.assertElementsText(funnyCount, ['1'])
+
+    // Unreact
+    await reactButton.hover()
+    await funnyReaction.click()
+    await page.assertElementsText(status, ['No reactions.'])
+    await page.assertElementsText(funnyCount, ['0'])
+  })
 })

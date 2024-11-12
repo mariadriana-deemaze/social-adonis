@@ -23,7 +23,7 @@ export const updatePostValidator = vine.compile(
 )
 
 /**
- * Validates the post update action payload
+ * Validates the post-react create/update action payload
  */
 export const postReactionValidator = vine.compile(
   vine.object({

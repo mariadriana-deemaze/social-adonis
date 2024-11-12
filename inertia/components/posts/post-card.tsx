@@ -25,9 +25,9 @@ import { DeletePost } from '@/components/posts/delete'
 import { PostResponse } from 'app/interfaces/post'
 import { AttachmentResponse } from 'app/interfaces/attachment'
 import { formatDistanceToNow } from 'date-fns'
-import type { UUID } from 'crypto'
 import { PostReactionType } from '#enums/post'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card'
+import type { UUID } from 'crypto'
 
 const userLink = (id: UUID) => `/users/${id}`
 const postLink = (id: UUID) => `/posts/${id}`
@@ -278,7 +278,7 @@ function PostReaction({
       <HoverCard>
         <HoverCardTrigger>
           <button
-            className={`border rounded-full px-2 cursor-pointer ${!!reaction.type ? 'bg-blue-100 border-blue-400 hover:bg-blue-400-200' : 'bg-slate-50 border-slate-400 hover:bg-slate-200'}`}
+            className={`trigger-user-post-react border rounded-full px-2 cursor-pointer ${!!reaction.type ? 'bg-blue-100 border-blue-400 hover:bg-blue-400-200' : 'bg-slate-50 border-slate-400 hover:bg-slate-200'}`}
             disabled={isSubmitting}
           >
             {reaction.type ? REACTIONS[reaction.type] : '+'}
@@ -293,7 +293,7 @@ function PostReaction({
             <button
               key={`reaction_${key}`}
               type="button"
-              className="flex flex-row gap-1 p-1 justify-center items-center"
+              className={`react-${key.toLowerCase()} flex flex-row gap-1 p-1 justify-center items-center`}
               onClick={() => reactToPost(key as PostReactionType)}
             >
               <p className="text-md hover:scale-110 duration-150">{value}</p>
@@ -304,7 +304,7 @@ function PostReaction({
           ))}
         </HoverCardContent>
       </HoverCard>
-      <p className="text-xs text-slate-500">{countStatus}</p>
+      <p className="user-post-react-status text-xs text-slate-500">{countStatus}</p>
     </div>
   )
 }
