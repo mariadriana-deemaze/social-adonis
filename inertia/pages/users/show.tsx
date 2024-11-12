@@ -1,4 +1,4 @@
-import UsersController from '#controllers/users_controller'
+import FeedController from '#controllers/feed_controller'
 import FeedList from '@/components/posts/feed-list'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Card, CardContent } from '@/components/ui/card'
@@ -8,11 +8,21 @@ import { Head } from '@inertiajs/react'
 import { CalendarHeart, FilePen } from 'lucide-react'
 import { CreatePost } from '@/components/posts/create'
 
-export default function Show({ user, posts, profile }: InferPageProps<UsersController, 'show'>) {
+export default function Show({ user, posts, profile }: InferPageProps<FeedController, 'show'>) {
   if (!posts || !profile) return <>Loading..</>
   return (
     <>
       <Head title={`SocialAdonis | @${profile.username}`} />
+
+      {/*  // TODO: Place cover */}
+      {/* <div className="relative bg-slate-300 h-64 w-full rounded-2xl mb-10 shadow-inner">
+        <div className="w-full h-full rounded-2xl overflow-hidden">
+          <img
+            className="w-full h-full object-cover rounded-lg overflow"
+            src="https://socialadonisweb.s3.eu-north-1.amazonaws.com/uploads/Image/cu8dzs2a4svkvpbmoy6mw45q.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIARFAXXG6LR2ZE7KLB%2F20241112%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20241112T171721Z&X-Amz-Expires=1800&X-Amz-Signature=c78316cd70ab2b795f1d42d92d5cc0e7adb87c9886788d33087978d6662d0840&X-Amz-SignedHeaders=host&x-id=GetObject"
+          />
+        </div>
+      </div> */}
       <div className="relative flex flex-col lg:flex-row gap-2 w-full">
         <div className="h-full w-full max-w-full lg:max-w-72">
           {/* TODO: Make sticky on mobile scroll, as a nav. */}

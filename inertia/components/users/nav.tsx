@@ -76,7 +76,7 @@ export default function UserNavBar({ user }: { user: User | null }) {
                       <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
                     </DropdownMenuItem>
                     <DropdownMenuItem>
-                      Settings
+                      <Link href={`/users/${user.id}/settings`}>Settings</Link>
                       <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
