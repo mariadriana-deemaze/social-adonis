@@ -28,22 +28,29 @@ import { formatDistanceToNow } from 'date-fns'
 import { PostReactionType } from '#enums/post'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card'
 import type { UUID } from 'crypto'
+import { UserResponse } from '#interfaces/user'
 
 const userLink = (id: UUID) => `/users/${id}`
 const postLink = (id: UUID) => `/posts/${id}`
 
-function PostContentParser({ post }: { post: PostResponse }) {
-  const content = useMemo(() => {
-    if (post.link) {
-      return post.content.replace(
-        post.link.link,
-        `<a class="text-cyan-600" href=${post.link.link} target="_blank">${post.link.link}</a>`
+function PostContentParser({
+  content,
+  preview,
+}: {
+  content: string
+  preview: PostResponse['link']
+}) {
+  const parsed = useMemo(() => {
+    if (preview) {
+      return content.replace(
+        preview.link,
+        `<a class="text-cyan-600" href=${preview.link} target="_blank">${preview.link}</a>`
       )
     }
-    return post.content
-  }, [post])
+    return content
+  }, [content])
   return (
-    <div className="pb-5 break-words post-content" dangerouslySetInnerHTML={{ __html: content }} />
+    <div className="pb-5 break-words post-content" dangerouslySetInnerHTML={{ __html: parsed }} />
   )
 }
 
@@ -84,7 +91,7 @@ function PostImage({ image }: { image: AttachmentResponse }) {
   return (
     <>
       <div
-        className={`absolute flex flex-col bg-slate-900 duration-700 w-full h-full m-auto items-center z-[5] ${loaded ? 'opacity-0' : 'opacity-85 pointer-events-none'}`}
+        className={`absolute flex flex-col bg-slate-900 duration-700 w-full h-full m-auto items-center z-[5] ${loaded ? 'opacity-0' : 'opacity-85'}`}
       >
         <Loader2 className="h-10 w-10 animate-spin text-muted m-auto" />
       </div>
@@ -193,9 +200,7 @@ function PostReaction({
   currentUser,
 }: {
   post: PostResponse
-  currentUser: {
-    [x: string]: any
-  } | null
+  currentUser: UserResponse | null
 }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [reaction, setReaction] = useState<{ type: PostReactionType | null; count: number }>({
@@ -316,9 +321,7 @@ export default function PostCard({
   redirect = false,
 }: {
   post: PostResponse
-  user: {
-    [x: string]: any
-  } | null
+  user: UserResponse | null
   actions?: boolean
   redirect?: boolean
 }) {
@@ -326,9 +329,9 @@ export default function PostCard({
 
   return (
     <article className="flex flex-col w-full border pt-6 px-6 bg-white rounded-sm">
-      <div className="flex flex-row justify-between border-b border-b-gray-200">
+      <div className="flex flex-row pb-3 justify-between border-b border-b-gray-200">
         <Link href={userLink(post.user.id)}>
-          <div className="flex flex-row gap-3 pb-4 justify-items-center align-middle">
+          <div className="flex flex-row gap-3">
             <Avatar className="h-8 w-8">
               <AvatarImage
                 src={post.user.attachments.avatar?.link}
@@ -337,7 +340,7 @@ export default function PostCard({
               <AvatarFallback>{post.user.name ? post.user.name[0] : '-'}</AvatarFallback>
             </Avatar>
             <div className="flex flex-col gap-1">
-              <p className="text-xs text-gray-600 self-center text-ellipsis truncate max-w-40 md:max-w-screen-lg">
+              <p className="text-xs text-gray-600 text-ellipsis truncate max-w-40 md:max-w-screen-lg">
                 @{post.user.username}
               </p>
               <span className="flex text-xs text-gray-400 gap-1 items-center">
@@ -403,10 +406,10 @@ export default function PostCard({
 
         {redirect ? (
           <Link href={postLink(post.id)}>
-            <PostContentParser post={post} />
+            <PostContentParser content={post.content} preview={post.link} />
           </Link>
         ) : (
-          <PostContentParser post={post} />
+          <PostContentParser content={post.content} preview={post.link} />
         )}
 
         {post.link && <LinkPreview preview={post.link} />}
