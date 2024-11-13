@@ -32,3 +32,8 @@ export function sanitizePostContent(content: string): string {
   // @ts-ignore
   return content.replace(/[&<>]/g, (m) => map[m])
 }
+
+export const REGEX = {
+  ALPHA_STRING: /^[A-z]+$/,
+  ALPHANUMERIC_STRING: /^[A-z0-9]+$/,
+}

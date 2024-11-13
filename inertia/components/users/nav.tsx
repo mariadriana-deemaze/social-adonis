@@ -11,11 +11,11 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
-import User from '#models/user'
 import AdonisLogo from '@/components/svg/logo'
+import { UserResponse } from '#interfaces/user'
+import { cn } from '@/lib/utils'
 
-export default function UserNavBar({ user }: { user: User | null }) {
+export default function UserNavBar({ user }: { user: UserResponse | null }) {
   const LINKS: Record<'title' | 'link', string>[] = [
     {
       title: 'Home',
@@ -25,10 +25,6 @@ export default function UserNavBar({ user }: { user: User | null }) {
       title: 'Feed',
       link: '/feed',
     },
-    /*  {
-      title: 'Groups',
-      link: '/groups',
-    }, */
   ]
 
   return (
@@ -53,7 +49,10 @@ export default function UserNavBar({ user }: { user: User | null }) {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src="#" alt={`${user.name} avatar image`} />
+                      <AvatarImage
+                        src={user?.attachments ? user?.attachments?.avatar?.link : '#'}
+                        alt={`${user.name} avatar image`}
+                      />
                       <AvatarFallback>{user.name ? user.name[0] : '-'}</AvatarFallback>
                     </Avatar>
                   </Button>
@@ -76,7 +75,7 @@ export default function UserNavBar({ user }: { user: User | null }) {
                       <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
                     </DropdownMenuItem>
                     <DropdownMenuItem>
-                      Settings
+                      <Link href={`/users/${user.id}/settings`}>Settings</Link>
                       <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
                     </DropdownMenuItem>
                   </DropdownMenuGroup>

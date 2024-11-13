@@ -3,8 +3,9 @@ import { router } from '@inertiajs/react'
 import { useToast } from '@/components/ui/use-toast'
 import PostCard from '@/components/posts/post-card'
 import { useIntersectionObserver } from '@/hooks/use-intersection-observer'
+import { PostResponse } from '#interfaces/post'
+import { UserResponse } from '#interfaces/user'
 import { Loader2 } from 'lucide-react'
-import { PostResponse } from 'app/interfaces/post'
 
 export default function FeedList({
   url,
@@ -16,9 +17,7 @@ export default function FeedList({
     meta: any
     data: PostResponse[]
   }
-  currentUser: {
-    [x: string]: any
-  } | null
+  currentUser: UserResponse | null
 }) {
   const [allPosts, setAllPosts] = useState(posts?.data)
   const [meta, setMeta] = useState(posts.meta)

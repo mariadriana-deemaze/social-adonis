@@ -1,4 +1,5 @@
-import User from '#models/user'
+import { UserResponse } from '#interfaces/user'
+import { UserService } from '#services/user_service'
 import { defineConfig } from '@adonisjs/inertia'
 import type { InferSharedProps } from '@adonisjs/inertia/types'
 
@@ -12,7 +13,15 @@ const inertiaConfig = defineConfig({
    * Data that should be shared with all rendered pages
    */
   sharedData: {
-    user: async (ctx): Promise<User | null> => ctx?.auth?.user || null,
+    user: async (ctx): Promise<UserResponse | null> => {
+      if (ctx?.auth?.user) {
+        const service = new UserService() // TODO: Figure out if there's a better way to go around this, and if that brings any performance penalty.
+        const user = await service.serialize(ctx?.auth?.user)
+        return user
+      } else {
+        return null
+      }
+    },
     errors: (ctx) => ctx.session?.flashMessages.get('errors'),
   },
 

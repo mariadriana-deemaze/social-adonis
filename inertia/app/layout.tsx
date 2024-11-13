@@ -9,7 +9,6 @@ export default function Layout({ children }: { children: ReactNode }) {
   const {
     props: { user },
   } = usePage<SharedProps>()
-
   return (
     <>
       <link rel="icon" type="image/svg+xml" href={favicon} />

@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon'
 import {
   BaseModel,
+  beforeDelete,
   beforeSave,
   beforeUpdate,
   belongsTo,
@@ -45,5 +46,10 @@ export default class Post extends BaseModel {
   @beforeUpdate()
   static sanitizeContent(post: Post) {
     post.content = sanitizePostContent(post.content)
+  }
+
+  @beforeDelete()
+  public static async deleteAssociations(post: Post) {
+    await post.related('reactions').query().delete()
   }
 }

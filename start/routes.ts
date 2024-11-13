@@ -18,10 +18,15 @@ import PostReactionsController from '#controllers/post_reactions_controller'
 
 /**
  *
- * GUEST/PUBLIC
+ * PUBLIC
  *
  **/
-router.on('/').renderInertia('home') // TODO: Contextualize `ctx.auth.authenticate` via middleware.
+router
+  .group(() => {
+    router.on('/').renderInertia('home')
+    router.get('/feed', [FeedController, 'index'])
+  })
+  .use(middleware.guest())
 
 /**
  *
@@ -46,8 +51,10 @@ router
 router
   .group(() => {
     router.delete('/auth/sign-out', [AuthController, 'destroy'])
-    router.get('/feed', [FeedController, 'index'])
-    router.get('/users/:id', [UsersController, 'show']) // TODO: Make public, and contextualize `ctx.auth.authenticate` via middleware.
+    router.get('/users/:id', [FeedController, 'show']) // TODO: Make public, and contextualize `ctx.auth.authenticate` via middleware.
+    router.get('/users/:id/settings', [UsersController, 'show'])
+    router.patch('/users/:id', [UsersController, 'update'])
+    router.delete('/users/:id', [UsersController, 'delete'])
     router.post('/posts', [PostsController, 'create'])
     router.get('/posts/:id', [PostsController, 'show'])
     router.patch('/posts/:id', [PostsController, 'update'])

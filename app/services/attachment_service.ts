@@ -35,11 +35,24 @@ export default class AttachmentService {
       resources.images.push({
         id: attachment.id,
         link,
+        type: attachment.type,
         metadata: attachment.metadata,
       })
     }
 
     return resources
+  }
+
+  /**
+   * Polymorphic find of many attachments to a specified model.
+   * Returns the records.
+   */
+  async findManyRaw(model: AttachmentModel, model_id: string) {
+    const attachments = await Attachment.findManyBy({
+      model,
+      model_id,
+    })
+    return attachments
   }
 
   /**
@@ -86,6 +99,40 @@ export default class AttachmentService {
     // NOTE: Videos could be handed over here to a different provider.
   }
 
+  async storeOne(model: AttachmentModel, modelId: UUID, type: AttachmentType, file: MultipartFile) {
+    const extension = file.extname || file.subtype || file.headers['content-type']
+
+    const attachment = new Attachment()
+    attachment.model = model
+    attachment.type = type
+    attachment.model_id = modelId
+    attachment.metadata = new MetadataJSON({
+      filename: file.clientName,
+      size: file.size,
+      mimetype: file.headers['content-type'],
+      extension,
+    })
+
+    let key = this.generateS3Key(type, extension)
+    await file.moveToDisk(key)
+    attachment.external_key = key
+    await attachment.save()
+  }
+
+  async getPresignedLink(externalKey: string) {
+    return this.disk.getSignedUrl(externalKey)
+  }
+
+  /**
+   * Updates file in given key.
+   */
+  async update(key: string, file: MultipartFile) {
+    await file.moveToDisk(key)
+  }
+
+  /**
+   * Generates a key in disk
+   */
   private generateS3Key(type: AttachmentType, extension: string) {
     return `uploads/${type}/${cuid()}.${extension}`
   }

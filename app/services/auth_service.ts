@@ -11,13 +11,6 @@ export default class AuthService {
 
     try {
       const payload = await request.validateUsing(createAuthValidator)
-      const existant = await User.query().where('email', payload.email).first()
-      if (existant) {
-        session.flash('errors', {
-          email: 'An user with the provided email already exists.',
-        })
-        return response.redirect().back()
-      }
 
       const user = new User()
       Object.assign(user, payload)
