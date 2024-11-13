@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-export function PreviewThumbnail({ file, className }: { file: File; className?: string }) {
+function PreviewThumbnail({ file, className }: { file: File; className?: string }) {
   const [isLoading, setIsLoading] = useState(true)
 
   const thumbnailRef = useRef<HTMLImageElement>(null)
@@ -31,7 +31,11 @@ export function PreviewThumbnail({ file, className }: { file: File; className?: 
       <div
         className={`absolute w-full h-full bg-black duration-1000 ${isLoading ? 'opacity-100' : 'opacity-0'}`}
       />
-      <img ref={thumbnailRef} alt={file.name} className={`object-cover w-full h-full ${isLoading ? 'opacity-0' : 'opacity-100'}`} />
+      <img
+        ref={thumbnailRef}
+        alt={file.name}
+        className={`object-cover w-full h-full ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+      />
     </div>
   )
 }

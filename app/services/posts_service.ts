@@ -10,12 +10,15 @@ import PostReaction from '#models/post_reaction'
 import { ModelObject } from '@adonisjs/lucid/types/model'
 import type { HttpContext } from '@adonisjs/core/http'
 import type { UUID } from 'crypto'
+import { UserService } from '#services/user_service'
 
 export default class PostsService {
+  private readonly userService: UserService
   private readonly linkService: LinkParserService
   private readonly attachmentService: AttachmentService
 
   constructor() {
+    this.userService = new UserService()
     this.linkService = new LinkParserService()
     this.attachmentService = new AttachmentService()
   }
@@ -132,6 +135,7 @@ export default class PostsService {
    */
   async serialize(currentUserId: UUID, post: Post): Promise<PostResponse> {
     const data = post.toJSON() as ModelObject & { reactions: PostReaction[] }
+    const user = await this.userService.serialize(post.user)
     const attachments = await this.attachmentService.findMany(AttachmentModel.POST, post.id)
     const link = await this.linkService.show(post.link)
 
@@ -154,7 +158,7 @@ export default class PostsService {
     const resource: PostResponse = {
       id: data.id,
       content: data.content,
-      user: data.user,
+      user,
       link,
       attachments,
       reactions: {

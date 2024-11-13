@@ -12,6 +12,8 @@ export enum AttachmentType {
   AUDIO = 'Audio',
   DOCUMENT = 'Document',
   VIDEO = 'Video',
+  AVATAR = 'Avatar',
+  COVER = 'Cover',
 }
 
 export enum AttachmentModel {

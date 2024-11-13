@@ -1,16 +1,24 @@
-import { PreviewThumbnail } from '@/components/generic/file-upload-preview'
+import UsersController from '#controllers/users_controller'
+import { UserResponse } from '#interfaces/user'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/components/ui/use-toast'
-import { SharedProps } from '@adonisjs/inertia/types'
+import { InferPageProps } from '@adonisjs/inertia/types'
 import { Head, useForm, usePage } from '@inertiajs/react'
 import { Upload } from 'lucide-react'
-import { useEffect, useRef } from 'react'
+import { ChangeEvent, useEffect, useRef, useState } from 'react'
 
-export default function UserSettings({ user }: SharedProps) {
+export default function UserSettings({
+  user,
+}: InferPageProps<UsersController, 'show'> & { user: UserResponse }) {
+  const [avatarPreview, setAvatarPreview] = useState(
+    () => user.attachments.avatar?.link || undefined
+  )
+  const [coverPreview, setCoverPreview] = useState(() => user.attachments.cover?.link || undefined)
+
   if (!user) return <></>
 
   const { props } = usePage()
@@ -39,9 +47,35 @@ export default function UserSettings({ user }: SharedProps) {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     patch(`/users/${user?.id}`, {
-      preserveState: false,
+      preserveState: true,
       preserveScroll: true,
     })
+  }
+
+  function onAvatarChange(e: ChangeEvent<HTMLInputElement>) {
+    if (!e.target.files || !e.target.files[0]) return
+    setData('avatar', e.target.files[0])
+
+    const fileReader = new FileReader()
+    fileReader.onload = () => {
+      const { result } = fileReader
+      if (!result) return
+      setAvatarPreview(String(result))
+    }
+    fileReader.readAsDataURL(e.target.files[0])
+  }
+
+  function onCoverChange(e: ChangeEvent<HTMLInputElement>) {
+    if (!e.target.files || !e.target.files[0]) return
+    setData('cover', e.target.files[0])
+
+    const fileReader = new FileReader()
+    fileReader.onload = () => {
+      const { result } = fileReader
+      if (!result) return
+      setCoverPreview(String(result))
+    }
+    fileReader.readAsDataURL(e.target.files[0])
   }
 
   useEffect(() => {
@@ -57,39 +91,20 @@ export default function UserSettings({ user }: SharedProps) {
         <form className="flex flex-col items-center gap-4 w-full" onSubmit={handleSubmit}>
           <div className="relative bg-slate-300 h-64 w-full rounded-2xl mb-20 shadow-inner">
             <div className="w-full h-full rounded-2xl overflow-hidden">
-              {data.cover ? (
-                <PreviewThumbnail
+              {coverPreview && (
+                <img
                   className="w-full h-full object-cover rounded-lg overflow"
-                  file={data.cover}
+                  src={coverPreview}
                 />
-              ) : (
-                <>
-                  {
-                    // @ts-ignore
-                    user?.cover && (
-                      <img
-                        className="w-full h-full object-cover rounded-lg overflow"
-                        src="https://socialadonisweb.s3.eu-north-1.amazonaws.com/uploads/Image/cu8dzs2a4svkvpbmoy6mw45q.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIARFAXXG6LR2ZE7KLB%2F20241112%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20241112T171721Z&X-Amz-Expires=1800&X-Amz-Signature=c78316cd70ab2b795f1d42d92d5cc0e7adb87c9886788d33087978d6662d0840&X-Amz-SignedHeaders=host&x-id=GetObject"
-                      />
-                    )
-                  }
-                </>
               )}
             </div>
 
             <div className="absolute h-32 w-32 left-[calc(50%_-_62px)] -bottom-10">
               <div className="relative w-full h-full">
-                {/* <Avatar className="h-32 w-32 shadow-lg">
-                  <AvatarImage
-                    //src="https://socialadonisweb.s3.eu-north-1.amazonaws.com/uploads/Image/cu8dzs2a4svkvpbmoy6mw45q.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIARFAXXG6LR2ZE7KLB%2F20241112%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20241112T142906Z&X-Amz-Expires=1800&X-Amz-Signature=f728c7a3362b4bef1b616c058c88d9ea302aa3df96c29588b7aa8ba706d24cff&X-Amz-SignedHeaders=host&x-id=GetObject"
-                    src="https://avatars.githubusercontent.com/u/97130795?v=4"
-                    alt={`${user.name} avatar image`}
-                  />
+                <Avatar className="h-32 w-32 shadow-lg">
+                  <AvatarImage src={avatarPreview} alt={`${user.name} avatar image`} />
                   <AvatarFallback>{user.name ? user.name[0] : '-'}</AvatarFallback>
-                </Avatar> */}
-                {data.avatar && (
-                  <PreviewThumbnail className="h-32 w-32 rounded-full" file={data.avatar} />
-                )}
+                </Avatar>
 
                 <Button
                   type="button"
@@ -105,10 +120,7 @@ export default function UserSettings({ user }: SharedProps) {
                   accept="image/*"
                   multiple
                   className="hidden"
-                  onChange={(e) => {
-                    if (!e.target.files || !e.target.files[0]) return
-                    setData('avatar', e.target.files[0])
-                  }}
+                  onChange={onAvatarChange}
                 />
               </div>
             </div>
@@ -119,10 +131,7 @@ export default function UserSettings({ user }: SharedProps) {
                 accept="image/*"
                 multiple
                 className="hidden"
-                onChange={(e) => {
-                  if (!e.target.files || !e.target.files[0]) return
-                  setData('cover', e.target.files[0])
-                }}
+                onChange={onCoverChange}
               />
               <Button
                 type="button"
@@ -152,6 +161,9 @@ export default function UserSettings({ user }: SharedProps) {
                     onChange={(e) => setData('name', e.target.value)}
                     required
                   />
+                  {props?.errors?.name && (
+                    <p className="text-red-600 text-xs">{props?.errors?.name}</p>
+                  )}
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="username">Surname</Label>
@@ -162,6 +174,9 @@ export default function UserSettings({ user }: SharedProps) {
                     value={data.surname}
                     onChange={(e) => setData('surname', e.target.value)}
                   />
+                  {props?.errors?.surname && (
+                    <p className="text-red-600 text-xs">{props?.errors?.surname}</p>
+                  )}
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="email">Email</Label>

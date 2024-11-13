@@ -4,10 +4,22 @@ import { updateUserValidator } from '#validators/user'
 import { errors } from '@vinejs/vine'
 import { errorsReducer } from '#utils/index'
 import { UserService } from '#services/user_service'
+import { UserResponse } from '#interfaces/user'
+import { PageObject } from '@adonisjs/inertia/types'
 
 @inject()
 export default class UsersController {
-  constructor(public readonly service: UserService) { }
+  constructor(private readonly service: UserService) {}
+
+  async show(ctx: HttpContext): Promise<
+    | string
+    | PageObject<{
+        user: UserResponse
+      }>
+  > {
+    const user = await this.service.serialize(ctx.auth.user!)
+    return ctx.inertia.render('users/settings', { user })
+  }
 
   async update(ctx: HttpContext) {
     const user = ctx.auth.user!
@@ -27,12 +39,14 @@ export default class UsersController {
       })
 
       await this.service.storeAttachments(ctx)
+
       return ctx.inertia.render('users/settings')
     } catch (error) {
       if (error instanceof errors.E_VALIDATION_ERROR) {
         const reducedErrors = errorsReducer(error.messages)
         ctx.session.flash('errors', reducedErrors)
       }
+
       return ctx.response.redirect().back()
     }
   }

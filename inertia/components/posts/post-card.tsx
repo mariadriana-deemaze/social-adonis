@@ -330,7 +330,10 @@ export default function PostCard({
         <Link href={userLink(post.user.id)}>
           <div className="flex flex-row gap-3 pb-4 justify-items-center align-middle">
             <Avatar className="h-8 w-8">
-              <AvatarImage src="#" alt={`${post.user.name} avatar image`} />
+              <AvatarImage
+                src={post.user.attachments.avatar?.link}
+                alt={`${post.user.name} avatar image`}
+              />
               <AvatarFallback>{post.user.name ? post.user.name[0] : '-'}</AvatarFallback>
             </Avatar>
             <div className="flex flex-col gap-1">

@@ -31,7 +31,10 @@ export default function Show({ user, posts, profile }: InferPageProps<FeedContro
               <div className="relative w-full flex flex-col gap-4 items-center p-5">
                 <div className="flex flex-row gap-3">
                   <Avatar className="h-20 w-20">
-                    <AvatarImage src="#" alt={`${profile.name} avatar image`} />
+                    <AvatarImage
+                      src={profile.attachments.avatar?.link}
+                      alt={`${profile.name} avatar image`}
+                    />
                     <AvatarFallback>{profile.name ? profile.name[0] : '-'}</AvatarFallback>
                   </Avatar>
                 </div>

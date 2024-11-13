@@ -1,13 +1,10 @@
 import { BaseSchema } from '@adonisjs/lucid/schema'
 
 export default class extends BaseSchema {
-  protected tableName = 'update_attachment_types'
-
   async up() {
-    //this.schema.raw('UPDATE TYPE IF EXISTS "attachment_type"')
+    this.schema.raw(`ALTER TYPE "attachment_type" ADD VALUE IF NOT EXISTS 'Avatar'`)
+    this.schema.raw(`ALTER TYPE "attachment_type" ADD VALUE IF NOT EXISTS 'Cover'`)
   }
 
-  async down() {
-    this.schema.dropTable(this.tableName)
-  }
+  async down() {}
 }

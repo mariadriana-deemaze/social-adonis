@@ -48,7 +48,7 @@ router
     router.delete('/auth/sign-out', [AuthController, 'destroy'])
     router.get('/feed', [FeedController, 'index'])
     router.get('/users/:id', [FeedController, 'show']) // TODO: Make public, and contextualize `ctx.auth.authenticate` via middleware.
-    router.on('/users/:id/settings').renderInertia('users/settings')
+    router.get('/users/:id/settings', [UsersController, 'show'])
     router.patch('/users/:id', [UsersController, 'update'])
     router.delete('/users/:id', [UsersController, 'delete'])
     router.post('/posts', [PostsController, 'create'])

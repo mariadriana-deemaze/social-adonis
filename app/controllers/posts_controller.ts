@@ -10,17 +10,15 @@ import { PageObject } from '@adonisjs/inertia/types'
 
 @inject()
 export default class PostsController {
-  constructor(private service: service) { }
+  constructor(private service: service) {}
 
   async show(ctx: HttpContext): Promise<
     | string
-    | PageObject<
-      | {
+    | PageObject<{
         post: PostResponse | null
-      }
-    >
+      }>
   > {
-    const currentUserId = ctx.auth.user?.id!;
+    const currentUserId = ctx.auth.user?.id!
     const post = await this.service.findOne(ctx.params.id)
     if (!post) {
       return ctx.inertia.render('errors/not_found', {
@@ -64,7 +62,7 @@ export default class PostsController {
   }
 
   async update(ctx: HttpContext) {
-    const currentUserId = ctx.auth.user?.id!;
+    const currentUserId = ctx.auth.user?.id!
     const post = await this.service.findOne(ctx.params.id)
     if (!post) {
       return ctx.inertia.render('errors/not_found', {
