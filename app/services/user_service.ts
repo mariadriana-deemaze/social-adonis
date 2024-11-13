@@ -36,17 +36,17 @@ export class UserService {
   async storeAttachments(ctx: HttpContext) {
     const currentUserId = ctx.auth.user?.id!
 
-    const avatar = ctx.request.files('avatar', {
+    const avatar = ctx.request.file('avatar', {
       size: '2mb',
       extnames: ['jpeg', 'jpg', 'png'],
     })
 
-    const cover = ctx.request.files('cover', {
+    const cover = ctx.request.file('cover', {
       size: '2mb',
       extnames: ['jpeg', 'jpg', 'png'],
     })
 
-    const attachments = await this.attachmentService
+    const keys = await this.attachmentService
       .findManyRaw(AttachmentModel.USER, currentUserId)
       .then((result) => {
         return result.reduce(
@@ -62,26 +62,30 @@ export class UserService {
         )
       })
 
-    if (avatar && attachments.Avatar) {
-      await this.attachmentService.update(attachments.Avatar, avatar[0])
-    } else {
-      await this.attachmentService.storeOne(
-        AttachmentModel.USER,
-        currentUserId,
-        AttachmentType.AVATAR,
-        avatar[0]
-      )
+    if (avatar) {
+      if (keys.Avatar) {
+        await this.attachmentService.update(keys.Avatar, avatar)
+      } else {
+        await this.attachmentService.storeOne(
+          AttachmentModel.USER,
+          currentUserId,
+          AttachmentType.AVATAR,
+          avatar
+        )
+      }
     }
 
-    if (cover && attachments.Cover) {
-      await this.attachmentService.update(attachments.Cover, cover[0])
-    } else {
-      await this.attachmentService.storeOne(
-        AttachmentModel.USER,
-        currentUserId,
-        AttachmentType.COVER,
-        cover[0]
-      )
+    if (cover) {
+      if (keys.Cover) {
+        await this.attachmentService.update(keys.Cover, cover)
+      } else {
+        await this.attachmentService.storeOne(
+          AttachmentModel.USER,
+          currentUserId,
+          AttachmentType.COVER,
+          cover
+        )
+      }
     }
   }
 
