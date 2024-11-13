@@ -25,7 +25,8 @@ router
   .group(() => {
     router.on('/').renderInertia('home')
     router.get('/feed', [FeedController, 'index'])
-  }).use(middleware.guest())
+  })
+  .use(middleware.guest())
 
 /**
  *

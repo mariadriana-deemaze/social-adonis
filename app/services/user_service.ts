@@ -90,7 +90,7 @@ export class UserService {
   }
 
   async serialize(user: User): Promise<UserResponse> {
-    const data = user.toJSON();
+    const data = user.toJSON()
 
     const attachments: Record<'avatar' | 'cover', AttachmentResponse | null> = {
       avatar: null,

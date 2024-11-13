@@ -2,14 +2,14 @@ import { REGEX } from '#utils/index'
 import vine from '@vinejs/vine'
 
 /**
- * Validates the post creation action payload
+ * Validates the user update action payload
  */
 export const updateUserValidator = vine.compile(
   vine.object({
     username: vine
       .string()
       .trim()
-      .regex(REGEX.ALPHA_STRING)
+      .regex(REGEX.ALPHANUMERIC_STRING)
       .unique(async (db, value, field) => {
         const user = await db
           .from('users')

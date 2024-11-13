@@ -9,16 +9,12 @@ import type { NextFn } from '@adonisjs/core/types/http'
  * is already logged-in
  */
 export default class GuestMiddleware {
-  async handle(
-    ctx: HttpContext,
-    next: NextFn,
-  ) {
-    let user = null;
+  async handle(ctx: HttpContext, next: NextFn) {
+    let user = null
 
     try {
-      user = await ctx.auth.authenticate();
-    } catch (error) {
-    }
+      user = await ctx.auth.authenticate()
+    } catch (error) {}
 
     if (!!user && ctx.route?.pattern.includes('auth')) {
       return ctx.response.redirect().back()

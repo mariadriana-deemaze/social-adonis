@@ -11,16 +11,12 @@ export default class AuthMiddleware {
    */
   redirectTo = '/auth/sign-in'
 
-  async handle(
-    ctx: HttpContext,
-    next: NextFn
-  ) {
+  async handle(ctx: HttpContext, next: NextFn) {
     try {
-      await ctx.auth.authenticate();
+      await ctx.auth.authenticate()
       return next()
     } catch (error) {
       return ctx.response.redirect().toPath(this.redirectTo)
     }
-
   }
 }

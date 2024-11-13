@@ -35,4 +35,5 @@ export function sanitizePostContent(content: string): string {
 
 export const REGEX = {
   ALPHA_STRING: /^[A-z]+$/,
+  ALPHANUMERIC_STRING: /^[A-z0-9]+$/,
 }

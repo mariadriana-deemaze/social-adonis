@@ -49,6 +49,9 @@ export default function UserSettings({
     patch(`/users/${user?.id}`, {
       preserveState: true,
       preserveScroll: true,
+      onSuccess: () => {
+        toast({ title: 'Success!' })
+      },
     })
   }
 

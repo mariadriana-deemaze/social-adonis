@@ -6,7 +6,13 @@ import vine, { SimpleMessagesProvider } from '@vinejs/vine'
 export const createAuthValidator = vine.compile(
   vine.object({
     name: vine.string(),
-    email: vine.string().email(),
+    email: vine
+      .string()
+      .unique(async (db, value) => {
+        const user = await db.from('users').where('email', value).first()
+        return !user
+      })
+      .email(),
     password: vine.string().minLength(8).maxLength(32).confirmed({
       confirmationField: 'passwordConfirmation',
     }),
