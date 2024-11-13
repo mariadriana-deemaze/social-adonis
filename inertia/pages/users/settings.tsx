@@ -169,9 +169,9 @@ export default function UserSettings({
                   )}
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="username">Surname</Label>
+                  <Label htmlFor="surname">Surname</Label>
                   <Input
-                    id="username"
+                    id="surname"
                     type="text"
                     placeholder="Family name"
                     value={data.surname}

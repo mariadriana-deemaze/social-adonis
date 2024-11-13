@@ -18,7 +18,7 @@ test.group('Acessing user profile feed', (group) => {
     const user = await UserFactory.with('posts', 2).create()
     await browserContext.loginAs(user)
     const page = await visit(`/users/${user.id}`)
-    const locator = page.locator('.user-profile-card-total-posts')
+    const locator = page.getByText('Total posts').first()
     await page.assertText(locator, `Total posts ${user.posts.length}`)
   })
 
@@ -30,7 +30,7 @@ test.group('Acessing user profile feed', (group) => {
     const otherUser = await UserFactory.with('posts', 8).create()
     await browserContext.loginAs(user)
     const page = await visit(`/users/${otherUser.id}`)
-    const locator = page.locator('.user-profile-card-total-posts')
+    const locator = page.getByText('Total posts').first()
     await page.assertText(locator, `Total posts ${otherUser.posts.length}`)
   })
 })
