@@ -12,6 +12,7 @@ import {
 import User from '#models/user'
 import { extractFirstLink, sanitizePostContent } from '#utils/index'
 import PostReaction from '#models/post_reaction'
+import { PostStatus } from '#enums/post'
 import type { UUID } from 'crypto'
 import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 
@@ -27,6 +28,9 @@ export default class Post extends BaseModel {
 
   @column()
   declare userId: UUID
+  
+  @column()
+  declare status: PostStatus
 
   @hasMany(() => PostReaction)
   declare reactions: HasMany<typeof PostReaction>
