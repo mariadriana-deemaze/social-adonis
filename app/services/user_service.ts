@@ -90,46 +90,44 @@ export class UserService {
   }
 
   async serialize(user: User): Promise<UserResponse> {
-    const resources = await this.attachmentService.findManyRaw(AttachmentModel.USER, user.id)
-    debugger
+    const data = user.toJSON();
 
     const attachments: Record<'avatar' | 'cover', AttachmentResponse | null> = {
       avatar: null,
       cover: null,
     }
-    for (const resource of resources) {
-      const link = await this.attachmentService.getPresignedLink(resource.external_key)
+
+    const attached = await this.attachmentService.findManyRaw(AttachmentModel.USER, user.id)
+
+    for (const attachment of attached) {
+      const link = await this.attachmentService.getPresignedLink(attachment.external_key)
       let item: AttachmentResponse = {
-        id: resource.id,
-        type: resource.type,
+        id: attachment.id,
+        type: attachment.type,
         link,
-        metadata: resource.metadata,
+        metadata: attachment.metadata,
       }
 
-      if (resource.type === AttachmentType.AVATAR) {
-        attachments.avatar = {
-          ...item,
-        }
+      if (attachment.type === AttachmentType.AVATAR) {
+        attachments.avatar = item
       }
-      if (resource.type === AttachmentType.COVER) {
-        attachments.cover = {
-          ...item,
-        }
+      if (attachment.type === AttachmentType.COVER) {
+        attachments.cover = item
       }
     }
 
-    return {
-      id: user.id,
-      role: user.role,
-      name: user.name,
-      surname: user.surname,
-      username: user.username,
-      email: user.email,
+    const resource: UserResponse = {
+      id: data.id,
+      role: data.role,
+      name: data.name,
+      surname: data.surname,
+      username: data.username,
+      email: data.email,
       attachments,
-      // @ts-ignore
-      createdAt: user.createdAt,
-      // @ts-ignore
-      updatedAt: user.updatedAt,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
     }
+
+    return resource
   }
 }
