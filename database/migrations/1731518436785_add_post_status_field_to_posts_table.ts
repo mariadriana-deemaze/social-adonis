@@ -6,11 +6,14 @@ export default class extends BaseSchema {
 
   async up() {
     this.schema.alterTable(this.tableName, (table) => {
-      table.enu('status', Object.values(PostStatus), {
-        useNative: true,
-        enumName: 'post_status',
-        existingType: false,
-      }).defaultTo(PostStatus.PUBLISHED).notNullable()
+      table
+        .enu('status', Object.values(PostStatus), {
+          useNative: true,
+          enumName: 'post_status',
+          existingType: false,
+        })
+        .defaultTo(PostStatus.PUBLISHED)
+        .notNullable()
     })
   }
 

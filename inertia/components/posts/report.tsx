@@ -138,7 +138,7 @@ export function ReportPost({ post, trigger }: { post: PostResponse; trigger: Rea
                   })
                 }}
               >
-                <SelectTrigger className='select-reason'>
+                <SelectTrigger className="select-reason">
                   <SelectValue id="reason" placeholder="Choose a reason" />
                 </SelectTrigger>
                 <SelectContent>

@@ -10,18 +10,18 @@ export enum PostReactionType {
 export enum PostReportReason {
   ADULTERY = 'ADULTERY',
   IMPERSONATION = 'IMPERSONATION',
-  OFFENSIVE = 'OFFENSIVE'
+  OFFENSIVE = 'OFFENSIVE',
 }
 
 export enum PostStatus {
   DRAFT = 'DRAFT',
   PROCESSING = 'PROCESSING',
   PUBLISHED = 'PUBLISHED',
-  REPORTED = 'REPORTED'
+  REPORTED = 'REPORTED',
 }
 
 export enum PostReportStatus {
   PENDING = 'PENDING',
   ACCEPTED = 'ACCEPTED',
-  REJECTED = 'REJECTED'
+  REJECTED = 'REJECTED',
 }

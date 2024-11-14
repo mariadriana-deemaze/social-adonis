@@ -11,11 +11,9 @@ export const PostReportFactory = factory
       reason: faker.helpers.enumValue(PostReportReason),
       description: faker.lorem.paragraph(),
       userId: randomUUID(),
-      postId: randomUUID()
+      postId: randomUUID(),
     }
   })
   .relation('user', () => UserFactory)
   .relation('post', () => PostFactory)
   .build()
-
-

@@ -77,8 +77,8 @@ test.group('Acessing feed', (group) => {
     await browserContext.loginAs(user)
     const page = await visit(`/posts/${otherUser.posts[0].id}`)
     await page.locator('button.trigger-user-post-actions').click()
-    const updateAction = page.locator('button.update-post-trigger');
-    const deleteAction = page.locator('button.delete-post-trigger');
+    const updateAction = page.locator('button.update-post-trigger')
+    const deleteAction = page.locator('button.delete-post-trigger')
     await page.assertNotExists(updateAction)
     await page.assertNotExists(deleteAction)
   })

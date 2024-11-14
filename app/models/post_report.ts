@@ -11,25 +11,25 @@ export default class PostReport extends BaseModel {
   declare id: UUID
 
   @column()
-  declare reason: PostReportReason;
+  declare reason: PostReportReason
 
   @column()
-  declare description: string;
+  declare description: string
 
   @column()
-  declare userId: UUID;
+  declare userId: UUID
 
   @belongsTo(() => User)
   declare user: BelongsTo<typeof User>
 
   @column()
-  declare postId: UUID;
+  declare postId: UUID
 
   @belongsTo(() => Post)
   declare post: BelongsTo<typeof Post>
 
   @column()
-  declare status: PostReportStatus;
+  declare status: PostReportStatus
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -40,8 +40,8 @@ export default class PostReport extends BaseModel {
   @beforeUpdate()
   static async updatePostStatus(report: PostReport) {
     if (report.status === PostReportStatus.ACCEPTED) {
-      await report.load('post');
-      const post = report.post;
+      await report.load('post')
+      const post = report.post
       post.status = PostStatus.REPORTED
       await post.save()
     }
