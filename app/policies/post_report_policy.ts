@@ -15,8 +15,8 @@ export default class PostReportPolicy extends BasePolicy {
  /**
   * Only the reporting user or an administrative user, can edit the post report.
   */
- edit(user: User, post: PostReport): AuthorizerResponse {
-  return user.role === AccountRole.ADMIN || user.id === post.userId
+ edit(user: User, report: PostReport): AuthorizerResponse {
+  return user.id === report.userId || user.role === AccountRole.ADMIN
  }
 
  /**
