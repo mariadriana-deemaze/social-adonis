@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { ReactElement, useMemo, useState } from 'react'
 import { Link } from '@inertiajs/react'
 import {
   ArrowLeft,
@@ -9,14 +9,13 @@ import {
   Loader2,
   Pencil,
   Trash2,
+  Flag,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
-  DropdownMenuSeparator,
-  DropdownMenuGroup,
   DropdownMenuItem,
 } from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -29,6 +28,7 @@ import { PostReactionType } from '#enums/post'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card'
 import type { UUID } from 'crypto'
 import { UserResponse } from '#interfaces/user'
+import { ReportPost } from '@/components/posts/report'
 
 const userLink = (id: UUID) => `/users/${id}`
 const postLink = (id: UUID) => `/posts/${id}`
@@ -314,6 +314,81 @@ function PostReaction({
   )
 }
 
+function PostActions({
+  post,
+  habilities,
+}: {
+  post: PostResponse
+  habilities: Partial<Array<'update' | 'delete' | 'report'>>
+}) {
+  const actions: Record<'update' | 'delete' | 'report', () => ReactElement> = {
+    update: () => (
+      <UpdatePost
+        post={post}
+        trigger={
+          <div className="flex flex-row gap-3 items-center w-full hover:cursor-pointer">
+            <Button className="update-post-trigger" variant="ghost" size="sm-icon">
+              <Pencil size={15} />
+            </Button>
+            <p className="font-normal text-xs text-current">Update</p>
+          </div>
+        }
+      />
+    ),
+    delete: () => (
+      <DeletePost
+        post={post}
+        trigger={
+          <div className="flex flex-row gap-3 items-center w-full hover:cursor-pointer">
+            <Button className="delete-post-trigger" variant="ghost" size="sm-icon">
+              <Trash2 size={15} />
+            </Button>
+            <p className="font-normal text-xs text-current">Delete</p>
+          </div>
+        }
+      />
+    ),
+    report: () => (
+      <ReportPost
+        post={post}
+        trigger={
+          <div className="flex flex-row gap-3 items-center w-full hover:cursor-pointer">
+            <Button className="delete-post-trigger" variant="ghost" size="sm-icon">
+              <Flag size={15} />
+            </Button>
+            <p className="font-normal text-xs text-current">Report</p>
+          </div>
+        }
+      />
+    ),
+  }
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button className="trigger-user-post-actions" variant="outline" size="sm-icon">
+          <EllipsisVerticalIcon className="h-4 w-4 text-gray-500" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-auto" align="end" forceMount>
+        {Object.entries(actions).map(([action, Element], index) => {
+          if (habilities.includes(action as 'update' | 'delete' | 'report')) {
+            return (
+              <DropdownMenuItem
+                key={`${post.id}_${action}_${index}`}
+                className="flex flex-row gap-4 p-0 text-gray-600"
+                onSelect={(e) => e.preventDefault()}
+              >
+                <Element />
+              </DropdownMenuItem>
+            )
+          }
+        })}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
+
 export default function PostCard({
   post,
   user,
@@ -325,8 +400,6 @@ export default function PostCard({
   actions?: boolean
   redirect?: boolean
 }) {
-  const displayActions = useMemo(() => actions && post.user.id === user?.id, [user])
-
   return (
     <article className="flex flex-col w-full border pt-6 px-6 bg-white rounded-sm">
       <div className="flex flex-row pb-3 justify-between border-b border-b-gray-200">
@@ -351,51 +424,12 @@ export default function PostCard({
           </div>
         </Link>
 
-        {displayActions && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button className="trigger-user-post-actions" variant="outline" size="sm-icon">
-                <EllipsisVerticalIcon className="h-4 w-4 text-gray-500" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-auto" align="end" forceMount>
-              <DropdownMenuGroup>
-                <DropdownMenuItem
-                  className="flex flex-row gap-4 p-0 text-gray-600"
-                  onSelect={(e) => e.preventDefault()}
-                >
-                  <UpdatePost
-                    post={post}
-                    trigger={
-                      <div className="flex flex-row gap-3 items-center w-full hover:cursor-pointer">
-                        <Button className="update-post-trigger" variant="ghost" size="sm-icon">
-                          <Pencil size={15} />
-                        </Button>
-                        <p className="font-normal text-xs text-current">Update</p>
-                      </div>
-                    }
-                  />
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                className="flex flex-row gap-4 p-0 text-gray-600 hover:text-red-600"
-                onSelect={(e) => e.preventDefault()}
-              >
-                <DeletePost
-                  post={post}
-                  trigger={
-                    <div className="flex flex-row gap-3 items-center w-full hover:cursor-pointer">
-                      <Button className="delete-post-trigger" variant="ghost" size="sm-icon">
-                        <Trash2 size={15} />
-                      </Button>
-                      <p className="font-normal text-xs text-current">Delete</p>
-                    </div>
-                  }
-                />
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+        {/* // TODO: Review on how to best manage this, be wise. Explore habilities viewing send from the BE. */}
+        {actions && (
+          <PostActions
+            post={post}
+            habilities={post.user.id !== user?.id ? ['report'] : ['update', 'delete', 'report']}
+          />
         )}
       </div>
 
