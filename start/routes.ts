@@ -15,7 +15,6 @@ const PostsController = () => import('#controllers/posts_controller')
 const UsersController = () => import('#controllers/users_controller')
 const PostReactionsController = () => import('#controllers/post_reactions_controller')
 const PostReportsController = () => import('#controllers/post_reports_controller')
-// import AdminUsersController from '#controllers/admin/admin_users_controller'
 
 /**
  *
@@ -74,3 +73,28 @@ router
       .prefix('posts')
   })
   .use(middleware.auth())
+
+/**
+ *
+ * Admin Auth
+ *
+ * */
+router
+  .group(() => {
+    router
+      .group(() => {
+        router.post('/sign-in', [AuthController, 'show'])
+        router.on('/sign-in').renderInertia('admin/sign-in')
+      })
+      .prefix('auth')
+
+    /**
+     * Admin protected
+     */
+    router
+      .group(() => {
+        router.on('/index').renderInertia('admin/index')
+      })
+      .use(middleware.auth({ guards: ['admin-web'] }))
+  })
+  .prefix('admin')

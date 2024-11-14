@@ -6,6 +6,7 @@ import { hydrateRoot } from 'react-dom/client'
 import { createInertiaApp } from '@inertiajs/react'
 import { resolvePageComponent } from '@adonisjs/inertia/helpers'
 import Layout from './layout'
+import AdminLayout from '@/app/admin-layout'
 
 const appName = import.meta.env.VITE_APP_NAME || 'AdonisJS'
 
@@ -17,7 +18,12 @@ createInertiaApp({
       `../pages/${name}.tsx`,
       import.meta.glob(['../pages/**/*.tsx', '../images/**'])
     )
-    page.default.layout ??= (children: any) => <Layout children={children} />
+    if (name.includes('admin/')) {
+      page.default.layout ??= (children: any) => <AdminLayout children={children} />
+    } else {
+      page.default.layout ??= (children: any) => <Layout children={children} />
+    }
+
     return page
   },
   setup({ el, App, props }) {

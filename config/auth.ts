@@ -5,7 +5,13 @@ import type { InferAuthEvents, Authenticators } from '@adonisjs/auth/types'
 const authConfig = defineConfig({
   default: 'web',
   guards: {
-    web: sessionGuard({
+    'web': sessionGuard({
+      useRememberMeTokens: false,
+      provider: sessionUserProvider({
+        model: () => import('#models/user'),
+      }),
+    }),
+    'admin-web': sessionGuard({
       useRememberMeTokens: false,
       provider: sessionUserProvider({
         model: () => import('#models/user'),
