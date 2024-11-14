@@ -353,7 +353,7 @@ function PostActions({
         post={post}
         trigger={
           <div className="flex flex-row gap-3 items-center w-full hover:cursor-pointer">
-            <Button className="delete-post-trigger" variant="ghost" size="sm-icon">
+            <Button className="report-post-trigger" variant="ghost" size="sm-icon">
               <Flag size={15} />
             </Button>
             <p className="font-normal text-xs text-current">Report</p>
@@ -428,7 +428,7 @@ export default function PostCard({
         {actions && (
           <PostActions
             post={post}
-            habilities={post.user.id !== user?.id ? ['report'] : ['update', 'delete', 'report']}
+            habilities={post.user.id !== user?.id ? ['report'] : ['update', 'delete']}
           />
         )}
       </div>

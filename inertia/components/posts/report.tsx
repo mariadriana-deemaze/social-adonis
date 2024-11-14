@@ -71,14 +71,6 @@ export function ReportPost({ post, trigger }: { post: PostResponse; trigger: Rea
     const url = hasReported ? `/posts/${hasReported.id}/report` : `/posts/${post.id}/report`
     const method = hasReported ? 'put' : 'post'
 
-    console.log('sending this ->', {
-      method,
-      headers: {
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    })
-
     e.preventDefault()
     setIsSubmitting(true)
     fetch(url, {
@@ -88,12 +80,10 @@ export function ReportPost({ post, trigger }: { post: PostResponse; trigger: Rea
       },
       body: JSON.stringify(data),
     })
-      .then((response) => {
-        console.log('response', response)
+      .then(() => {
         setSubmitted(true)
       })
-      .catch((err) => {
-        console.log('err ->', err)
+      .catch(() => {
         toast({ title: 'Something went wrong.', description: 'Try again later.' })
       })
       .finally(() => {
@@ -148,12 +138,14 @@ export function ReportPost({ post, trigger }: { post: PostResponse; trigger: Rea
                   })
                 }}
               >
-                <SelectTrigger>
+                <SelectTrigger className='select-reason'>
                   <SelectValue id="reason" placeholder="Choose a reason" />
                 </SelectTrigger>
                 <SelectContent>
                   {Object.entries(PostReportReason).map(([reason]) => (
-                    <SelectItem value={reason}>{reason.toLocaleLowerCase()}</SelectItem>
+                    <SelectItem id={`reason-${reason.toLowerCase()}`} value={reason}>
+                      {reason.toLocaleLowerCase()}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -195,7 +187,7 @@ export function ReportPost({ post, trigger }: { post: PostResponse; trigger: Rea
                 <Send className="text-green-500" />
               </div>
               <div className="flex flex-col w-full text-center items-center gap-2">
-                <h1 className="font-bold">Thank you for the report</h1>
+                <h1 className="font-bold">Thank you for reporting</h1>
                 <p className="text-sm text-gray-500 max-w-xs">
                   Will be analysed by our moderators, and will notify you as soon as its processed.
                 </p>

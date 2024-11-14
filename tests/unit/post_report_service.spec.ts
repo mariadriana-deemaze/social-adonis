@@ -6,7 +6,6 @@ import testUtils from '@adonisjs/core/services/test_utils';
 import { faker } from '@faker-js/faker';
 import { test } from '@japa/runner'
 import { errors } from '@vinejs/vine';
-import { PostReportFactory } from '#database/factories/post_report_factory';
 
 test.group('Post report service', (group) => {
 
@@ -26,10 +25,7 @@ test.group('Post report service', (group) => {
 
   test('Succesfully creates a new post report with valid payload', async ({ assert }) => {
     const user = await UserFactory.with('posts', 1).create()
-
-
     const result = await service.create(user.id, user.posts[0], validPayload)
-
     assert.instanceOf(result, PostReport)
     assert.containsSubset(result, validPayload)
   })
