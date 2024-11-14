@@ -11,8 +11,8 @@ export default function SignIn() {
   const { toast } = useToast()
 
   const { data, setData, post, processing, errors } = useForm({
-    email: 'admin_user@gmail.com',
-    password: 'take1WildGuess!',
+    email: '',
+    password: '',
   })
 
   function handleSubmit(e: React.FormEvent) {

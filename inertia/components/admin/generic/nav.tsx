@@ -81,7 +81,7 @@ export default function NavBar({ user }: { user: UserResponse | null }) {
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>
-                    <Link as="button" href={'/auth/sign-out'} method="delete">
+                    <Link as="button" href={'/admin/auth/sign-out'} method="delete">
                       Log out
                     </Link>
                     <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
@@ -89,9 +89,7 @@ export default function NavBar({ user }: { user: UserResponse | null }) {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Link href="/auth/sign-in">
-                <Button size="sm">Sign in</Button>
-              </Link>
+              <></>
             )}
           </div>
         </div>

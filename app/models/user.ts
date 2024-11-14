@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon'
 import hash from '@adonisjs/core/services/hash'
 import { compose } from '@adonisjs/core/helpers'
-import { BaseModel, column, hasMany } from '@adonisjs/lucid/orm'
+import { BaseModel, column, computed, hasMany } from '@adonisjs/lucid/orm'
 import type { HasMany } from '@adonisjs/lucid/types/relations'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { DbRememberMeTokensProvider } from '@adonisjs/auth/session'
@@ -37,6 +37,11 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @column()
   role: AccountRole = AccountRole.USER
+
+  @computed({ serializeAs: null })
+  get isAdmin() {
+    return this.role === AccountRole.ADMIN
+  }
 
   @column({ serializeAs: null })
   declare password: string
