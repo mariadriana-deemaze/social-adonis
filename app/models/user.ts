@@ -5,7 +5,7 @@ import { BaseModel, column, hasMany } from '@adonisjs/lucid/orm'
 import type { HasMany } from '@adonisjs/lucid/types/relations'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { DbRememberMeTokensProvider } from '@adonisjs/auth/session'
-import { randomUUID, type UUID } from 'crypto'
+import { randomUUID, type UUID } from 'node:crypto'
 import Session from '#models/session'
 import Post from '#models/post'
 

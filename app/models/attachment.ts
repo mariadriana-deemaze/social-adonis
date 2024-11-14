@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon'
 import { BaseModel, column } from '@adonisjs/lucid/orm'
-import type { UUID } from 'crypto'
+import type { UUID } from 'node:crypto'
 import { AttachmentMetadataJSON } from 'app/interfaces/attachment'
 
 export enum AttachmentProvider {

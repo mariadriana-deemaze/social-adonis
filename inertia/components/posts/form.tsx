@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useRef } from 'react'
 import { MAX_POST_CONTENT_SIZE, MIN_POST_CONTENT_SIZE } from '#validators/post'
-import FileUploadPreview from '@/components/generic/file-upload-preview'
+import FileUploadPreview from '@/components/generic/file_upload_preview'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { useToast } from '@/components/ui/use-toast'
+import { useToast } from '@/components/ui/use_toast'
 import { cn } from '@/lib/utils'
 import { useForm, usePage } from '@inertiajs/react'
 import { Paperclip } from 'lucide-react'
@@ -45,7 +45,7 @@ export default function Form({
 
   const uploadImages = useRef<HTMLInputElement | null>(null)
 
-  const method = !!post ? 'patch' : 'post'
+  const method = post ? 'patch' : 'post'
 
   function addFiles(e: React.ChangeEvent<HTMLInputElement>) {
     if (!e.target.files) return

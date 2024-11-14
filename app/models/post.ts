@@ -14,7 +14,7 @@ import { extractFirstLink, sanitizePostContent } from '#utils/index'
 import PostReaction from '#models/post_reaction'
 import PostReport from '#models/post_report'
 import { PostStatus } from '#enums/post'
-import type { UUID } from 'crypto'
+import type { UUID } from 'node:crypto'
 import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 
 export default class Post extends BaseModel {
@@ -57,7 +57,7 @@ export default class Post extends BaseModel {
   }
 
   @beforeDelete()
-  public static async deleteAssociations(post: Post) {
+  static async deleteAssociations(post: Post) {
     await post.related('reactions').query().delete()
   }
 }

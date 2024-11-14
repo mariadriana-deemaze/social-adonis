@@ -9,7 +9,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { useToast } from '@/components/ui/use-toast'
+import { useToast } from '@/components/ui/use_toast'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
@@ -52,16 +52,16 @@ export function ReportPost({ post, trigger }: { post: PostResponse; trigger: Rea
       .then((response) => {
         return response.json()
       })
-      .then((data) => {
-        if (data) {
+      .then((json) => {
+        if (json) {
           setHasReported({
-            id: data.id,
-            reason: data.reason,
-            description: data.description,
+            id: json.id,
+            reason: json.reason,
+            description: json.description,
           })
           setData({
-            reason: data.reason,
-            description: data.description,
+            reason: json.reason,
+            description: json.description,
           })
         }
       })
@@ -129,7 +129,7 @@ export function ReportPost({ post, trigger }: { post: PostResponse; trigger: Rea
               </Label>
               <Select
                 value={data.reason}
-                onValueChange={(value) => {
+                onValueChange={(value: string) => {
                   setData((prevState) => {
                     return {
                       ...prevState,

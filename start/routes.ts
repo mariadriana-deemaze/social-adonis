@@ -9,12 +9,12 @@
 
 import router from '@adonisjs/core/services/router'
 import { middleware } from '#start/kernel'
-import AuthController from '#controllers/auth_controller'
-import FeedController from '#controllers/feed_controller'
-import PostsController from '#controllers/posts_controller'
-import UsersController from '#controllers/users_controller'
-import PostReactionsController from '#controllers/post_reactions_controller'
-import PostReportsController from '#controllers/post_reports_controller'
+const AuthController = () => import('#controllers/auth_controller')
+const FeedController = () => import('#controllers/feed_controller')
+const PostsController = () => import('#controllers/posts_controller')
+const UsersController = () => import('#controllers/users_controller')
+const PostReactionsController = () => import('#controllers/post_reactions_controller')
+const PostReportsController = () => import('#controllers/post_reports_controller')
 // import AdminUsersController from '#controllers/admin/admin_users_controller'
 
 /**
@@ -37,9 +37,9 @@ router
 router
   .group(() => {
     router.post('/sign-up', [AuthController, 'store'])
-    router.on('/sign-up').renderInertia('sign-up')
+    router.on('/sign-up').renderInertia('sign_up')
     router.post('/sign-in', [AuthController, 'show'])
-    router.on('/sign-in').renderInertia('sign-in')
+    router.on('/sign-in').renderInertia('sign_in')
   })
   .prefix('auth')
   .use(middleware.guest())

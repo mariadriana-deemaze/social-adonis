@@ -1,5 +1,5 @@
-import { BaseEntity } from 'app/interfaces/base-entity'
-import { UUID } from 'crypto'
+import { BaseEntity } from '#interfaces/base_entity'
+import { UUID } from 'node:crypto'
 import { UserResponse } from './user'
 import { AttachmentResponse } from 'app/interfaces/attachment'
 import { PostReactionType } from '#enums/post'

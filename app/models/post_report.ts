@@ -4,7 +4,7 @@ import { PostReportReason, PostReportStatus, PostStatus } from '#enums/post'
 import User from '#models/user'
 import Post from '#models/post'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
-import type { UUID } from 'crypto'
+import type { UUID } from 'node:crypto'
 
 export default class PostReport extends BaseModel {
   @column({ isPrimary: true })

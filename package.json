@@ -110,6 +110,24 @@
     "extends": "@adonisjs/eslint-config/app",
     "ignorePatterns": [
       "database/migrations/**"
+    ],
+    "overrides": [
+      {
+        "files": [
+          "tailwind.config.js"
+        ],
+        "rules": {
+          "unicorn/prefer-module": "off"
+        }
+      },
+      {
+        "files": [
+          "docker-entrypoint.js"
+        ],
+        "rules": {
+          "unicorn/filename-case": "off"
+        }
+      }
     ]
   },
   "prettier": "@adonisjs/prettier-config"

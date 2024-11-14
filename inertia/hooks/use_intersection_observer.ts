@@ -62,8 +62,7 @@ export function useIntersectionObserver({
 
         entries.forEach((entry) => {
           const isIntersecting =
-            entry.isIntersecting &&
-            thresholds.some((threshold) => entry.intersectionRatio >= threshold)
+            entry.isIntersecting && thresholds.some((t) => entry.intersectionRatio >= t)
 
           setState({ isIntersecting, entry })
 

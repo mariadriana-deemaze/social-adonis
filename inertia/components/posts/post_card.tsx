@@ -17,7 +17,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
   DropdownMenuItem,
-} from '@/components/ui/dropdown-menu'
+} from '@/components/ui/dropdown_menu'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { UpdatePost } from '@/components/posts/update'
 import { DeletePost } from '@/components/posts/delete'
@@ -25,8 +25,8 @@ import { PostResponse } from 'app/interfaces/post'
 import { AttachmentResponse } from 'app/interfaces/attachment'
 import { formatDistanceToNow } from 'date-fns'
 import { PostReactionType } from '#enums/post'
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card'
-import type { UUID } from 'crypto'
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover_card'
+import type { UUID } from 'node:crypto'
 import { UserResponse } from '#interfaces/user'
 import { ReportPost } from '@/components/posts/report'
 
@@ -266,16 +266,16 @@ function PostReaction({
   }, [reaction.type])
 
   const reactionCounts = useMemo(() => {
-    const counts = { ...post.reactions.reactionsCounts }
+    const accCounts = { ...post.reactions.reactionsCounts }
     if (reaction.type && post.reactions.reacted) {
-      counts[reaction.type] = counts[reaction.type] + 1
-      counts[post.reactions.reacted] = counts[post.reactions.reacted] - 1
+      accCounts[reaction.type] = accCounts[reaction.type] + 1
+      accCounts[post.reactions.reacted] = accCounts[post.reactions.reacted] - 1
     } else if (reaction.type && !post.reactions.reacted) {
-      counts[reaction.type] = counts[reaction.type] + 1
+      accCounts[reaction.type] = accCounts[reaction.type] + 1
     } else if (!reaction.type && post.reactions.reacted) {
-      counts[post.reactions.reacted] = counts[post.reactions.reacted] - 1
+      accCounts[post.reactions.reacted] = accCounts[post.reactions.reacted] - 1
     }
-    return counts
+    return accCounts
   }, [reaction.type])
 
   return (
@@ -283,7 +283,7 @@ function PostReaction({
       <HoverCard>
         <HoverCardTrigger>
           <button
-            className={`trigger-user-post-react border rounded-full px-2 cursor-pointer ${!!reaction.type ? 'bg-blue-100 border-blue-400 hover:bg-blue-400-200' : 'bg-slate-50 border-slate-400 hover:bg-slate-200'}`}
+            className={`trigger-user-post-react border rounded-full px-2 cursor-pointer ${reaction.type ? 'bg-blue-100 border-blue-400 hover:bg-blue-400-200' : 'bg-slate-50 border-slate-400 hover:bg-slate-200'}`}
             disabled={isSubmitting}
           >
             {reaction.type ? REACTIONS[reaction.type] : '+'}

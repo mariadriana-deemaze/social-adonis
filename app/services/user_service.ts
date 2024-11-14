@@ -4,7 +4,7 @@ import { AttachmentModel, AttachmentType } from '#models/attachment'
 import User from '#models/user'
 import AttachmentService from '#services/attachment_service'
 import { HttpContext } from '@adonisjs/core/http'
-import { UUID } from 'crypto'
+import { UUID } from 'node:crypto'
 
 export class UserService {
   private readonly attachmentService: AttachmentService

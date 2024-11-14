@@ -1,4 +1,4 @@
-import LinkMetadata from '#models/link-metadata'
+import LinkMetadata from '#models/link_metadata'
 import { LinkResponse } from 'app/interfaces/post'
 import { differenceInHours } from 'date-fns'
 import env from '#start/env'
@@ -26,7 +26,7 @@ export default class LinkParserService {
       body: JSON.stringify({ q: link }),
     })
       .then((res) => {
-        if (res.status != 200) {
+        if (res.status !== 200) {
           console.log(res.status)
           throw new Error('something went wrong')
         }

@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { useToast } from '@/components/ui/use-toast'
+import { useToast } from '@/components/ui/use_toast'
 import { ModelObject } from '@adonisjs/lucid/types/model'
 import { router } from '@inertiajs/react'
 

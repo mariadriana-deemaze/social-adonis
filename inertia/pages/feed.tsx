@@ -1,6 +1,6 @@
 import { Head } from '@inertiajs/react'
 import { CreatePost } from '@/components/posts/create'
-import FeedList from '@/components/posts/feed-list'
+import FeedList from '@/components/posts/feed_list'
 import type { InferPageProps } from '@adonisjs/inertia/types'
 import type FeedController from '#controllers/feed_controller'
 

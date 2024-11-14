@@ -1,7 +1,7 @@
 // Inspired by react-hot-toast library
 import * as React from 'react'
 
-import type { ToastActionElement, ToastProps } from '../../components/ui/toast'
+import type { ToastActionElement, ToastProps } from './toast'
 
 const TOAST_LIMIT = 1
 const TOAST_REMOVE_DELAY = 1000000
@@ -91,8 +91,8 @@ export const reducer = (state: State, action: Action): State => {
       if (toastId) {
         addToRemoveQueue(toastId)
       } else {
-        state.toasts.forEach((toast) => {
-          addToRemoveQueue(toast.id)
+        state.toasts.forEach((t) => {
+          addToRemoveQueue(t.id)
         })
       }
 
@@ -138,11 +138,12 @@ type Toast = Omit<ToasterToast, 'id'>
 function toast({ ...props }: Toast) {
   const id = genId()
 
-  const update = (props: ToasterToast) =>
+  const update = (p: ToasterToast) =>
     dispatch({
       type: 'UPDATE_TOAST',
-      toast: { ...props, id },
+      toast: { ...p, id },
     })
+
   const dismiss = () => dispatch({ type: 'DISMISS_TOAST', toastId: id })
 
   dispatch({
