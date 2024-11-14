@@ -12,4 +12,7 @@
 |
 */
 
-export const policies = {}
+export const policies = {
+  PostPolicy: () => import('#policies/posts_policy'),
+  PostReportPolicy: () => import('#policies/post_report_policy'),
+}

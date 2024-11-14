@@ -14,6 +14,7 @@ import FeedController from '#controllers/feed_controller'
 import PostsController from '#controllers/posts_controller'
 import UsersController from '#controllers/users_controller'
 import PostReactionsController from '#controllers/post_reactions_controller'
+import PostReportsController from '#controllers/post_reports_controller'
 // import AdminUsersController from '#controllers/admin/admin_users_controller'
 
 /**
@@ -59,7 +60,17 @@ router
     router.get('/posts/:id', [PostsController, 'show'])
     router.patch('/posts/:id', [PostsController, 'update'])
     router.delete('/posts/:id', [PostsController, 'destroy'])
+
     router.post('/posts/:id/react', [PostReactionsController, 'create'])
     router.delete('/posts/:id/react', [PostReactionsController, 'destroy'])
+
+    router
+      .group(() => {
+        router.get(':id/report', [PostReportsController, 'show'])
+        router.post(':id/report', [PostReportsController, 'create'])
+        router.put(':id/report', [PostReportsController, 'update'])
+        router.delete(':id/report', [PostReportsController, 'destroy'])
+      })
+      .prefix('posts')
   })
   .use(middleware.auth())

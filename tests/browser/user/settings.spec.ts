@@ -1,15 +1,14 @@
-import UsersController from '#controllers/users_controller';
+import UsersController from '#controllers/users_controller'
 import { UserFactory } from '#database/factories/user_factory'
-import User from '#models/user';
+import User from '#models/user'
 import testUtils from '@adonisjs/core/services/test_utils'
-import { InferPageProps, SharedProps } from '@adonisjs/inertia/types';
-import { faker } from '@faker-js/faker';
+import { InferPageProps, SharedProps } from '@adonisjs/inertia/types'
+import { faker } from '@faker-js/faker'
 import { test } from '@japa/runner'
 
 test.group('User settings', (group) => {
-
-  let user: User | null = null;
-  let url = '/users/:id/settings';
+  let user: User | null = null
+  let url = '/users/:id/settings'
 
   group.each.setup(async () => {
     await testUtils.db().truncate()
@@ -18,7 +17,7 @@ test.group('User settings', (group) => {
   })
 
   test('Sucessfully updates profile', async ({ visit, browserContext, assert }) => {
-    const authUser = user!;
+    const authUser = user!
     await browserContext.loginAs(authUser)
     const page = await visit(url)
 
@@ -36,8 +35,9 @@ test.group('User settings', (group) => {
 
     const responsePromise = page.waitForResponse(url)
     await page.getByRole('button', { name: 'Update' }).click()
-    const response = await responsePromise;
-    const json: { props: InferPageProps<UsersController, 'update'> & SharedProps } = await response.json()
+    const response = await responsePromise
+    const json: { props: InferPageProps<UsersController, 'update'> & SharedProps } =
+      await response.json()
     assert.equal(data.name, json.props.user?.name)
     assert.equal(data.surname, json.props.user?.surname)
     assert.equal(data.username, json.props.user?.username)
@@ -46,7 +46,7 @@ test.group('User settings', (group) => {
   })
 
   test('Fails to update profile', async ({ visit, browserContext, assert }) => {
-    const authUser = user!;
+    const authUser = user!
     await browserContext.loginAs(authUser)
     const page = await visit(url)
 
@@ -64,8 +64,9 @@ test.group('User settings', (group) => {
 
     const responsePromise = page.waitForResponse(url)
     await page.getByRole('button', { name: 'Update' }).click()
-    const response = await responsePromise;
-    const json: { props: InferPageProps<UsersController, 'update'> & SharedProps } = await response.json()
+    const response = await responsePromise
+    const json: { props: InferPageProps<UsersController, 'update'> & SharedProps } =
+      await response.json()
 
     assert.notEqual(data.name, json.props.user?.name)
     assert.notEqual(data.surname, json.props.user?.surname)
@@ -75,7 +76,7 @@ test.group('User settings', (group) => {
     assert.containsSubset(json.props?.errors, {
       username: 'The username field format is invalid',
       name: 'The name field format is invalid',
-      surname: 'The surname field format is invalid'
+      surname: 'The surname field format is invalid',
     })
   })
 })

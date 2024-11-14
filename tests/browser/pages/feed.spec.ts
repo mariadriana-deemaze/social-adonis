@@ -76,12 +76,14 @@ test.group('Acessing feed', (group) => {
     const otherUser = await UserFactory.with('posts', 8).create()
     await browserContext.loginAs(user)
     const page = await visit(`/posts/${otherUser.posts[0].id}`)
-    const actionsBtn = page.locator('button.trigger-user-post-actions')
-    await page.assertNotExists(actionsBtn)
+    await page.locator('button.trigger-user-post-actions').click()
+    const updateAction = page.locator('button.update-post-trigger')
+    const deleteAction = page.locator('button.delete-post-trigger')
+    await page.assertNotExists(updateAction)
+    await page.assertNotExists(deleteAction)
   })
 
   test('Successfully reacts to a post', async ({ visit, browserContext }) => {
-    //const user = await UserFactory.with('posts', 1, (post) => post.with('reactions', 3)).create()
     const user = await UserFactory.with('posts', 1).create()
     const otherUser = await UserFactory.with('posts', 8).create()
 
