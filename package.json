@@ -107,7 +107,10 @@
     ]
   },
   "eslintConfig": {
-    "extends": "@adonisjs/eslint-config/app"
+    "extends": "@adonisjs/eslint-config/app",
+    "ignorePatterns": [
+      "database/migrations/**"
+    ]
   },
   "prettier": "@adonisjs/prettier-config"
 }

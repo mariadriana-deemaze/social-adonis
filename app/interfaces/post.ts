@@ -25,8 +25,8 @@ export interface PostResponse extends BaseEntity {
   user: UserResponse
   link: LinkResponse | null
   reactions: {
-    reacted: PostReactionType | null,
+    reacted: PostReactionType | null
     reactionsCounts: Record<PostReactionType, number>
-    total:number;
+    total: number
   }
 }
