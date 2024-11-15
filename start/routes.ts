@@ -37,10 +37,10 @@ router
  * */
 router
   .group(() => {
-    router.post('/sign-up', [AuthController, 'store']).as('auth.store')
-    router.on('/sign-up').renderInertia('sign_up')
-    router.post('/sign-in', [AuthController, 'show']).as('auth.show')
-    router.on('/sign-in').renderInertia('sign_in')
+    router.post('sign-up', [AuthController, 'store']).as('auth.store')
+    router.on('sign-up').renderInertia('sign_up')
+    router.post('sign-in', [AuthController, 'show']).as('auth.show')
+    router.on('sign-in').renderInertia('sign_in')
   })
   .prefix('auth')
   .use(middleware.guest())
@@ -52,25 +52,31 @@ router
  **/
 router
   .group(() => {
-    router.delete('/auth/sign-out', [AuthController, 'destroy']).as('auth.destroy')
-    router.get('/users/:id', [FeedController, 'show']).as('users.show') // TODO: Make public, and contextualize `ctx.auth.authenticate` via middleware.
-    router.get('/users/:id/settings', [UsersController, 'show']).as('settings.show')
-    router.patch('/users/:id', [UsersController, 'update']).as('users.update')
-    router.delete('/users/:id', [UsersController, 'delete']).as('users.destroy') // delete vs destroy
-    router.post('/posts', [PostsController, 'create']).as('posts.store') // create vs store
-    router.get('/posts/:id', [PostsController, 'show']).as('posts.show')
-    router.patch('/posts/:id', [PostsController, 'update']).as('posts.update')
-    router.delete('/posts/:id', [PostsController, 'destroy']).as('posts.destroy')
-
-    router.post('/posts/:id/react', [PostReactionsController, 'create']).as('posts_reactions.store')
-    router
-      .delete('/posts/:id/react', [PostReactionsController, 'destroy'])
-      .as('posts_reactions.destroy')
+    router.delete('auth/sign-out', [AuthController, 'destroy']).as('auth.destroy')
 
     router
       .group(() => {
+        router.get(':id', [FeedController, 'show']).as('users.show') // TODO: Make public, and contextualize `ctx.auth.authenticate` via middleware.
+        router.get(':id/settings', [UsersController, 'show']).as('settings.show')
+        router.patch(':id', [UsersController, 'update']).as('users.update')
+        router.delete(':id', [UsersController, 'destroy']).as('users.destroy')
+      })
+      .prefix('users')
+
+    router
+      .group(() => {
+        router.post('/', [PostsController, 'store']).as('posts.store')
+        router.get(':id', [PostsController, 'show']).as('posts.show')
+        router.patch(':id', [PostsController, 'update']).as('posts.update')
+        router.delete(':id', [PostsController, 'destroy']).as('posts.destroy')
+
+        router.post(':id/react', [PostReactionsController, 'create']).as('posts_reactions.store')
+        router
+          .delete(':id/react', [PostReactionsController, 'destroy'])
+          .as('posts_reactions.destroy')
+
         router.get(':id/report', [PostReportsController, 'show']).as('posts_reports.show')
-        router.post(':id/report', [PostReportsController, 'create']).as('posts_reports.store') // create vs store
+        router.post(':id/report', [PostReportsController, 'store']).as('posts_reports.store')
         router.put(':id/report', [PostReportsController, 'update']).as('posts_reports.update')
         router.delete(':id/report', [PostReportsController, 'destroy']).as('posts_reports.destroy')
       })
@@ -87,8 +93,8 @@ router
   .group(() => {
     router
       .group(() => {
-        router.post('/sign-in', [AdminAuthController, 'show']).as('admin.show')
-        router.on('/sign-in').renderInertia('admin/sign_in')
+        router.post('sign-in', [AdminAuthController, 'show']).as('admin.show')
+        router.on('sign-in').renderInertia('admin/sign_in')
       })
       .prefix('auth')
 
@@ -97,8 +103,8 @@ router
      */
     router
       .group(() => {
-        router.delete('/auth/sign-out', [AdminAuthController, 'destroy']).as('admin_auth.destroy')
-        router.on('/index').renderInertia('admin/index').as('admin.index')
+        router.delete('auth/sign-out', [AdminAuthController, 'destroy']).as('admin_auth.destroy')
+        router.on('index').renderInertia('admin/index').as('admin.index')
         router
           .group(() => {
             router

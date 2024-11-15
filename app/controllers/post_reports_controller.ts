@@ -16,7 +16,7 @@ export default class PostReportsController {
     return ctx.response.ok(resource)
   }
 
-  async create(ctx: HttpContext) {
+  async store(ctx: HttpContext) {
     const currentUserId = ctx.auth.user?.id!
     const postId = ctx.request.params().id
     const post = await Post.findOrFail(postId)

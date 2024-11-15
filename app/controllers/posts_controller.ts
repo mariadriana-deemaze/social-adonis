@@ -32,7 +32,7 @@ export default class PostsController {
     })
   }
 
-  async create(ctx: HttpContext) {
+  async store(ctx: HttpContext) {
     if (await ctx.bouncer.with(policy).denies('create')) {
       return ctx.response.forbidden('Cannot create a post.')
     }
