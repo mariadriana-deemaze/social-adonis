@@ -1,4 +1,4 @@
-import { FormEvent } from 'react'
+import { FormEvent, SetStateAction, useState } from 'react'
 import AdminPostReportsController from '#controllers/admin_post_reports_controller'
 import { PostReportReason, PostReportStatus } from '#enums/post'
 import { Button } from '@/components/ui/button'
@@ -12,20 +12,123 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 import { DefaultPaginator } from '@/components/ui/pagination'
 import { cn } from '@/lib/utils'
 import { InferPageProps } from '@adonisjs/inertia/types'
-import { Head, Link, useForm } from '@inertiajs/react'
-import { ExternalLink, TextSearch } from 'lucide-react'
+import { Head, Link, useForm, usePage } from '@inertiajs/react'
+import { ExternalLink, SlidersVertical, TextSearch } from 'lucide-react'
 import { MultiSelect } from '@/components/ui/multi_select'
+import { useToast } from '@/components/ui/use_toast'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { ModelObject } from '@adonisjs/lucid/types/model'
 
 // FIX-ME: Stardust
-const pageURL = '/admin/posts/reports?page=1'
+const pageURL = '/admin/posts/reports'
+
+function Update({
+  report,
+  open,
+  onOpenChange,
+}: {
+  report: ModelObject
+  open: boolean
+  onOpenChange: React.Dispatch<SetStateAction<boolean>>
+}) {
+  const { errors } = usePage().props
+
+  const { toast } = useToast()
+
+  const {
+    data,
+    setData,
+    post: postData,
+    patch: patchData,
+    processing,
+  } = useForm<{
+    status: string
+  }>({
+    status: report.status,
+  })
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+
+    patchData(pageURL, {
+      preserveState: false,
+      onFinish: () => onOpenChange(false),
+    })
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogTrigger asChild>trigger</DialogTrigger>
+      <DialogContent className="default-dialog">
+        <DialogHeader>
+          <DialogTitle>Manage content</DialogTitle>
+          <DialogDescription>Revise</DialogDescription>
+        </DialogHeader>
+        <form
+          onSubmit={handleSubmit}
+          className={cn(processing ? 'opacity-20 pointer-events-none' : 'opacity-100')}
+        >
+          <div className="flex flex-col w-full gap-2">
+            <Label htmlFor="reason" className="text-left">
+              What's the reason?
+            </Label>
+            <Select
+              value={data.status}
+              onValueChange={(value: string) => {
+                setData((prevState) => {
+                  return {
+                    ...prevState,
+                    reason: value,
+                  }
+                })
+              }}
+            >
+              <SelectTrigger className="select-reason">
+                <SelectValue id="reason" placeholder="Choose a reason" />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.entries(PostReportReason).map(([reason]) => (
+                  <SelectItem id={`reason-${reason.toLowerCase()}`} value={reason}>
+                    {reason.toLocaleLowerCase()}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <Button className="mt-5" loading={processing} disabled={true} type="submit">
+            Update
+          </Button>
+        </form>
+      </DialogContent>
+    </Dialog>
+  )
+}
 
 export default function Index({
   queryParams,
   reports,
 }: InferPageProps<AdminPostReportsController, 'index'>) {
+  const [updatingReport, setUpdatingPost] = useState(null)
+  const [openUpdateReport, setOpenUpdateReport] = useState(false)
+
   const { data, setData, get } = useForm<{
     reason: string[]
     status: string[]
@@ -136,6 +239,9 @@ export default function Index({
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>
+                  <SlidersVertical size={14} className="text-gray-600" />
+                </TableHead>
                 <TableHead>Username</TableHead>
                 <TableHead>Post</TableHead>
                 <TableHead>Content</TableHead>
@@ -147,6 +253,16 @@ export default function Index({
             <TableBody>
               {reports.data.map((report) => (
                 <TableRow key={report.id}>
+                  <TableCell className="font-medium max-w-10 truncate">
+                    <SlidersVertical
+                      size={14}
+                      className="text-gray-600"
+                      onClick={() => {
+                        setUpdatingPost(report.post)
+                        setOpenUpdateReport(true)
+                      }}
+                    />
+                  </TableCell>
                   <TableCell className="font-medium max-w-10 truncate">
                     {report.user.username}
                   </TableCell>
@@ -184,6 +300,10 @@ export default function Index({
             baseUrl="/admin/posts/reports"
           />
         </Card>
+
+        {updatingReport && (
+          <Update open={openUpdateReport} onOpenChange={setOpenUpdateReport} report={updatingReport} />
+        )}
       </div>
     </>
   )
