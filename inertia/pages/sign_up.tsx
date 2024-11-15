@@ -50,8 +50,8 @@ export default function SignUp() {
                     value={data.name}
                     onChange={(e) => setData('name', e.target.value)}
                     required
+                    error={errors.name}
                   />
-                  {errors.name && <p className="text-red-600 text-xs">{errors.name}</p>}
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="email">Email</Label>
@@ -62,8 +62,8 @@ export default function SignUp() {
                     value={data.email}
                     onChange={(e) => setData('email', e.target.value)}
                     required
+                    error={errors.email}
                   />
-                  {errors.email && <p className="text-red-600 text-xs">{errors.email}</p>}
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="password">Password</Label>
@@ -72,8 +72,8 @@ export default function SignUp() {
                     type="password"
                     value={data.password}
                     onChange={(e) => setData('password', e.target.value)}
+                    error={errors.password}
                   />
-                  {errors.password && <p className="text-red-600 text-xs">{errors.password}</p>}
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="confirmPassword">Confirm password</Label>
@@ -82,10 +82,8 @@ export default function SignUp() {
                     type="password"
                     value={data.passwordConfirmation}
                     onChange={(e) => setData('passwordConfirmation', e.target.value)}
+                    error={errors.passwordConfirmation}
                   />
-                  {errors.passwordConfirmation && (
-                    <p className="text-red-600 text-xs">{errors.passwordConfirmation}</p>
-                  )}
                 </div>
                 <Button type="submit" className="w-full" disabled={processing}>
                   Create an account

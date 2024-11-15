@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Head, Link, useForm } from '@inertiajs/react'
+import { Head, useForm } from '@inertiajs/react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -11,13 +11,13 @@ export default function SignIn() {
   const { toast } = useToast()
 
   const { data, setData, post, processing, errors } = useForm({
-    email: '',
-    password: '',
+    email: 'admin_user@gmail.com',
+    password: 'take1WildGuess!',
   })
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    post('/auth/sign-in')
+    post('/admin/auth/sign-in')
   }
 
   useEffect(() => {
@@ -28,7 +28,7 @@ export default function SignIn() {
 
   return (
     <>
-      <Head title="Social Adonis | Sign in" />
+      <Head title="Social Adonis | Admin Sign in" />
       <div className="container gap-10">
         <AdonisLogo />
         <form className="flex flex-col items-center gap-4" onSubmit={handleSubmit}>
@@ -63,12 +63,6 @@ export default function SignIn() {
                 <Button type="submit" className="w-full" disabled={processing}>
                   Login
                 </Button>
-              </div>
-              <div className="mt-4 text-center text-sm">
-                Don't yet have an account?{' '}
-                <Link href="/auth/sign-up" className="underline">
-                  Sign up
-                </Link>
               </div>
             </CardContent>
           </Card>
