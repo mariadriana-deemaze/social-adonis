@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button'
 import AdonisLogo from '@/components/svg/logo'
 import { UserResponse } from '#interfaces/user'
 import { cn } from '@/lib/utils'
+import { PostReportStatus } from '#enums/post'
 
 export default function NavBar({ user }: { user: UserResponse | null }) {
   const LINKS: Record<'title' | 'link', string>[] = [
@@ -23,7 +24,8 @@ export default function NavBar({ user }: { user: UserResponse | null }) {
     },
     {
       title: 'Reports',
-      link: '/admin/index',
+      // FIX-ME: Stardust.
+      link: `/admin/posts/reports?status=${PostReportStatus.PENDING}`,
     },
   ]
 
