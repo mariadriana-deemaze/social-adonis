@@ -6,7 +6,7 @@ import { test } from '@japa/runner'
 
 test.group('Post report', (group) => {
   let user: User | null = null
-  let url = '/posts/:id'
+  const postShow = '/posts/:id'
 
   group.each.setup(async () => {
     await testUtils.db().truncate()
@@ -16,7 +16,7 @@ test.group('Post report', (group) => {
   test('Successfuly creates a post report', async ({ browserContext, visit }) => {
     const authUser = user!
     const otherUser = await UserFactory.with('posts', 1).create()
-    url.replace(':id', otherUser.posts[0].id)
+    const url = postShow.replace(':id', otherUser.posts[0].id)
     await browserContext.loginAs(authUser)
 
     const page = await visit(url)
@@ -39,7 +39,7 @@ test.group('Post report', (group) => {
         })
       )
     ).create()
-    url.replace(':id', userPostReport.posts[0].id)
+    const url = postShow.replace(':id', userPostReport.posts[0].id)
     await browserContext.loginAs(authUser)
 
     const page = await visit(url)
