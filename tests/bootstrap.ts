@@ -5,6 +5,7 @@ import { sessionBrowserClient } from '@adonisjs/session/plugins/browser_client'
 import { pluginAdonisJS } from '@japa/plugin-adonisjs'
 import { browserClient } from '@japa/browser-client'
 import testUtils from '@adonisjs/core/services/test_utils'
+import { izzyRoutePlugin } from '@izzyjs/route/plugins/japa'
 import type { Config } from '@japa/runner/types'
 
 /**
@@ -23,6 +24,7 @@ export const plugins: Config['plugins'] = [
   authBrowserClient(app),
   sessionBrowserClient(app),
   pluginAdonisJS(app),
+  izzyRoutePlugin()
 ]
 
 /**

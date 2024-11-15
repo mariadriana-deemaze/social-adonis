@@ -1,3 +1,4 @@
+import { route } from '@izzyjs/route/client'
 import { Head } from '@inertiajs/react'
 import { CreatePost } from '@/components/posts/create'
 import FeedList from '@/components/posts/feed_list'
@@ -8,7 +9,7 @@ export default function Feed({ posts, user }: InferPageProps<FeedController, 'in
   return (
     <>
       <Head title="SocialAdonis | Feed" />
-      <FeedList url={'/feed'} currentUser={user} posts={posts} />
+      <FeedList url={route('feed.show').path} currentUser={user} posts={posts} />
       <div className="z-10 fixed left-5 bottom-5">
         <CreatePost />
       </div>

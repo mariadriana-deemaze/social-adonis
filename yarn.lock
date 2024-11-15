@@ -1478,6 +1478,11 @@
     wrap-ansi "^8.1.0"
     wrap-ansi-cjs "npm:wrap-ansi@^7.0.0"
 
+"@izzyjs/route@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@izzyjs/route/-/route-1.2.0.tgz#6e3a53f5321b2495625e9207d2f6885261c86da9"
+  integrity sha512-GOc2tf4xNrFMZK3SGK7XSweUfxNskJX6vrdhx9M8mDOgkRONnpuIzaVM/N7AgRjCft8f97d5t2oOXyk5Sq92hA==
+
 "@japa/assert@^3.0.0":
   version "3.0.0"
   resolved "https://registry.npmjs.org/@japa/assert/-/assert-3.0.0.tgz"
