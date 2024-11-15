@@ -1,10 +1,11 @@
 import { cn } from '@/lib/utils'
 import { Link } from '@inertiajs/react'
+import { route } from '@izzyjs/route/client'
 
 export default function AdonisLogo({ className }: { className?: string }) {
   const style = cn(`w-16 h-16 fill-primary ${className}`)
   return (
-    <Link href="/">
+    <Link href={route('home.show').path}>
       <svg className={style} viewBox="0 0 33 33">
         <path
           fillRule="evenodd"

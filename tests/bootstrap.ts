@@ -24,7 +24,7 @@ export const plugins: Config['plugins'] = [
   authBrowserClient(app),
   sessionBrowserClient(app),
   pluginAdonisJS(app),
-  izzyRoutePlugin()
+  izzyRoutePlugin(),
 ]
 
 /**

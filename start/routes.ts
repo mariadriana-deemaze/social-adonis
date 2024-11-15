@@ -63,7 +63,9 @@ router
     router.delete('/posts/:id', [PostsController, 'destroy']).as('posts.destroy')
 
     router.post('/posts/:id/react', [PostReactionsController, 'create']).as('posts_reactions.store')
-    router.delete('/posts/:id/react', [PostReactionsController, 'destroy']).as('posts_reactions.destroy')
+    router
+      .delete('/posts/:id/react', [PostReactionsController, 'destroy'])
+      .as('posts_reactions.destroy')
 
     router
       .group(() => {
@@ -85,7 +87,7 @@ router
   .group(() => {
     router
       .group(() => {
-        router.post('/sign-in', [AdminAuthController, 'show'])
+        router.post('/sign-in', [AdminAuthController, 'show']).as('admin.show')
         router.on('/sign-in').renderInertia('admin/sign_in')
       })
       .prefix('auth')
@@ -95,13 +97,16 @@ router
      */
     router
       .group(() => {
-        router.delete('/auth/sign-out', [AdminAuthController, 'destroy'])
-        router.on('/index').renderInertia('admin/index')
-
+        router.delete('/auth/sign-out', [AdminAuthController, 'destroy']).as('admin_auth.destroy')
+        router.on('/index').renderInertia('admin/index').as('admin.index')
         router
           .group(() => {
-            router.get('reports', [AdminPostReportsController, 'index'])
-            router.put('reports/:id', [AdminPostReportsController, 'update'])
+            router
+              .get('reports', [AdminPostReportsController, 'index'])
+              .as('admin_posts_reports.index')
+            router
+              .put('reports/:id', [AdminPostReportsController, 'update'])
+              .as('admin_posts_reports.update')
           })
           .prefix('posts')
       })

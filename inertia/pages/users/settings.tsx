@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label'
 import { useToast } from '@/components/ui/use_toast'
 import { InferPageProps } from '@adonisjs/inertia/types'
 import { Head, useForm, usePage } from '@inertiajs/react'
+import { route } from '@izzyjs/route/client'
 import { AtSign, Upload } from 'lucide-react'
 import { ChangeEvent, useEffect, useRef, useState } from 'react'
 
@@ -46,7 +47,7 @@ export default function UserSettings({
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    patch(`/users/${user?.id}`, {
+    patch(route('users.update', { params: { id: user?.id! } }).path, {
       preserveState: true,
       preserveScroll: true,
       onSuccess: () => {

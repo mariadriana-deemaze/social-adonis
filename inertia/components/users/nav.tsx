@@ -14,16 +14,17 @@ import { Button } from '@/components/ui/button'
 import AdonisLogo from '@/components/svg/logo'
 import { UserResponse } from '#interfaces/user'
 import { cn } from '@/lib/utils'
+import { route } from '@izzyjs/route/client'
 
 export default function UserNavBar({ user }: { user: UserResponse | null }) {
   const LINKS: Record<'title' | 'link', string>[] = [
     {
       title: 'Home',
-      link: '/',
+      link: route('home.show').path,
     },
     {
       title: 'Feed',
-      link: '/feed',
+      link: route('feed.show').path,
     },
   ]
 
@@ -71,17 +72,21 @@ export default function UserNavBar({ user }: { user: UserResponse | null }) {
                   <DropdownMenuSeparator />
                   <DropdownMenuGroup>
                     <DropdownMenuItem>
-                      <Link href={`/users/${user.id}`}>Profile</Link>
+                      <Link href={route('users.show', { params: { id: user?.id! } }).path}>
+                        Profile
+                      </Link>
                       <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
                     </DropdownMenuItem>
                     <DropdownMenuItem>
-                      <Link href={`/users/${user.id}/settings`}>Settings</Link>
+                      <Link href={route('settings.show', { params: { id: user?.id! } }).path}>
+                        Settings
+                      </Link>
                       <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>
-                    <Link as="button" href={'/auth/sign-out'} method="delete">
+                    <Link as="button" href={route('auth.destroy').path} method="delete">
                       Log out
                     </Link>
                     <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
@@ -89,7 +94,7 @@ export default function UserNavBar({ user }: { user: UserResponse | null }) {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Link href="/auth/sign-in">
+              <Link href={route('auth.show').path}>
                 <Button size="sm">Sign in</Button>
               </Link>
             )}

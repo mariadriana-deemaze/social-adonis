@@ -22,6 +22,7 @@ import {
 } from '@/components/ui/select'
 import { PostReportReason } from '#enums/post'
 import { Send } from 'lucide-react'
+import { route } from '@izzyjs/route/client'
 
 export function ReportPost({ post, trigger }: { post: PostResponse; trigger: ReactNode }) {
   const [open, setOpen] = useState(false)
@@ -43,7 +44,7 @@ export function ReportPost({ post, trigger }: { post: PostResponse; trigger: Rea
   const { toast } = useToast()
 
   async function getUserPostReport() {
-    fetch(`/posts/${post.id}/report`, {
+    fetch(route('posts_reports.show', { params: { id: post.id } }).path, {
       method: 'get',
       headers: {
         'content-type': 'application/json',
@@ -68,7 +69,9 @@ export function ReportPost({ post, trigger }: { post: PostResponse; trigger: Rea
   }
 
   async function handleSubmit(e: React.FormEvent) {
-    const url = hasReported ? `/posts/${hasReported.id}/report` : `/posts/${post.id}/report`
+    const url = hasReported
+      ? route('posts_reports.update', { params: { id: hasReported.id } }).path
+      : route('posts_reports.store', { params: { id: post.id } }).path
     const method = hasReported ? 'put' : 'post'
 
     e.preventDefault()

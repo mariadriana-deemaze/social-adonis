@@ -13,6 +13,7 @@ import {
 import { useToast } from '@/components/ui/use_toast'
 import { ModelObject } from '@adonisjs/lucid/types/model'
 import { router } from '@inertiajs/react'
+import { route } from '@izzyjs/route/client'
 
 export function DeletePost({ post, trigger }: { post: ModelObject; trigger: ReactNode }) {
   const [open, setOpen] = useState(false)
@@ -23,9 +24,9 @@ export function DeletePost({ post, trigger }: { post: ModelObject; trigger: Reac
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    router.delete(`/posts/${post.id}`, {
+    router.delete(route('posts.destroy', { params: { id: post.id } }).path, {
       onFinish: () => {
-        router.visit('/feed', {
+        router.visit(route('feed.show').path, {
           preserveState: false,
         })
       },

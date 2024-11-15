@@ -8,6 +8,7 @@ import { Head } from '@inertiajs/react'
 import { CalendarHeart, FilePen } from 'lucide-react'
 import { CreatePost } from '@/components/posts/create'
 import { UserResponse } from '#interfaces/user'
+import { route } from '@izzyjs/route/client'
 
 function UserCard({ user, totalPosts }: { user: UserResponse; totalPosts: number }) {
   return (
@@ -80,7 +81,11 @@ export default function Show({ user, posts, profile }: InferPageProps<FeedContro
           <UserCard user={profile} totalPosts={posts.meta.total} />
         </div>
         <div className="w-full">
-          <FeedList url={`/users/${profile.id}`} currentUser={user} posts={posts} />
+          <FeedList
+            url={route('users.show', { params: { id: user?.id! } }).path}
+            currentUser={user}
+            posts={posts}
+          />
           {user?.id === profile.id && (
             <div className="z-10 fixed left-5 bottom-5">
               <CreatePost />

@@ -28,10 +28,7 @@ import { PostReactionType } from '#enums/post'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover_card'
 import { UserResponse } from '#interfaces/user'
 import { ReportPost } from '@/components/posts/report'
-import type { UUID } from 'node:crypto'
-
-const userLink = (id: UUID) => `/users/${id}`
-const postLink = (id: UUID) => `/posts/${id}`
+import { route } from '@izzyjs/route/client'
 
 function PostContentParser({
   content,
@@ -230,17 +227,20 @@ function PostReaction({
 
     const isDelete = react === reaction.type
 
-    const request = await fetch(`/posts/${post.id}/react`, {
-      method: isDelete ? 'delete' : 'post',
-      headers: {
-        'content-type': 'application/json',
-      },
-      ...(!isDelete && {
-        body: JSON.stringify({
-          reaction: react,
+    const request = await fetch(
+      route('posts_reactions.store', { params: { id: post?.id! } }).path,
+      {
+        method: isDelete ? 'delete' : 'post',
+        headers: {
+          'content-type': 'application/json',
+        },
+        ...(!isDelete && {
+          body: JSON.stringify({
+            reaction: react,
+          }),
         }),
-      }),
-    })
+      }
+    )
 
     if (request.status === 200 || request.status === 201) {
       setReaction({ type: react, count: counts.liked })
@@ -414,7 +414,15 @@ export default function PostCard({
   return (
     <article className="flex flex-col w-full border pt-6 px-6 bg-white rounded-sm">
       <div className="flex flex-row pb-3 justify-between border-b border-b-gray-200">
-        <Link href={userLink(post.user.id)}>
+        <Link
+          href={
+            route('users.show', {
+              params: {
+                id: post.user.id,
+              },
+            }).path
+          }
+        >
           <div className="flex flex-row gap-3">
             <Avatar className="h-8 w-8">
               <AvatarImage
@@ -450,7 +458,15 @@ export default function PostCard({
         )}
 
         {redirect ? (
-          <Link href={postLink(post.id)}>
+          <Link
+            href={
+              route('posts.show', {
+                params: {
+                  id: post.id,
+                },
+              }).path
+            }
+          >
             <PostContentParser content={post.content} preview={post.link} />
           </Link>
         ) : (
