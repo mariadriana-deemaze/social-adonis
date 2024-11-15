@@ -1,5 +1,5 @@
 import PostsController from '#controllers/posts_controller'
-import PostCard from '@/components/posts/post-card'
+import PostCard from '@/components/posts/post_card'
 import { Button } from '@/components/ui/button'
 import { InferPageProps } from '@adonisjs/inertia/types'
 import { Head } from '@inertiajs/react'

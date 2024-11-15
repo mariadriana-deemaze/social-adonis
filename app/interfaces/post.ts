@@ -1,5 +1,5 @@
-import { BaseEntity } from 'app/interfaces/base-entity'
-import { UUID } from 'crypto'
+import { BaseEntity } from '#interfaces/base_entity'
+import { UUID } from 'node:crypto'
 import { UserResponse } from './user'
 import { AttachmentResponse } from 'app/interfaces/attachment'
 import { PostReactionType } from '#enums/post'
@@ -25,8 +25,8 @@ export interface PostResponse extends BaseEntity {
   user: UserResponse
   link: LinkResponse | null
   reactions: {
-    reacted: PostReactionType | null,
+    reacted: PostReactionType | null
     reactionsCounts: Record<PostReactionType, number>
-    total:number;
+    total: number
   }
 }

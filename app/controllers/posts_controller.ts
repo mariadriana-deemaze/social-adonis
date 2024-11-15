@@ -1,7 +1,7 @@
 import { inject } from '@adonisjs/core'
 import { errors } from '@vinejs/vine'
 import type { HttpContext } from '@adonisjs/core/http'
-import service from '#services/posts_service'
+import PostsService from '#services/posts_service'
 import policy from '#policies/posts_policy'
 import Post from '#models/post'
 import { errorsReducer } from '#utils/index'
@@ -10,7 +10,7 @@ import { PageObject } from '@adonisjs/inertia/types'
 
 @inject()
 export default class PostsController {
-  constructor(private service: service) {}
+  constructor(private service: PostsService) {}
 
   async show(ctx: HttpContext): Promise<
     | string

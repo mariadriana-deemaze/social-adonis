@@ -1,6 +1,6 @@
 import { PostReactionType } from '#enums/post'
 import PostReaction from '#models/post_reaction'
-import type { UUID } from 'crypto'
+import type { UUID } from 'node:crypto'
 
 export default class PostReactionService {
   constructor() {}

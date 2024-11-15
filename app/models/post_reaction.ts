@@ -4,7 +4,7 @@ import Post from '#models/post'
 import User from '#models/user'
 import { PostReactionType } from '#enums/post'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
-import type { UUID } from 'crypto'
+import type { UUID } from 'node:crypto'
 
 export default class PostReaction extends BaseModel {
   @column({ isPrimary: true })

@@ -3,7 +3,7 @@ import { MultipartFile } from '@adonisjs/core/bodyparser'
 import { cuid } from '@adonisjs/core/helpers'
 import drive from '@adonisjs/drive/services/main'
 import { AttachmentResponse } from 'app/interfaces/attachment'
-import { UUID } from 'crypto'
+import { UUID } from 'node:crypto'
 
 export default class AttachmentService {
   private readonly disk = drive.use()

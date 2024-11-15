@@ -9,7 +9,7 @@ import { PostReactionType } from '#enums/post'
 import PostReaction from '#models/post_reaction'
 import { ModelObject } from '@adonisjs/lucid/types/model'
 import type { HttpContext } from '@adonisjs/core/http'
-import type { UUID } from 'crypto'
+import type { UUID } from 'node:crypto'
 import { UserService } from '#services/user_service'
 
 export default class PostsService {
@@ -59,7 +59,7 @@ export default class PostsService {
       .where('id', id)
       .preload('user')
       .preload('reactions')
-    return !!result ? result[0] : null
+    return result ? result[0] : null
   }
 
   /**

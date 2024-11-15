@@ -1,6 +1,6 @@
 import { BaseModel, column } from '@adonisjs/lucid/orm'
 import { DateTime } from 'luxon'
-import type { UUID } from 'crypto'
+import type { UUID } from 'node:crypto'
 
 export default class Session extends BaseModel {
   @column({ isPrimary: true })

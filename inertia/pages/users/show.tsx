@@ -1,5 +1,5 @@
 import FeedController from '#controllers/feed_controller'
-import FeedList from '@/components/posts/feed-list'
+import FeedList from '@/components/posts/feed_list'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Card, CardContent } from '@/components/ui/card'
 import { InferPageProps } from '@adonisjs/inertia/types'

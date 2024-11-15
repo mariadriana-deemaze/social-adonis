@@ -1,5 +1,5 @@
 import { AttachmentType } from '#models/attachment'
-import { UUID } from 'crypto'
+import { UUID } from 'node:crypto'
 
 export interface AttachmentMetadataJSON {
   filename: string

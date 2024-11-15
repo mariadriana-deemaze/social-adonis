@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon'
 import { BaseModel, column } from '@adonisjs/lucid/orm'
 import { LinkMetadataJSONResponse } from 'app/interfaces/post'
-import type { UUID } from 'crypto'
+import type { UUID } from 'node:crypto'
 
 export class LinkMetadataJSON {
   // TODO: Could benefit in adding class-validator?

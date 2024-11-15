@@ -1,7 +1,7 @@
 import Post from '#models/post'
 import PostReport from '#models/post_report'
 import { postReportValidator } from '#validators/post_report'
-import { UUID } from 'crypto'
+import { UUID } from 'node:crypto'
 
 export default class PostReportService {
   constructor() {}
