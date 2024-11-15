@@ -90,7 +90,7 @@ export default function UserSettings({
 
   return (
     <>
-      <Head title={`Social Adonis | ${user.username} Setting's`} />
+      <Head title={`${user.username} Setting's`} />
       <div className="relative flex flex-col pt-0 w-full">
         <form className="flex flex-col items-center gap-4 w-full" onSubmit={handleSubmit}>
           <div className="relative bg-slate-300 h-64 w-full rounded-2xl mb-20 shadow-inner">

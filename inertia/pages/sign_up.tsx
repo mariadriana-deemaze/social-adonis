@@ -31,7 +31,7 @@ export default function SignUp() {
 
   return (
     <>
-      <Head title="Social Adonis | Sign up" />
+      <Head title="Sign up" />
       <div className="container gap-10">
         <AdonisLogo />
         <form className="flex flex-col items-center gap-4" onSubmit={handleSubmit}>

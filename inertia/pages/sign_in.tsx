@@ -29,7 +29,7 @@ export default function SignIn() {
 
   return (
     <>
-      <Head title="Social Adonis | Sign in" />
+      <Head title="Sign in" />
       <div className="container gap-10">
         <AdonisLogo />
         <form className="flex flex-col items-center gap-4" onSubmit={handleSubmit}>

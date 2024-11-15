@@ -55,4 +55,5 @@ export default await Env.create(new URL('../', import.meta.url), {
   S3_BUCKET: Env.schema.string(),
 
   LINK_PREVIEW_API: Env.schema.string(),
+  VITE_APP_NAME: Env.schema.string(),
 })

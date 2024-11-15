@@ -62,7 +62,7 @@ export default function Show({ user, posts, profile }: InferPageProps<FeedContro
   if (!posts || !profile) return <>Loading..</>
   return (
     <>
-      <Head title={`SocialAdonis | @${profile.username}`} />
+      <Head title={`@${profile.username}`} />
       <div className="relative min-h-[280px] lg:min-h-max w-full mb-16 lg:mb-0">
         <div className="relative bg-slate-300 border border-gray-200 h-52 w-full rounded-2xl mb-4 shadow-inner">
           <div className="w-full h-full rounded-2xl overflow-hidden">

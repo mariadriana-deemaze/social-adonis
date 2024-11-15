@@ -8,7 +8,7 @@ import { resolvePageComponent } from '@adonisjs/inertia/helpers'
 import Layout from '@/app/layout'
 import AdminLayout from '@/app/admin_layout'
 
-const appName = import.meta.env.VITE_APP_NAME
+const appName = import.meta.env.VITE_APP_NAME || 'Social Adonis'
 
 createInertiaApp({
   progress: { color: '#5468FF' },
