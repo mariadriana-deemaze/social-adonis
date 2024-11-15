@@ -82,7 +82,7 @@ export default function Show({ user, posts, profile }: InferPageProps<FeedContro
         </div>
         <div className="w-full">
           <FeedList
-            url={route('users.show', { params: { id: user?.id! } }).path}
+            url={route('users.show', { params: { id: profile?.id! } }).path}
             currentUser={user}
             posts={posts}
           />
