@@ -22,6 +22,7 @@ const inertiaConfig = defineConfig({
         return null
       }
     },
+    queryParams: (ctx) => ctx.request.qs(),
     errors: (ctx) => ctx.session?.flashMessages.get('errors'),
   },
 
