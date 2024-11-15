@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label'
 import { useToast } from '@/components/ui/use_toast'
 import { InferPageProps } from '@adonisjs/inertia/types'
 import { Head, useForm, usePage } from '@inertiajs/react'
-import { Upload } from 'lucide-react'
+import { AtSign, Upload } from 'lucide-react'
 import { ChangeEvent, useEffect, useRef, useState } from 'react'
 
 export default function UserSettings({
@@ -163,10 +163,8 @@ export default function UserSettings({
                     value={data.name}
                     onChange={(e) => setData('name', e.target.value)}
                     required
+                    error={props?.errors?.name}
                   />
-                  {props?.errors?.name && (
-                    <p className="text-red-600 text-xs">{props?.errors?.name}</p>
-                  )}
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="surname">Surname</Label>
@@ -176,10 +174,8 @@ export default function UserSettings({
                     placeholder="Family name"
                     value={data.surname}
                     onChange={(e) => setData('surname', e.target.value)}
+                    error={props?.errors?.surname}
                   />
-                  {props?.errors?.surname && (
-                    <p className="text-red-600 text-xs">{props?.errors?.surname}</p>
-                  )}
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="email">Email</Label>
@@ -190,10 +186,8 @@ export default function UserSettings({
                     value={data.email}
                     onChange={(e) => setData('email', e.target.value)}
                     required
+                    error={props?.errors?.email}
                   />
-                  {props?.errors?.email && (
-                    <p className="text-red-600 text-xs">{props?.errors?.email}</p>
-                  )}
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="username">Username</Label>
@@ -202,10 +196,9 @@ export default function UserSettings({
                     type="text"
                     value={data.username}
                     onChange={(e) => setData('username', e.target.value)}
+                    error={props?.errors?.username}
+                    LeftSlot={() => <AtSign size={18} className="text-gray-400" />}
                   />
-                  {props?.errors?.username && (
-                    <p className="text-red-600 text-xs">{props?.errors?.username}</p>
-                  )}
                 </div>
               </div>
               <Button type="submit" className="w-full" disabled={processing}>

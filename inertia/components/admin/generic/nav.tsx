@@ -8,7 +8,7 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuShortcut,
-} from '@/components/ui/dropdown-menu'
+} from '@/components/ui/dropdown_menu'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import AdonisLogo from '@/components/svg/logo'

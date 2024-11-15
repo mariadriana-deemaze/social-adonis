@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useToast } from '@/components/ui/use-toast'
+import { useToast } from '@/components/ui/use_toast'
 import AdonisLogo from '@/components/svg/logo'
 
 export default function SignIn() {
@@ -57,6 +57,7 @@ export default function SignIn() {
                     type="password"
                     value={data.password}
                     onChange={(e) => setData('password', e.target.value)}
+                    RightSlot
                   />
                 </div>
                 <Button type="submit" className="w-full" disabled={processing}>

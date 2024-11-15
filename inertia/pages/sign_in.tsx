@@ -57,6 +57,7 @@ export default function SignIn() {
                     type="password"
                     value={data.password}
                     onChange={(e) => setData('password', e.target.value)}
+                    RightSlot
                   />
                 </div>
                 <Button type="submit" className="w-full" disabled={processing}>
