@@ -34,19 +34,19 @@ export default class TestingCommand extends BaseCommand {
       process.exit()
     }
 
-    const [modelName, ...queryParts] = command.split('.')
+    const [modelName, ...queryParts] = command.trim().split('.')
 
     const queryMethod = queryParts.join('.')
     const modelNameSnakeCase = modelName.replace(/([a-z0-9])([A-Z])/g, '$1_$2').toLowerCase()
 
-    try {
-      // @ts-ignore
-      const model = await import(`#models/${modelNameSnakeCase}`)
-        .then((module) => module.default)
-        .catch(() => {
-          throw new Error(`Model not found`)
-        })
+    // @ts-ignore
+    const model = await import(`#models/${modelNameSnakeCase}`)
+      .then((module) => module.default)
+      .catch(() => {
+        throw new Error(`Model not found`)
+      })
 
+    try {
       const query = `model.${queryMethod}`
 
       try {
@@ -75,13 +75,13 @@ export default class TestingCommand extends BaseCommand {
     process.exit()
   }
 
-  private printResult(data: any): void {
+  private printResult(data: any[] | null): void {
     logger.log(
       'info',
       JSON.parse(
         JSON.stringify({
           data,
-          count: data.length || 0,
+          count: data?.length || 0,
         })
       )
     )
