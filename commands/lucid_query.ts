@@ -54,14 +54,9 @@ export default class TestingCommand extends BaseCommand {
         // eslint-disable-next-line no-eval
         const data = await eval(query)
 
-        if (data) {
-          const result = []
-
-          for (const record of data) {
-            result.push(record.toJSON())
-          }
-
-          this.printResult(data)
+        if (Array.isArray(data)) {
+          const results = data.map((record) => record.toJSON())
+          this.printResult(results)
         } else {
           this.printResult(data)
         }
@@ -78,11 +73,13 @@ export default class TestingCommand extends BaseCommand {
   private printResult(data: any[] | null): void {
     logger.log(
       'info',
-      JSON.parse(
-        JSON.stringify({
+      JSON.stringify(
+        {
           data,
-          count: data?.length || 0,
-        })
+          count: Array.isArray(data) ? data.length : 1,
+        },
+        null,
+        2
       )
     )
   }
