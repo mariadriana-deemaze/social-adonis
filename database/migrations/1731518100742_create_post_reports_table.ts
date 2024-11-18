@@ -27,6 +27,7 @@ export default class extends BaseSchema {
       table.uuid('post_id').references('posts.id').notNullable()
       table.timestamp('created_at', { useTz: false })
       table.timestamp('updated_at', { useTz: false })
+      table.unique(['user_id', 'post_id'])
     })
   }
 
