@@ -8,6 +8,7 @@ import {
   column,
   computed,
   hasMany,
+  scope,
 } from '@adonisjs/lucid/orm'
 import User from '#models/user'
 import { extractFirstLink, sanitizePostContent } from '#utils/index'
@@ -44,6 +45,10 @@ export default class Post extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
+
+  static visible = scope((query) => {
+    query.where('post_status', PostStatus.PUBLISHED)
+  })
 
   @computed()
   get link(): string | null {

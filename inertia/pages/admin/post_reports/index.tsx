@@ -1,4 +1,4 @@
-import { FormEvent, SetStateAction, useState } from 'react'
+import { FormEvent, SetStateAction, useMemo, useState } from 'react'
 import AdminPostReportsController from '#controllers/admin_post_reports_controller'
 import { PostReportReason, PostReportStatus } from '#enums/post'
 import { Button } from '@/components/ui/button'
@@ -24,7 +24,7 @@ import { DefaultPaginator } from '@/components/ui/pagination'
 import { cn } from '@/lib/utils'
 import { InferPageProps } from '@adonisjs/inertia/types'
 import { Head, useForm, router } from '@inertiajs/react'
-import { ExternalLink, SlidersVertical, TextSearch } from 'lucide-react'
+import { CheckCheck, ExternalLink, ListTodo, SlidersVertical, TextSearch } from 'lucide-react'
 import { MultiSelect } from '@/components/ui/multi_select'
 import {
   Select,
@@ -60,16 +60,21 @@ function Update({
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    await fetch(pageURL, {
-      method: 'put',
-      headers: {
-        'content-type': 'application/json',
+    // FIX-ME: izzy
+    router.put(
+      `${pageURL}/${report.id}`,
+      {
+        status: data.status,
       },
-      body: JSON.stringify(data),
-    })
-
-    onOpenChange(false)
-    reset()
+      {
+        replace: false,
+        only: ['reports'],
+        onFinish: () => {
+          onOpenChange(false)
+          reset()
+        },
+      }
+    )
   }
 
   return (
@@ -161,12 +166,27 @@ export default function Index({
     status: queryParams?.status || [],
   })
 
+  const emptyStateMessage = useMemo(() => {
+    if (
+      !queryParams?.reason &&
+      queryParams?.status?.length === 1 &&
+      queryParams?.status[0] === PostReportStatus.PENDING
+    ) {
+      return 'All done!'
+    }
+    return 'No records matching the search criteria.'
+  }, [queryParams])
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     router.get(
       pageURL,
-      { status: data.status, reason: data.reason },
       {
+        status: data.status,
+        reason: data.reason,
+      },
+      {
+        only: ['reports', 'queryParams'],
         preserveState: false,
       }
     )
@@ -257,7 +277,9 @@ export default function Index({
             <TableHeader>
               <TableRow>
                 <TableHead>
-                  <SlidersVertical size={14} className="text-gray-600" />
+                  <Button type="button" size="sm-icon" variant="ghost">
+                    <ListTodo size={14} className="text-gray-600" />
+                  </Button>
                 </TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead>Username</TableHead>
@@ -272,21 +294,29 @@ export default function Index({
               {reports.data.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={8} className="h-32 text-center">
-                    <p>No records matching the search criteria.</p>
+                    <p>{emptyStateMessage}</p>
                   </TableCell>
                 </TableRow>
               ) : (
                 reports.data.map((report: PostReportResponse) => (
                   <TableRow key={report.id}>
-                    <TableCell className="font-medium max-w-10 truncate">
-                      <SlidersVertical
-                        size={14}
-                        className="text-gray-600"
-                        onClick={() => {
-                          setUpdatingPost(report)
-                          setOpenUpdateReport(true)
-                        }}
-                      />
+                    <TableCell className="font-medium max-w-10 truncate align-middle items-center justify-center">
+                      {report.status === PostReportStatus.PENDING ? (
+                        <Button type="button" size="sm-icon" variant="outline">
+                          <SlidersVertical
+                            size={14}
+                            className="text-gray-600"
+                            onClick={() => {
+                              setUpdatingPost(report)
+                              setOpenUpdateReport(true)
+                            }}
+                          />
+                        </Button>
+                      ) : (
+                        <Button disabled={true} type="button" size="sm-icon" variant="ghost">
+                          <CheckCheck size={14} className="text-gray-600" />
+                        </Button>
+                      )}
                     </TableCell>
                     <TableCell className="font-medium max-w-10 truncate">
                       {formatDistanceToNow(new Date(report.createdAt))} ago

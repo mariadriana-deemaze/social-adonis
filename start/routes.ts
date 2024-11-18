@@ -101,7 +101,7 @@ router
         router
           .group(() => {
             router.get('reports', [AdminPostReportsController, 'index'])
-            router.put('reports', [AdminPostReportsController, 'update'])
+            router.put('reports/:id', [AdminPostReportsController, 'update'])
           })
           .prefix('posts')
       })

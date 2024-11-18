@@ -56,6 +56,7 @@ export default class PostsService {
    */
   async findOne(id: UUID): Promise<Post | null> {
     const result: Post[] | null = await Post.query()
+      .withScopes((scope) => scope.visible())
       .where('id', id)
       .preload('user')
       .preload('reactions')
@@ -72,6 +73,7 @@ export default class PostsService {
   ): Promise<PaginatedResponse<PostResponse>> {
     const result = await Post.query()
       .where('user_id', userId)
+      .withScopes((scope) => scope.visible())
       .orderBy('updated_at', 'desc')
       .preload('user')
       .preload('reactions')

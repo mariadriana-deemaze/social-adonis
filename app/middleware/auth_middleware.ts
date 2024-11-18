@@ -13,7 +13,7 @@ export default class AuthMiddleware {
   redirectTo = '/auth/sign-in'
 
   /**
-   * The URL to redirect to, when authentication fails
+   * The URL to redirect the admin to, when authentication fails
    */
   adminRedirectTo = '/admin/auth/sign-in'
 
@@ -28,7 +28,12 @@ export default class AuthMiddleware {
     if (ctx.route?.pattern.includes('admin')) guard = 'admin-web'
 
     try {
-      await ctx.auth.authenticateUsing([guard])
+      const user = await ctx.auth.authenticateUsing([guard])
+      // NOTE: Should not be required, and only here as a second layer of security.
+      if (!user.isAdmin) {
+        throw new Error('Restricted area.')
+      }
+
       return next()
     } catch (error) {
       return ctx.response
