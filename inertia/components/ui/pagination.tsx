@@ -98,31 +98,34 @@ const DefaultPaginator = ({
   className?: React.ComponentProps<'nav'>['className']
 }) => {
   return (
-    <Pagination className={cn('w-full', className)}>
-      <PaginationContent>
-        <PaginationItem>
-          <PaginationPrevious
-            href={meta?.previousPageUrl ? baseUrl + meta?.previousPageUrl : '#'}
-          />
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationLink href={baseUrl + meta?.firstPageUrl}>{meta.firstPage}</PaginationLink>
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationEllipsis />
-        </PaginationItem>
-        {meta.lastPage > 1 && (
+    <div className="flex flex-col gap-0 w-full text-center border-t border-t-gray-100 mt-2">
+      <p className="text-slate-400 pt-2 mt-2 text-sm">{meta.total} records</p>
+      <Pagination className={cn('w-full', className)}>
+        <PaginationContent>
           <PaginationItem>
-            <PaginationLink href={baseUrl + meta?.lastPageUrl || '#'}>
-              {meta.lastPage}
-            </PaginationLink>
+            <PaginationPrevious
+              href={meta?.previousPageUrl ? baseUrl + meta?.previousPageUrl : '#'}
+            />
           </PaginationItem>
-        )}
-        <PaginationItem className={cn(!meta?.nextPageUrl && 'opacity-30 cursor-not-allowed')}>
-          <PaginationNext href={meta?.nextPageUrl ? baseUrl + meta?.nextPageUrl : '#'} />
-        </PaginationItem>
-      </PaginationContent>
-    </Pagination>
+          <PaginationItem>
+            <PaginationLink href={baseUrl + meta?.firstPageUrl}>{meta.firstPage}</PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationEllipsis />
+          </PaginationItem>
+          {meta.lastPage > 1 && (
+            <PaginationItem>
+              <PaginationLink href={baseUrl + meta?.lastPageUrl || '#'}>
+                {meta.lastPage}
+              </PaginationLink>
+            </PaginationItem>
+          )}
+          <PaginationItem className={cn(!meta?.nextPageUrl && 'opacity-30 cursor-not-allowed')}>
+            <PaginationNext href={meta?.nextPageUrl ? baseUrl + meta?.nextPageUrl : '#'} />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
+    </div>
   )
 }
 

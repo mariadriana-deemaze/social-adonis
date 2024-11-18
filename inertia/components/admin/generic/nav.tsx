@@ -24,8 +24,8 @@ export default function NavBar({ user }: { user: UserResponse | null }) {
     },
     {
       title: 'Reports',
-      // FIX-ME: Stardust.
-      link: `/admin/posts/reports?status=${PostReportStatus.PENDING}`,
+      // FIX-ME: izzy.
+      link: `/admin/posts/reports?status[]=${PostReportStatus.PENDING}`,
     },
   ]
 

@@ -23,10 +23,9 @@ import {
 import { DefaultPaginator } from '@/components/ui/pagination'
 import { cn } from '@/lib/utils'
 import { InferPageProps } from '@adonisjs/inertia/types'
-import { Head, Link, useForm, usePage } from '@inertiajs/react'
+import { Head, useForm, router } from '@inertiajs/react'
 import { ExternalLink, SlidersVertical, TextSearch } from 'lucide-react'
 import { MultiSelect } from '@/components/ui/multi_select'
-import { useToast } from '@/components/ui/use_toast'
 import {
   Select,
   SelectContent,
@@ -34,43 +33,43 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { ModelObject } from '@adonisjs/lucid/types/model'
+import PostCard from '@/components/posts/post_card'
+import { UserResponse } from '#interfaces/user'
+import { PostReportResponse } from '#interfaces/post'
+import { formatDistanceToNow } from 'date-fns'
 
-// FIX-ME: Stardust
+// FIX-ME: izzy
 const pageURL = '/admin/posts/reports'
 
 function Update({
+  currentUser,
   report,
   open,
   onOpenChange,
 }: {
-  report: ModelObject
+  currentUser: UserResponse
+  report: PostReportResponse
   open: boolean
   onOpenChange: React.Dispatch<SetStateAction<boolean>>
 }) {
-  const { errors } = usePage().props
-
-  const { toast } = useToast()
-
-  const {
-    data,
-    setData,
-    post: postData,
-    patch: patchData,
-    processing,
-  } = useForm<{
+  const { data, setData, processing, reset } = useForm<{
     status: string
   }>({
     status: report.status,
   })
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-
-    patchData(pageURL, {
-      preserveState: false,
-      onFinish: () => onOpenChange(false),
+    await fetch(pageURL, {
+      method: 'put',
+      headers: {
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify(data),
     })
+
+    onOpenChange(false)
+    reset()
   }
 
   return (
@@ -79,41 +78,65 @@ function Update({
       <DialogContent className="default-dialog">
         <DialogHeader>
           <DialogTitle>Manage content</DialogTitle>
-          <DialogDescription>Revise</DialogDescription>
+          <DialogDescription>Take action on the reported complaint</DialogDescription>
         </DialogHeader>
+
+        <div className="max-w-max">
+          <PostCard post={report.post} user={currentUser} actions={false} />
+        </div>
+
         <form
           onSubmit={handleSubmit}
           className={cn(processing ? 'opacity-20 pointer-events-none' : 'opacity-100')}
         >
           <div className="flex flex-col w-full gap-2">
             <Label htmlFor="reason" className="text-left">
-              What's the reason?
+              Change status
             </Label>
             <Select
               value={data.status}
-              onValueChange={(value: string) => {
-                setData((prevState) => {
-                  return {
-                    ...prevState,
-                    reason: value,
-                  }
-                })
-              }}
+              onValueChange={(value: string) => setData({ status: value })}
             >
               <SelectTrigger className="select-reason">
-                <SelectValue id="reason" placeholder="Choose a reason" />
+                <SelectValue id="status" placeholder="Update status" />
               </SelectTrigger>
               <SelectContent>
-                {Object.entries(PostReportReason).map(([reason]) => (
-                  <SelectItem id={`reason-${reason.toLowerCase()}`} value={reason}>
+                {Object.entries(PostReportStatus).map(([reason]) => (
+                  <SelectItem
+                    key={`post-report-${report.id}-reason-${reason.toLowerCase()}`}
+                    id={`reason-${reason.toLowerCase()}`}
+                    value={reason}
+                  >
                     {reason.toLocaleLowerCase()}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
+
+            {data.status === PostReportStatus.ACCEPTED && (
+              <div className="border border-red-200 bg-red-100 rounded-md py-2 px-4">
+                <p className="text-red-500">
+                  This action will immediately hide the post from the others users feed.
+                </p>
+              </div>
+            )}
+
+            {data.status === PostReportStatus.REJECTED && (
+              <div className="border border-green-200 bg-green-100 rounded-md py-2 px-4">
+                <p className="text-green-500">
+                  This action will discard the complaint, and notify the reporting user of the
+                  decision.
+                </p>
+              </div>
+            )}
           </div>
 
-          <Button className="mt-5" loading={processing} disabled={true} type="submit">
+          <Button
+            className="mt-5"
+            loading={processing}
+            disabled={data.status === report.status}
+            type="submit"
+          >
             Update
           </Button>
         </form>
@@ -124,35 +147,29 @@ function Update({
 
 export default function Index({
   queryParams,
+  user,
   reports,
 }: InferPageProps<AdminPostReportsController, 'index'>) {
-  const [updatingReport, setUpdatingPost] = useState(null)
+  const [updatingReport, setUpdatingPost] = useState<PostReportResponse | null>(null)
   const [openUpdateReport, setOpenUpdateReport] = useState(false)
 
-  const { data, setData, get } = useForm<{
+  const { data, setData } = useForm<{
     reason: string[]
     status: string[]
   }>({
-    reason: queryParams.reason || [],
-    status: queryParams.status || [],
+    reason: queryParams?.reason || [],
+    status: queryParams?.status || [],
   })
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
-    // FIX-ME: Figure what's the best pattern here.
-    let url = pageURL
-
-    if (data.reason.length > 0) {
-      //@ts-ignore
-      url += String(data.reason.map((reason) => `&reason[]=${reason}`)).replaceAll(',', '')
-    }
-
-    if (data.status.length > 0) {
-      //@ts-ignore
-      url += String(data.status.map((status) => `&status[]=${status}`)).replaceAll(',', '')
-    }
-
-    get(url)
+    router.get(
+      pageURL,
+      { status: data.status, reason: data.reason },
+      {
+        preserveState: false,
+      }
+    )
   }
 
   return (
@@ -225,7 +242,7 @@ export default function Index({
                   />
                 </div>
 
-                <Button type="submit" size="sm" className="self-end justify-end">
+                <Button type="submit" size="sm" className="self-end justify-end h-10">
                   <TextSearch />
                 </Button>
               </div>
@@ -242,67 +259,85 @@ export default function Index({
                 <TableHead>
                   <SlidersVertical size={14} className="text-gray-600" />
                 </TableHead>
+                <TableHead>Date</TableHead>
                 <TableHead>Username</TableHead>
                 <TableHead>Post</TableHead>
-                <TableHead>Content</TableHead>
-                <TableHead>Reason</TableHead>
+                <TableHead>N. Reports</TableHead>
                 <TableHead>Description</TableHead>
+                <TableHead>Reason</TableHead>
                 <TableHead className="text-right">Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {reports.data.map((report) => (
-                <TableRow key={report.id}>
-                  <TableCell className="font-medium max-w-10 truncate">
-                    <SlidersVertical
-                      size={14}
-                      className="text-gray-600"
-                      onClick={() => {
-                        setUpdatingPost(report.post)
-                        setOpenUpdateReport(true)
-                      }}
-                    />
-                  </TableCell>
-                  <TableCell className="font-medium max-w-10 truncate">
-                    {report.user.username}
-                  </TableCell>
-                  <TableCell className="font-medium w-10">
-                    <Link href={`/posts/${report.post.id}`}>
-                      <ExternalLink size={15} className="text-blue-400" />
-                    </Link>
-                  </TableCell>
-                  <TableCell className="font-medium max-w-20 truncate">
-                    {report.post.content}
-                  </TableCell>
-                  <TableCell className="font-medium max-w-20 truncate">{report.reason}</TableCell>
-                  <TableCell className="font-medium max-w-20 truncate">
-                    {report.description}
-                  </TableCell>
-                  <TableCell className="flex font-medium justify-end">
-                    <div
-                      className={cn(
-                        'font-medium text-xs text-white w-max rounded-sm px-2 py-1',
-                        report.status === PostReportStatus.ACCEPTED && 'bg-green-500',
-                        report.status === PostReportStatus.PENDING && 'bg-orange-500',
-                        report.status === PostReportStatus.REJECTED && 'bg-red-500'
-                      )}
-                    >
-                      {report.status}
-                    </div>
+              {reports.data.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="h-32 text-center">
+                    <p>No records matching the search criteria.</p>
                   </TableCell>
                 </TableRow>
-              ))}
+              ) : (
+                reports.data.map((report: PostReportResponse) => (
+                  <TableRow key={report.id}>
+                    <TableCell className="font-medium max-w-10 truncate">
+                      <SlidersVertical
+                        size={14}
+                        className="text-gray-600"
+                        onClick={() => {
+                          setUpdatingPost(report)
+                          setOpenUpdateReport(true)
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell className="font-medium max-w-10 truncate">
+                      {formatDistanceToNow(new Date(report.createdAt))} ago
+                    </TableCell>
+                    <TableCell className="font-medium max-w-10 truncate">
+                      {report.user.username}
+                    </TableCell>
+                    <TableCell className="font-medium w-10">
+                      {/* // FIX-ME - izzy */}
+                      <a href={`/posts/${report.post.id}`} target="blank">
+                        <ExternalLink size={15} className="text-blue-400" />
+                      </a>
+                    </TableCell>
+                    <TableCell className="font-medium max-w-10 truncate">
+                      {report.post.reportCount}
+                    </TableCell>
+                    <TableCell className="font-medium max-w-20 truncate">
+                      {report.post.content}
+                    </TableCell>
+                    <TableCell className="font-medium max-w-20 truncate">{report.reason}</TableCell>
+                    <TableCell className="flex font-medium justify-end">
+                      <div
+                        className={cn(
+                          'font-medium text-xs text-white w-max rounded-sm px-2 py-1',
+                          report.status === PostReportStatus.ACCEPTED && 'bg-green-500',
+                          report.status === PostReportStatus.PENDING && 'bg-orange-500',
+                          report.status === PostReportStatus.REJECTED && 'bg-red-500'
+                        )}
+                      >
+                        {report.status}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
           <DefaultPaginator
-            className="mt-5 py-2"
+            className="py-2"
             meta={reports.meta}
-            baseUrl="/admin/posts/reports"
+            baseUrl="/admin/posts/reports" // FIX-ME: izzy
           />
         </Card>
 
         {updatingReport && (
-          <Update open={openUpdateReport} onOpenChange={setOpenUpdateReport} report={updatingReport} />
+          <Update
+            currentUser={user!}
+            open={openUpdateReport}
+            onOpenChange={setOpenUpdateReport}
+            report={updatingReport}
+          />
         )}
       </div>
     </>
