@@ -101,6 +101,7 @@ router
         router
           .group(() => {
             router.get('reports', [AdminPostReportsController, 'index'])
+            router.put('reports', [AdminPostReportsController, 'update'])
           })
           .prefix('posts')
       })

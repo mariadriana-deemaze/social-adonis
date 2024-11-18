@@ -2,7 +2,7 @@ import { BaseEntity } from '#interfaces/base_entity'
 import { UUID } from 'node:crypto'
 import { UserResponse } from './user'
 import { AttachmentResponse } from 'app/interfaces/attachment'
-import { PostReactionType } from '#enums/post'
+import { PostReactionType, PostReportReason, PostReportStatus } from '#enums/post'
 
 export interface LinkMetadataJSONResponse {
   title: string
@@ -29,4 +29,15 @@ export interface PostResponse extends BaseEntity {
     reactionsCounts: Record<PostReactionType, number>
     total: number
   }
+}
+
+export interface PostReportResponse extends BaseEntity {
+  id: UUID
+  reason: PostReportReason
+  status: PostReportStatus
+  description: string
+  userId: UUID
+  postId: UUID
+  post: PostResponse & { reportCount: number }
+  user: UserResponse
 }
