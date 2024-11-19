@@ -12,7 +12,7 @@ export const postReportValidator = vine.compile(
 )
 
 /**
- * Validates the post-report create/update action payload
+ * Validates the administrator post-report update action payload
  */
 export const adminUpdatePostReportValidator = vine.compile(
   vine.object({

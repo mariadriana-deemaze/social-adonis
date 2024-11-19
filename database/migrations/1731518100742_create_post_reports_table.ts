@@ -24,7 +24,7 @@ export default class extends BaseSchema {
         .defaultTo(PostReportStatus.PENDING)
         .notNullable()
       table.uuid('user_id').references('users.id').notNullable()
-      table.uuid('post_id').references('posts.id').notNullable()
+      table.uuid('post_id').references('posts.id').notNullable().onDelete('CASCADE')
       table.timestamp('created_at', { useTz: false })
       table.timestamp('updated_at', { useTz: false })
       table.unique(['user_id', 'post_id'])
