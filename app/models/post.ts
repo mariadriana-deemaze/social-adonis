@@ -47,7 +47,7 @@ export default class Post extends BaseModel {
   declare updatedAt: DateTime | null
 
   static visible = scope((query) => {
-    query.where('post_status', PostStatus.PUBLISHED)
+    query.where('status', PostStatus.PUBLISHED)
   })
 
   @computed()
