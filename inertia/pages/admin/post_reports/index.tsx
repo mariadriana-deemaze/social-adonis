@@ -86,7 +86,9 @@ function Update({
           <DialogDescription>Take action on the reported complaint</DialogDescription>
         </DialogHeader>
 
-        <div className="max-w-max">
+        <hr />
+
+        <div className="w-full pt-8 pb-4">
           <PostCard post={report.post} user={currentUser} actions={false} />
         </div>
 
@@ -94,7 +96,7 @@ function Update({
           onSubmit={handleSubmit}
           className={cn(processing ? 'opacity-20 pointer-events-none' : 'opacity-100')}
         >
-          <div className="flex flex-col w-full gap-2">
+          <div className="flex flex-col w-full gap-2 bg-gray-100 rounded-md p-4">
             <Label htmlFor="reason" className="text-left">
               Change status
             </Label>
@@ -102,7 +104,7 @@ function Update({
               value={data.status}
               onValueChange={(value: string) => setData({ status: value })}
             >
-              <SelectTrigger className="select-reason">
+              <SelectTrigger className="select-reason bg-white">
                 <SelectValue id="status" placeholder="Update status" />
               </SelectTrigger>
               <SelectContent>
@@ -119,16 +121,16 @@ function Update({
             </Select>
 
             {data.status === PostReportStatus.ACCEPTED && (
-              <div className="border border-red-200 bg-red-100 rounded-md py-2 px-4">
-                <p className="text-red-500">
+              <div className="border border-red-200 bg-red-100 rounded-md mt-2 py-2 px-4">
+                <p className="text-sm text-red-500">
                   This action will immediately hide the post from the others users feed.
                 </p>
               </div>
             )}
 
             {data.status === PostReportStatus.REJECTED && (
-              <div className="border border-green-200 bg-green-100 rounded-md py-2 px-4">
-                <p className="text-green-500">
+              <div className="border border-green-200 bg-green-100 rounded-md mt-2 py-2 px-4">
+                <p className="text-sm text-green-500">
                   This action will discard the complaint, and notify the reporting user of the
                   decision.
                 </p>
