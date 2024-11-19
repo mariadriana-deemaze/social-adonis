@@ -26,9 +26,9 @@ import { AttachmentResponse } from 'app/interfaces/attachment'
 import { formatDistanceToNow } from 'date-fns'
 import { PostReactionType } from '#enums/post'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover_card'
-import type { UUID } from 'node:crypto'
 import { UserResponse } from '#interfaces/user'
 import { ReportPost } from '@/components/posts/report'
+import type { UUID } from 'node:crypto'
 
 const userLink = (id: UUID) => `/users/${id}`
 const postLink = (id: UUID) => `/posts/${id}`
@@ -196,9 +196,11 @@ function PostGallery({ attachments }: { attachments: AttachmentResponse[] }) {
 }
 
 function PostReaction({
+  actions,
   post,
   currentUser,
 }: {
+  actions: boolean
   post: PostResponse
   currentUser: UserResponse | null
 }) {
@@ -280,35 +282,44 @@ function PostReaction({
 
   return (
     <div className="flex flex-row gap-2 items-center">
-      <HoverCard>
-        <HoverCardTrigger>
-          <button
-            className={`trigger-user-post-react border rounded-full px-2 cursor-pointer ${reaction.type ? 'bg-blue-100 border-blue-400 hover:bg-blue-400-200' : 'bg-slate-50 border-slate-400 hover:bg-slate-200'}`}
-            disabled={isSubmitting}
-          >
-            {reaction.type ? REACTIONS[reaction.type] : '+'}
-          </button>
-        </HoverCardTrigger>
-        <HoverCardContent
-          align="start"
-          side="top"
-          className="flex flex-row divide-x divide-dashed gap-2 px-2 py-1 w-auto"
-        >
-          {Object.entries(REACTIONS).map(([key, value]: [key: string, value: string]) => (
+      {actions ? (
+        <HoverCard>
+          <HoverCardTrigger>
             <button
-              key={`reaction_${key}`}
-              type="button"
-              className={`react-${key.toLowerCase()} flex flex-row gap-1 p-1 justify-center items-center`}
-              onClick={() => reactToPost(key as PostReactionType)}
+              className={`trigger-user-post-react border rounded-full px-2 cursor-pointer ${reaction.type ? 'bg-blue-100 border-blue-400 hover:bg-blue-400-200' : 'bg-slate-50 border-slate-400 hover:bg-slate-200'}`}
+              disabled={isSubmitting}
             >
-              <p className="text-md hover:scale-110 duration-150">{value}</p>
-              <span className="text-xs text-gray-700">
-                {reactionCounts[key as PostReactionType]}
-              </span>
+              {reaction.type ? REACTIONS[reaction.type] : '+'}
             </button>
-          ))}
-        </HoverCardContent>
-      </HoverCard>
+          </HoverCardTrigger>
+          <HoverCardContent
+            align="start"
+            side="top"
+            className="flex flex-row divide-x divide-dashed gap-2 px-2 py-1 w-auto"
+          >
+            {Object.entries(REACTIONS).map(([key, value]: [key: string, value: string]) => (
+              <button
+                key={`reaction_${key}`}
+                type="button"
+                className={`react-${key.toLowerCase()} flex flex-row gap-1 p-1 justify-center items-center`}
+                onClick={actions ? () => reactToPost(key as PostReactionType) : () => {}}
+              >
+                <p className="text-md hover:scale-110 duration-150">{value}</p>
+                <span className="text-xs text-gray-700">
+                  {reactionCounts[key as PostReactionType]}
+                </span>
+              </button>
+            ))}
+          </HoverCardContent>
+        </HoverCard>
+      ) : (
+        <button
+          className={`border rounded-full cursor-not-allowed px-2 ${reaction.type ? 'bg-blue-100 border-blue-400' : 'bg-slate-50 border-slate-400 '}`}
+          disabled={true}
+        >
+          {reaction.type ? REACTIONS[reaction.type] : '+'}
+        </button>
+      )}
       <p className="user-post-react-status text-xs text-slate-500">{countStatus}</p>
     </div>
   )
@@ -316,10 +327,10 @@ function PostReaction({
 
 function PostActions({
   post,
-  habilities,
+  abilities,
 }: {
   post: PostResponse
-  habilities: Partial<Array<'update' | 'delete' | 'report'>>
+  abilities: Partial<Array<'update' | 'delete' | 'report'>>
 }) {
   const actions: Record<'update' | 'delete' | 'report', () => ReactElement> = {
     update: () => (
@@ -372,7 +383,7 @@ function PostActions({
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-auto" align="end" forceMount>
         {Object.entries(actions).map(([action, Element], index) => {
-          if (habilities.includes(action as 'update' | 'delete' | 'report')) {
+          if (abilities.includes(action as 'update' | 'delete' | 'report')) {
             return (
               <DropdownMenuItem
                 key={`${post.id}_${action}_${index}`}
@@ -428,7 +439,7 @@ export default function PostCard({
         {actions && (
           <PostActions
             post={post}
-            habilities={post.user.id !== user?.id ? ['report'] : ['update', 'delete']}
+            abilities={post.user.id !== user?.id ? ['report'] : ['update', 'delete']}
           />
         )}
       </div>
@@ -450,7 +461,7 @@ export default function PostCard({
       </div>
 
       <div className="py-4 opacity-70 border-t border-t-gray-200">
-        <PostReaction post={post} currentUser={user} />
+        <PostReaction actions={actions} post={post} currentUser={user} />
       </div>
     </article>
   )

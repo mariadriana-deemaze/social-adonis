@@ -21,6 +21,7 @@ export default class FeedController {
 
     const posts = await Post.query()
       .orderBy('updated_at', 'desc')
+      .withScopes((scope) => scope.visible())
       .preload('user')
       .preload('reactions')
       .paginate(page, 10)

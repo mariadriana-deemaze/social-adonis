@@ -13,7 +13,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     <>
       <link rel="icon" type="image/svg+xml" href={favicon} />
       <NavBar user={user} />
-      <div className="container flex justify-start pt-20">{children}</div>
+      <div className="flex flex-col justify-start pt-20">{children}</div>
       <Toaster />
     </>
   )

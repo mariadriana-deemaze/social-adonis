@@ -16,6 +16,7 @@ const UsersController = () => import('#controllers/users_controller')
 const PostReactionsController = () => import('#controllers/post_reactions_controller')
 const PostReportsController = () => import('#controllers/post_reports_controller')
 const AdminAuthController = () => import('#controllers/admin_auth_controller')
+const AdminPostReportsController = () => import('#controllers/admin_post_reports_controller')
 
 /**
  *
@@ -85,7 +86,7 @@ router
     router
       .group(() => {
         router.post('/sign-in', [AdminAuthController, 'show'])
-        router.on('/sign-in').renderInertia('admin/sign-in')
+        router.on('/sign-in').renderInertia('admin/sign_in')
       })
       .prefix('auth')
 
@@ -96,6 +97,13 @@ router
       .group(() => {
         router.delete('/auth/sign-out', [AdminAuthController, 'destroy'])
         router.on('/index').renderInertia('admin/index')
+
+        router
+          .group(() => {
+            router.get('reports', [AdminPostReportsController, 'index'])
+            router.put('reports/:id', [AdminPostReportsController, 'update'])
+          })
+          .prefix('posts')
       })
       .use(middleware.auth({ guards: ['admin-web'] }))
   })

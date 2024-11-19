@@ -13,7 +13,8 @@ export default class AuthMiddleware {
   redirectTo = '/auth/sign-in'
 
   /**
-   * The URL to redirect to, when authentication fails
+   *
+   * The URL to redirect the admin to, when authentication fails
    */
   adminRedirectTo = '/admin/auth/sign-in'
 
@@ -26,7 +27,6 @@ export default class AuthMiddleware {
   ) {
     let guard: keyof Authenticators = 'web'
     if (ctx.route?.pattern.includes('admin')) guard = 'admin-web'
-
     try {
       await ctx.auth.authenticateUsing([guard])
       return next()

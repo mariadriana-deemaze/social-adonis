@@ -33,6 +33,7 @@ export default function FeedList({
       `${url}${meta.nextPageUrl}`,
       {},
       {
+        only: ['posts'],
         preserveState: true,
         preserveScroll: true,
         onSuccess: () => {
