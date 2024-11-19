@@ -1,4 +1,5 @@
 import { FormEvent, SetStateAction, useMemo, useState } from 'react'
+import { formatDistanceToNow } from 'date-fns'
 import AdminPostReportsController from '#controllers/admin_post_reports_controller'
 import { PostReportReason, PostReportStatus } from '#enums/post'
 import { Button } from '@/components/ui/button'
@@ -22,7 +23,6 @@ import {
 } from '@/components/ui/dialog'
 import { DefaultPaginator } from '@/components/ui/pagination'
 import { cn } from '@/lib/utils'
-import { InferPageProps } from '@adonisjs/inertia/types'
 import { Head, useForm, router } from '@inertiajs/react'
 import { CheckCheck, ExternalLink, ListTodo, SlidersVertical, TextSearch } from 'lucide-react'
 import { MultiSelect } from '@/components/ui/multi_select'
@@ -36,7 +36,8 @@ import {
 import PostCard from '@/components/posts/post_card'
 import { UserResponse } from '#interfaces/user'
 import { PostReportResponse } from '#interfaces/post'
-import { formatDistanceToNow } from 'date-fns'
+import type { InferPageProps } from '@adonisjs/inertia/types'
+import AdminPageHeader from '@/pages/admin/page_header'
 
 // FIX-ME: izzy
 const pageURL = '/admin/posts/reports'
@@ -196,99 +197,91 @@ export default function Index({
 
   return (
     <>
-      <Head title="Moderation Reports" />
-      <div className="flex flex-col justify-start relative lg:h-52 pb-5 text-left w-full border-b border-b-gray-200 bg-gray-100">
-        <div className="w-full container items-stretch">
-          <div>
-            <h2 className="text-2xl font-semibold text-gray-900">Content Moderation</h2>
-            <h2 className="text-sm font-normal text-gray-700">
-              Take actionable steps to recent user reported posts
-            </h2>
-          </div>
-
-          <div className="flex flex-col gap-4 min-h-24 w-full justify-end">
-            <form onSubmit={handleSubmit}>
-              <div className="flex flex-col lg:flex-row gap-4">
-                <div className="flex flex-col gap-2 w-full lg:w-96">
-                  <Label htmlFor="reason" className="text-left">
-                    Reason:
-                  </Label>
-                  <MultiSelect
-                    id="reason"
-                    defaultValue={data.reason}
-                    maxCount={1}
-                    placeholder="Filter by a reason"
-                    className="bg-white"
-                    options={Object.values(PostReportReason).map((reason) => {
-                      return {
-                        label: reason.toLocaleLowerCase(),
-                        value: reason,
-                      }
-                    })}
-                    value={data.reason}
-                    onValueChange={(value) =>
-                      setData((prevState) => {
-                        return {
-                          ...prevState,
-                          reason: value,
-                        }
-                      })
+      <Head title="Content moderation" />
+      <AdminPageHeader
+        title="Content Moderation"
+        description="Take actionable steps to recent user reported posts."
+      >
+        <form onSubmit={handleSubmit}>
+          <div className="flex flex-col lg:flex-row gap-4">
+            <div className="flex flex-col gap-2 w-full lg:w-96">
+              <Label htmlFor="reason" className="text-left">
+                Reason:
+              </Label>
+              <MultiSelect
+                id="reason"
+                defaultValue={data.reason}
+                maxCount={1}
+                placeholder="Filter by a reason"
+                className="bg-white"
+                options={Object.values(PostReportReason).map((reason) => {
+                  return {
+                    label: reason.toLocaleLowerCase(),
+                    value: reason,
+                  }
+                })}
+                value={data.reason}
+                onValueChange={(value) =>
+                  setData((prevState) => {
+                    return {
+                      ...prevState,
+                      reason: value,
                     }
-                  />
-                </div>
-                <div className="flex flex-col gap-2 w-full lg:w-96">
-                  <Label htmlFor="status" className="text-left">
-                    Status:
-                  </Label>
-                  <MultiSelect
-                    id="status"
-                    defaultValue={data.status}
-                    maxCount={1}
-                    placeholder="Filter by status"
-                    className="bg-white"
-                    options={Object.values(PostReportStatus).map((status) => {
-                      return {
-                        label: status.toLocaleLowerCase(),
-                        value: status,
-                      }
-                    })}
-                    value={data.status}
-                    onValueChange={(value) =>
-                      setData((prevState) => {
-                        return {
-                          ...prevState,
-                          status: value,
-                        }
-                      })
+                  })
+                }
+              />
+            </div>
+            <div className="flex flex-col gap-2 w-full lg:w-96">
+              <Label htmlFor="status" className="text-left">
+                Status:
+              </Label>
+              <MultiSelect
+                id="status"
+                defaultValue={data.status}
+                maxCount={1}
+                placeholder="Filter by status"
+                className="bg-white"
+                options={Object.values(PostReportStatus).map((status) => {
+                  return {
+                    label: status.toLocaleLowerCase(),
+                    value: status,
+                  }
+                })}
+                value={data.status}
+                onValueChange={(value) =>
+                  setData((prevState) => {
+                    return {
+                      ...prevState,
+                      status: value,
                     }
-                  />
-                </div>
+                  })
+                }
+              />
+            </div>
 
-                <Button type="submit" size="sm" className="self-end justify-end h-10">
-                  <TextSearch />
-                </Button>
-              </div>
-            </form>
+            <Button type="submit" size="sm" className="self-end justify-end h-10">
+              <TextSearch />
+            </Button>
           </div>
-        </div>
-      </div>
+        </form>
+      </AdminPageHeader>
 
       <div className="container pt-5">
         <Card className="w-full top-2">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>
+                <TableHead className="max-w-16">
                   <Button type="button" size="sm-icon" variant="ghost">
                     <ListTodo size={14} className="text-gray-600" />
                   </Button>
                 </TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Username</TableHead>
-                <TableHead>Post</TableHead>
-                <TableHead>N. Reports</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead>Reason</TableHead>
+                <TableHead className="max-w-16">Report date</TableHead>
+                <TableHead className="max-w-38">Reporting username</TableHead>
+                <TableHead className="max-w-24">Post</TableHead>
+                <TableHead className="min-w-32">N. Reports</TableHead>
+                <TableHead className="max-w-32">Description</TableHead>
+                <TableHead className="max-w-32">Reason</TableHead>
                 <TableHead className="text-right">Status</TableHead>
               </TableRow>
             </TableHeader>
@@ -302,9 +295,14 @@ export default function Index({
               ) : (
                 reports.data.map((report: PostReportResponse) => (
                   <TableRow key={report.id}>
-                    <TableCell className="font-medium max-w-10 truncate align-middle items-center justify-center">
+                    <TableCell className="font-medium truncate align-middle items-center justify-center">
                       {report.status === PostReportStatus.PENDING ? (
-                        <Button type="button" size="sm-icon" variant="outline">
+                        <Button
+                          className="report-update-action-trigger"
+                          type="button"
+                          size="sm-icon"
+                          variant="outline"
+                        >
                           <SlidersVertical
                             size={14}
                             className="text-gray-600"
@@ -320,27 +318,25 @@ export default function Index({
                         </Button>
                       )}
                     </TableCell>
-                    <TableCell className="font-medium max-w-10 truncate">
+                    <TableCell className="font-medium truncate">
                       {formatDistanceToNow(new Date(report.createdAt))} ago
                     </TableCell>
-                    <TableCell className="font-medium max-w-10 truncate">
-                      {report.user.username}
-                    </TableCell>
-                    <TableCell className="font-medium w-10">
+                    <TableCell className="font-medium truncate">{report.user.username}</TableCell>
+                    <TableCell className="font-medium">
                       {/* // FIX-ME - izzy */}
                       <a href={`/posts/${report.post.id}`} target="blank">
                         <ExternalLink size={15} className="text-blue-400" />
                       </a>
                     </TableCell>
-                    <TableCell className="font-medium max-w-10 truncate">
+                    <TableCell className="report-count font-medium truncate">
                       {report.post.reportCount}
                     </TableCell>
-                    <TableCell className="font-medium max-w-20 truncate">
+                    <TableCell className="report-post-content font-medium truncate max-w-60">
                       {report.post.content}
                     </TableCell>
-                    <TableCell className="font-medium max-w-20 truncate">{report.reason}</TableCell>
-                    <TableCell className="flex font-medium justify-end">
-                      <div
+                    <TableCell className="font-medium truncate">{report.reason}</TableCell>
+                    <TableCell className="report-status flex font-medium justify-end">
+                      <span
                         className={cn(
                           'font-medium text-xs text-white w-max rounded-sm px-2 py-1',
                           report.status === PostReportStatus.ACCEPTED && 'bg-green-500',
@@ -349,7 +345,7 @@ export default function Index({
                         )}
                       >
                         {report.status}
-                      </div>
+                      </span>
                     </TableCell>
                   </TableRow>
                 ))

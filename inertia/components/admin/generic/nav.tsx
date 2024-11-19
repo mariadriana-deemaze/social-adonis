@@ -12,8 +12,8 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import AdonisLogo from '@/components/svg/logo'
-import { UserResponse } from '#interfaces/user'
 import { cn } from '@/lib/utils'
+import { UserResponse } from '#interfaces/user'
 import { PostReportStatus } from '#enums/post'
 
 export default function NavBar({ user }: { user: UserResponse | null }) {
@@ -39,6 +39,7 @@ export default function NavBar({ user }: { user: UserResponse | null }) {
               <Link
                 key={`link-${index}`}
                 href={link}
+                except={['user']}
                 className="text-white text-sm font-medium transition-colors hover:text-primary"
               >
                 {title}

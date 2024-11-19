@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ButtonProps, buttonVariants } from '@/components/ui/button'
 import { MetaResponse } from '#interfaces/pagination'
+import { InertiaLinkProps, Link } from '@inertiajs/react'
 
 const Pagination = ({ className, ...props }: React.ComponentProps<'nav'>) => (
   <nav
@@ -30,10 +31,12 @@ PaginationItem.displayName = 'PaginationItem'
 type PaginationLinkProps = {
   isActive?: boolean
 } & Pick<ButtonProps, 'size'> &
-  React.ComponentProps<'a'>
+  React.ComponentProps<'a'> &
+  Omit<InertiaLinkProps, 'size'>
 
 const PaginationLink = ({ className, isActive, size = 'icon', ...props }: PaginationLinkProps) => (
-  <a
+  <Link
+    except={['user']}
     aria-current={isActive ? 'page' : undefined}
     className={cn(
       buttonVariants({
@@ -98,8 +101,10 @@ const DefaultPaginator = ({
   className?: React.ComponentProps<'nav'>['className']
 }) => {
   return (
-    <div className="flex flex-col gap-0 w-full text-center border-t border-t-gray-100 mt-2">
-      <p className="text-slate-400 pt-2 mt-2 text-sm">{meta.total} records</p>
+    <div className="default-paginator flex flex-col gap-0 w-full text-center border-t border-t-gray-100 mt-2">
+      <p className="default-paginator-total text-slate-400 pt-2 mt-2 text-sm">
+        {meta.total} records
+      </p>
       <Pagination className={cn('w-full', className)}>
         <PaginationContent>
           <PaginationItem>
@@ -128,6 +133,8 @@ const DefaultPaginator = ({
     </div>
   )
 }
+
+DefaultPaginator.displayName = 'DefaultPaginator'
 
 export {
   Pagination,
