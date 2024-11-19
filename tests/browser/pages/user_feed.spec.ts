@@ -16,7 +16,7 @@ test.group('Acessing user profile feed', (group) => {
     browserContext,
   }) => {
     const user = await UserFactory.with('posts', 2).create()
-    await browserContext.loginAs(user)
+    await browserContext.withGuard('web').loginAs(user)
     const page = await visit(`/users/${user.id}`)
     const locator = page.getByText('Total posts').first()
     await page.assertText(locator, `Total posts ${user.posts.length}`)
