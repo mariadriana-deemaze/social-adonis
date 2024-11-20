@@ -1,6 +1,9 @@
+import { PostReportStatus } from '#enums/post'
 import { PaginatedResponse } from '#interfaces/pagination'
 import { PostReportResponse } from '#interfaces/post'
 import PostReport from '#models/post_report'
+import PostReportingUserStatusNotification from '#notifications/post_reporting_user_status_notification'
+import UserPostReportedNotification from '#notifications/user_post_reported_notification'
 import PostsService from '#services/posts_service'
 import { UserService } from '#services/user_service'
 import { inject } from '@adonisjs/core'
@@ -48,6 +51,21 @@ export default class AdminPostReportService {
       data: serialized,
       meta,
     }
+  }
+
+  /**
+   * This action performs two notification types:
+   * 1 - Notify the post author of the post being blocked, in case it is blocked.
+   * 2 - Notify the post reporting user of the taken action.
+   */
+  async notify(report: PostReport): Promise<void> {
+    const promises = [report.user.notify(new PostReportingUserStatusNotification(report))]
+
+    if (report.status === PostReportStatus.ACCEPTED) {
+      promises.push(report.post.user.notify(new UserPostReportedNotification(report)))
+    }
+
+    await Promise.all(promises)
   }
 
   private async serialize(currentUserId: UUID, report: PostReport): Promise<PostReportResponse> {

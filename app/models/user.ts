@@ -7,8 +7,9 @@ import { DbRememberMeTokensProvider } from '@adonisjs/auth/session'
 import Session from '#models/session'
 import Post from '#models/post'
 import Notifiable from '@osenco/adonisjs-notifications/mixins/notifiable'
-import type { HasMany } from '@adonisjs/lucid/types/relations'
 import { randomUUID, type UUID } from 'node:crypto'
+import type { HasMany } from '@adonisjs/lucid/types/relations'
+import type { NotificationChannelName } from '@osenco/adonisjs-notifications/types'
 
 export enum AccountRole {
   USER = 'USER',
@@ -20,7 +21,7 @@ const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   passwordColumnName: 'password',
 })
 
-export default class User extends compose(BaseModel, AuthFinder, Notifiable('notifications')) {
+export default class User extends compose(BaseModel, AuthFinder, Notifiable('user_notifications')) {
   @column({ isPrimary: true })
   declare id: UUID
 
@@ -54,6 +55,12 @@ export default class User extends compose(BaseModel, AuthFinder, Notifiable('not
   declare posts: HasMany<typeof Post>
 
   static rememberMeTokens = DbRememberMeTokensProvider.forModel(User)
+
+  // NOTE: Should be attached differently
+  @computed({ serializeAs: null })
+  get notificationPreference(): NotificationChannelName {
+    return 'database'
+  }
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

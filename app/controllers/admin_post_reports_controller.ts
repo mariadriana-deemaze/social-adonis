@@ -42,11 +42,13 @@ export default class AdminPostReportsController {
       return ctx.response.forbidden('Only admin is able to take action on report status.')
     }
 
+    // TODO: Pass to service
     try {
       const payload = ctx.request.body()
       const data = await adminUpdatePostReportValidator.validate(payload)
       report.status = data.status
       await report.save()
+      await this.service.notify(report)
       return this.index(ctx)
     } catch (error) {
       if (error instanceof errors.E_VALIDATION_ERROR) {
