@@ -70,6 +70,7 @@
     "@adonisjs/drive": "^3.2.0",
     "@adonisjs/inertia": "^1.1.0",
     "@adonisjs/lucid": "^21.1.0",
+    "@adonisjs/mail": "^9.2.2",
     "@adonisjs/session": "^7.4.2",
     "@adonisjs/shield": "^8.1.1",
     "@adonisjs/static": "^1.1.1",

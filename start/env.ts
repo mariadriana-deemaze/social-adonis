@@ -56,4 +56,12 @@ export default await Env.create(new URL('../', import.meta.url), {
 
   LINK_PREVIEW_API: Env.schema.string(),
   VITE_APP_NAME: Env.schema.string(),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for configuring the mail package
+  |----------------------------------------------------------
+  */
+  SMTP_HOST: Env.schema.string(),
+  SMTP_PORT: Env.schema.string(),
 })

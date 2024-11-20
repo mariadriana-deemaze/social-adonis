@@ -16,6 +16,7 @@ export default defineConfig({
     () => import('@adonisjs/bouncer/commands'),
     () => import('@izzyjs/route/commands'),
     () => import('@osenco/adonisjs-notifications/commands'),
+    () => import('@adonisjs/mail/commands'),
   ],
 
   /*
@@ -48,6 +49,7 @@ export default defineConfig({
     () => import('@adonisjs/drive/drive_provider'),
     () => import('@izzyjs/route/izzy_provider'),
     () => import('@osenco/adonisjs-notifications/notification_provider'),
+    () => import('@adonisjs/mail/mail_provider'),
   ],
 
   /*
