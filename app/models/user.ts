@@ -2,12 +2,13 @@ import { DateTime } from 'luxon'
 import hash from '@adonisjs/core/services/hash'
 import { compose } from '@adonisjs/core/helpers'
 import { BaseModel, column, computed, hasMany } from '@adonisjs/lucid/orm'
-import type { HasMany } from '@adonisjs/lucid/types/relations'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { DbRememberMeTokensProvider } from '@adonisjs/auth/session'
-import { randomUUID, type UUID } from 'node:crypto'
 import Session from '#models/session'
 import Post from '#models/post'
+import Notifiable from '@osenco/adonisjs-notifications/mixins/notifiable'
+import type { HasMany } from '@adonisjs/lucid/types/relations'
+import { randomUUID, type UUID } from 'node:crypto'
 
 export enum AccountRole {
   USER = 'USER',
@@ -19,7 +20,7 @@ const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   passwordColumnName: 'password',
 })
 
-export default class User extends compose(BaseModel, AuthFinder) {
+export default class User extends compose(BaseModel, AuthFinder, Notifiable('notifications')) {
   @column({ isPrimary: true })
   declare id: UUID
 

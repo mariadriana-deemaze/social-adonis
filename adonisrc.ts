@@ -15,6 +15,7 @@ export default defineConfig({
     () => import('@adonisjs/lucid/commands'),
     () => import('@adonisjs/bouncer/commands'),
     () => import('@izzyjs/route/commands'),
+    () => import('@osenco/adonisjs-notifications/commands'),
   ],
 
   /*
@@ -46,6 +47,7 @@ export default defineConfig({
     () => import('@adonisjs/bouncer/bouncer_provider'),
     () => import('@adonisjs/drive/drive_provider'),
     () => import('@izzyjs/route/izzy_provider'),
+    () => import('@osenco/adonisjs-notifications/notification_provider'),
   ],
 
   /*
@@ -107,5 +109,8 @@ export default defineConfig({
   hooks: {
     onBuildStarting: [() => import('@adonisjs/vite/build_hook')],
     onDevServerStarted: [() => import('@izzyjs/route/dev_hook')],
+  },
+  directories: {
+    notifications: 'app/notifications',
   },
 })
