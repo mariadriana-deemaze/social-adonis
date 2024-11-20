@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils'
 import { useForm, usePage } from '@inertiajs/react'
 import { Paperclip } from 'lucide-react'
 import { PostResponse } from 'app/interfaces/post'
+import { route } from '@izzyjs/route/client'
 
 const MAX_FILES = 3
 
@@ -62,12 +63,12 @@ export default function Form({
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (method === 'patch' && data) {
-      patchData(`/posts/${post?.id}`, {
+      patchData(route('posts.update', { params: { id: post?.id! } }).path, {
         preserveState: false,
         onFinish: () => setOpen(false),
       })
     } else {
-      postData('/posts', {
+      postData(route('posts.store').path, {
         preserveState: false,
         onFinish: () => setOpen(false),
       })

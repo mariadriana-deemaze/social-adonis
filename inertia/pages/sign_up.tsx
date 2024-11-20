@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/components/ui/use_toast'
 import AdonisLogo from '@/components/svg/logo'
+import { route } from '@izzyjs/route/client'
 
 export default function SignUp() {
   const { toast } = useToast()
@@ -30,7 +31,7 @@ export default function SignUp() {
 
   return (
     <>
-      <Head title="Social Adonis | Sign up" />
+      <Head title="Sign up" />
       <div className="container gap-10">
         <AdonisLogo />
         <form className="flex flex-col items-center gap-4" onSubmit={handleSubmit}>
@@ -91,7 +92,7 @@ export default function SignUp() {
               </div>
               <div className="mt-4 text-center text-sm">
                 Already have an account?{' '}
-                <Link href="/auth/sign-in" className="underline">
+                <Link href={route('auth.show').path} className="underline">
                   Sign in
                 </Link>
               </div>

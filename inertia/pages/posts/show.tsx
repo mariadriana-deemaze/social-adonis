@@ -9,7 +9,7 @@ export default function Show({ post, user }: InferPageProps<PostsController, 'sh
   if (!post) return <>loading...</>
   return (
     <>
-      <Head title={`SocialAdonis | Post by @${post.user.username}`} />
+      <Head title={`Post by @${post.user.username}`} />
       <div className="w-full flex flex-col items-start pb-4">
         <div className="my-6">
           <div

@@ -3,33 +3,49 @@ services:
     image: postgres:15
     container_name: pg15
     restart: always
+    volumes:
+      - pg15_volume:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: root
     ports:
-      - '5432:5432'
+      - 5432:5432
     networks:
       - social-adonis-network
 
-  web:
-    image: social-adonis-web
-    container_name: social-adonis-web
+  redis:
+    container_name: redis
+    image: redis:6-alpine
+    volumes:
+      - redis_volume:/data
+    ports:
+      - 6379:6379
+    networks:
+      - social-adonis-network
+
+  adonis_app:
+    container_name: adonis_app
     build:
       context: .
-      dockerfile: Dockerfile
+      target: deps
+    ports:
+      - 3000:3000
+    env_file:
+      - .env
+    environment:
+      - DB_HOST=pg15
+      - REDIS_HOST=redis
     volumes:
       - .:/app
       - /app/node_modules
-    restart: unless-stopped
-    command: yarn dev
-    ports:
-      - '3000:3000'
-    env_file:
-      - .env
-    depends_on:
-      - pg15
+    working_dir: /app
     networks:
       - social-adonis-network
+    command: yarn dev
+
+volumes:
+  pg15_volume:
+  redis_volume:
 
 networks:
   social-adonis-network:

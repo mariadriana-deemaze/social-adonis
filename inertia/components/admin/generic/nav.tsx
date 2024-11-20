@@ -5,7 +5,6 @@ import {
   DropdownMenuTrigger,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuShortcut,
 } from '@/components/ui/dropdown_menu'
@@ -14,18 +13,20 @@ import { Button } from '@/components/ui/button'
 import AdonisLogo from '@/components/svg/logo'
 import { cn } from '@/lib/utils'
 import { UserResponse } from '#interfaces/user'
+import { route } from '@izzyjs/route/client'
 import { PostReportStatus } from '#enums/post'
 
 export default function NavBar({ user }: { user: UserResponse | null }) {
   const LINKS: Record<'title' | 'link', string>[] = [
     {
       title: 'Home',
-      link: '/admin/index',
+      link: route('admin.index').path,
     },
     {
       title: 'Reports',
-      // FIX-ME: izzy.
-      link: `/admin/posts/reports?status[]=${PostReportStatus.PENDING}`,
+      link: route('admin_posts_reports.index', {
+        qs: { 'status[]': [PostReportStatus.PENDING] },
+      }).path,
     },
   ]
 
@@ -72,19 +73,8 @@ export default function NavBar({ user }: { user: UserResponse | null }) {
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuGroup>
-                    <DropdownMenuItem>
-                      <Link href={`/users/${user.id}`}>Profile</Link>
-                      <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Link href={`/users/${user.id}/settings`}>Settings</Link>
-                      <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
-                    </DropdownMenuItem>
-                  </DropdownMenuGroup>
-                  <DropdownMenuSeparator />
                   <DropdownMenuItem>
-                    <Link as="button" href={'/admin/auth/sign-out'} method="delete">
+                    <Link as="button" href={route('admin_auth.destroy').path} method="delete">
                       Log out
                     </Link>
                     <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>

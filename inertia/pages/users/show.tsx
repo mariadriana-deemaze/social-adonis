@@ -8,6 +8,7 @@ import { Head } from '@inertiajs/react'
 import { CalendarHeart, FilePen } from 'lucide-react'
 import { CreatePost } from '@/components/posts/create'
 import { UserResponse } from '#interfaces/user'
+import { route } from '@izzyjs/route/client'
 
 function UserCard({ user, totalPosts }: { user: UserResponse; totalPosts: number }) {
   return (
@@ -61,7 +62,7 @@ export default function Show({ user, posts, profile }: InferPageProps<FeedContro
   if (!posts || !profile) return <>Loading..</>
   return (
     <>
-      <Head title={`SocialAdonis | @${profile.username}`} />
+      <Head title={`@${profile.username}`} />
       <div className="relative min-h-[280px] lg:min-h-max w-full mb-16 lg:mb-0">
         <div className="relative bg-slate-300 border border-gray-200 h-52 w-full rounded-2xl mb-4 shadow-inner">
           <div className="w-full h-full rounded-2xl overflow-hidden">
@@ -80,7 +81,11 @@ export default function Show({ user, posts, profile }: InferPageProps<FeedContro
           <UserCard user={profile} totalPosts={posts.meta.total} />
         </div>
         <div className="w-full">
-          <FeedList url={`/users/${profile.id}`} currentUser={user} posts={posts} />
+          <FeedList
+            url={route('users.show', { params: { id: profile?.id! } }).path}
+            currentUser={user}
+            posts={posts}
+          />
           {user?.id === profile.id && (
             <div className="z-10 fixed left-5 bottom-5">
               <CreatePost />

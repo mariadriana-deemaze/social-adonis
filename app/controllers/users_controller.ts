@@ -51,7 +51,7 @@ export default class UsersController {
     }
   }
 
-  async delete() {
+  async destroy() {
     // TODO: Implement.
   }
 }

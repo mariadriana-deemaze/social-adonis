@@ -36,11 +36,9 @@ import {
 import PostCard from '@/components/posts/post_card'
 import { UserResponse } from '#interfaces/user'
 import { PostReportResponse } from '#interfaces/post'
-import type { InferPageProps } from '@adonisjs/inertia/types'
 import AdminPageHeader from '@/pages/admin/page_header'
-
-// FIX-ME: izzy
-const pageURL = '/admin/posts/reports'
+import { route } from '@izzyjs/route/client'
+import type { InferPageProps } from '@adonisjs/inertia/types'
 
 function Update({
   currentUser,
@@ -61,9 +59,12 @@ function Update({
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    // FIX-ME: izzy
     router.put(
-      `${pageURL}/${report.id}`,
+      route('admin_posts_reports.update', {
+        params: {
+          id: report.id,
+        },
+      }).path,
       {
         status: data.status,
       },
@@ -183,7 +184,7 @@ export default function Index({
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     router.get(
-      pageURL,
+      route('admin_posts_reports.index').path,
       {
         status: data.status,
         reason: data.reason,
@@ -323,8 +324,10 @@ export default function Index({
                     </TableCell>
                     <TableCell className="font-medium truncate">{report.user.username}</TableCell>
                     <TableCell className="font-medium">
-                      {/* // FIX-ME - izzy */}
-                      <a href={`/posts/${report.post.id}`} target="blank">
+                      <a
+                        href={route('posts.show', { params: { id: report.post.id } }).path}
+                        target="blank"
+                      >
                         <ExternalLink size={15} className="text-blue-400" />
                       </a>
                     </TableCell>
@@ -355,7 +358,7 @@ export default function Index({
           <DefaultPaginator
             className="py-2"
             meta={reports.meta}
-            baseUrl="/admin/posts/reports" // FIX-ME: izzy
+            baseUrl={route('admin_posts_reports.index').path}
           />
         </Card>
 

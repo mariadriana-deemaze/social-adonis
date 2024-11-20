@@ -14,6 +14,7 @@ export default defineConfig({
     () => import('@adonisjs/core/commands'),
     () => import('@adonisjs/lucid/commands'),
     () => import('@adonisjs/bouncer/commands'),
+    () => import('@izzyjs/route/commands'),
   ],
 
   /*
@@ -44,6 +45,7 @@ export default defineConfig({
     () => import('@rlanz/sentry/provider'),
     () => import('@adonisjs/bouncer/bouncer_provider'),
     () => import('@adonisjs/drive/drive_provider'),
+    () => import('@izzyjs/route/izzy_provider'),
   ],
 
   /*
@@ -104,5 +106,6 @@ export default defineConfig({
   assetsBundler: false,
   hooks: {
     onBuildStarting: [() => import('@adonisjs/vite/build_hook')],
+    onDevServerStarted: [() => import('@izzyjs/route/dev_hook')],
   },
 })

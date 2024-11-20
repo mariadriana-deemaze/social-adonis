@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label'
 import { useToast } from '@/components/ui/use_toast'
 import { InferPageProps } from '@adonisjs/inertia/types'
 import { Head, useForm, usePage } from '@inertiajs/react'
+import { route } from '@izzyjs/route/client'
 import { AtSign, Upload } from 'lucide-react'
 import { ChangeEvent, useEffect, useRef, useState } from 'react'
 
@@ -46,7 +47,7 @@ export default function UserSettings({
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    patch(`/users/${user?.id}`, {
+    patch(route('users.update', { params: { id: user?.id! } }).path, {
       preserveState: true,
       preserveScroll: true,
       onSuccess: () => {
@@ -89,7 +90,7 @@ export default function UserSettings({
 
   return (
     <>
-      <Head title={`Social Adonis | ${user.username} Setting's`} />
+      <Head title={`${user.username} Setting's`} />
       <div className="relative flex flex-col pt-0 w-full">
         <form className="flex flex-col items-center gap-4 w-full" onSubmit={handleSubmit}>
           <div className="relative bg-slate-300 h-64 w-full rounded-2xl mb-20 shadow-inner">
