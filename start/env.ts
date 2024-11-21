@@ -56,6 +56,7 @@ export default await Env.create(new URL('../', import.meta.url), {
 
   LINK_PREVIEW_API: Env.schema.string(),
   VITE_APP_NAME: Env.schema.string(),
+  PRODUCTION_URL: Env.schema.string(),
 
   /*
   |----------------------------------------------------------
