@@ -3,6 +3,7 @@ import { NotificationData } from '#interfaces/notification'
 import UserPostReportedMail from '#mails/user_post_reported_mail'
 import type User from '#models/user'
 import type PostReport from '#models/post_report'
+import { NotificationType } from '#enums/notification'
 
 export default class UserPostReportedNotification implements NotificationContract<User> {
   private readonly report
@@ -20,7 +21,8 @@ export default class UserPostReportedNotification implements NotificationContrac
 
   toDatabase(notifiable: User): NotificationData {
     return {
-      user: notifiable.toJSON(),
+      type: NotificationType.UserPostReportedNotification,
+      userId: notifiable.id,
       title: this.subject,
       message: this.message,
     }

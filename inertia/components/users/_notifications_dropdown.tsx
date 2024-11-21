@@ -8,10 +8,11 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown_menu'
 import { NotificationResponse } from '#interfaces/notification'
-import { BellDot, CheckCheck, Loader2 } from 'lucide-react'
+import { BadgeInfo, BellDot, CheckCheck, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import InfoPanel from '@/components/generic/info_panel'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { NotificationType } from '#enums/notification'
 
 export default function NotificationsDropdown() {
   const [notificationsLoadState, setNotificationsLoadState] = useState<
@@ -19,6 +20,11 @@ export default function NotificationsDropdown() {
   >('loading')
   const [notifications, setNotifications] = useState<NotificationResponse[]>([])
   const [markedAsRead, setMarkedAsRead] = useState(false)
+
+  const INFO_TYPES = [
+    NotificationType.PostReportingUserStatusNotification,
+    NotificationType.UserPostReportedNotification,
+  ]
 
   async function getUserNotifications() {
     const request = await fetch(route('notifications.index').path, { method: 'GET' })
@@ -46,7 +52,6 @@ export default function NotificationsDropdown() {
 
   useEffect(() => {
     getUserNotifications()
-
     // TODO: Future, implement as broadcast.
     const iter = setInterval(getUserNotifications, 1000 * 10)
     return () => clearInterval(iter)
@@ -58,7 +63,10 @@ export default function NotificationsDropdown() {
         <Button variant="ghost" size="icon" className="relative h-8 w-8 rounded-full">
           <div className="relative">
             {hasNotifications && (
-              <div className="absolute animate-in duration-700 right-[1px] top-[2.5px] h-2 w-2 bg-blue-500 rounded-full" />
+              <div className="flex absolute bg-white right-0 top-[1px] h-3 w-3 rounded-full">
+                <div className="self-center absolute animate-in duration-700 h-1 w-1 bg-blue-500 rounded-full" />
+                <div className="self-center absolute animate-pulse duration-1000 h-2 w-2 bg-blue-500 rounded-full" />
+              </div>
             )}
             <BellDot size={20} />
           </div>
@@ -113,19 +121,25 @@ export default function NotificationsDropdown() {
                       className="flex flex-row gap-4 p-2 overflow-hidden hover:bg-gray-50 rounded-md"
                     >
                       <div className="flex flex-col gap-2">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage
-                            src={
-                              notification.user?.attachments
-                                ? notification.user?.attachments?.avatar?.link
-                                : '#'
-                            }
-                            alt={`${notification.user.name} avatar image`}
-                          />
-                          <AvatarFallback>
-                            {notification.user.name ? notification.user.name[0] : '-'}
-                          </AvatarFallback>
-                        </Avatar>
+                        {INFO_TYPES.includes(notification.data.type) ? (
+                          <div className="h-8 w-8 bg-gradient-to-tr from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
+                            <BadgeInfo size={22} className="text-white" />
+                          </div>
+                        ) : (
+                          <Avatar className="h-8 w-8">
+                            <AvatarImage
+                              src={
+                                notification.user?.attachments
+                                  ? notification.user?.attachments?.avatar?.link
+                                  : '#'
+                              }
+                              alt={`${notification.user.name} avatar image`}
+                            />
+                            <AvatarFallback>
+                              {notification.user.name ? notification.user.name[0] : '-'}
+                            </AvatarFallback>
+                          </Avatar>
+                        )}
                       </div>
                       <div className="flex flex-col gap-1">
                         <a
@@ -143,7 +157,7 @@ export default function NotificationsDropdown() {
                           <p className="text-sm font-semibold truncate line-clamp-1 text-ellipsis text-wrap">
                             {notification.data.title}
                           </p>
-                          <p className="text-sm truncate line-clamp-2 text-ellipsis text-wrap">
+                          <p className="text-xs truncate line-clamp-2 text-ellipsis text-wrap">
                             {notification.data.message}
                           </p>
                         </div>

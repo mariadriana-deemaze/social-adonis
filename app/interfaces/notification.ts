@@ -1,6 +1,6 @@
+import { NotificationType } from '#enums/notification'
 import { BaseEntity } from '#interfaces/base_entity'
 import { UserResponse } from '#interfaces/user'
-import { ModelObject } from '@adonisjs/lucid/types/model'
 import { DatabaseChannelData, DatabaseNotificationRow } from '@osenco/adonisjs-notifications/types'
 import type { UUID } from 'node:crypto'
 
@@ -9,7 +9,8 @@ export interface NotificationRow extends Omit<DatabaseNotificationRow, 'id'> {
 }
 
 export interface NotificationData {
-  user: ModelObject // Consider inclusion of user avatar
+  type: NotificationType
+  userId: UUID
   title: string
   message: string
 }

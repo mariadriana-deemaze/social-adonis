@@ -2,6 +2,7 @@ import { NotificationChannelName, NotificationContract } from '@osenco/adonisjs-
 import { PostReportStatus } from '#enums/post'
 import { NotificationData } from '#interfaces/notification'
 import PostReportingUserStatusMail from '#mails/post_reporting_user_status_mail'
+import { NotificationType } from '#enums/notification'
 import type User from '#models/user'
 import type PostReport from '#models/post_report'
 
@@ -21,7 +22,8 @@ export default class PostReportingUserStatusNotification implements Notification
 
   toDatabase(notifiable: User): NotificationData {
     return {
-      user: notifiable.toJSON(),
+      type: NotificationType.PostReportingUserStatusNotification,
+      userId: notifiable.id,
       title: this.subject,
       message: this.message,
     }
