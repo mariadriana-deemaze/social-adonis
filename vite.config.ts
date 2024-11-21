@@ -30,4 +30,10 @@ export default defineConfig({
       ],
     },
   },
+  server: {
+    hmr: {
+      protocol: 'ws',
+      host: '0.0.0.0',
+    },
+  },
 })
