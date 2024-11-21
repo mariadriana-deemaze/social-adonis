@@ -15,8 +15,6 @@ export default class PlatformMailNotification extends BaseMail {
   }
 
   prepare() {
-    this.message.from(this.from)
-    this.message.html(this.body)
-    this.message.to(this.user.email)
+    this.message.subject(this.subject).from(this.from).to(this.user.email).html(this.body)
   }
 }

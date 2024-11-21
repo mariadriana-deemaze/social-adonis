@@ -70,13 +70,17 @@ export default class AdminPostReportService {
       return
     }
 
-    const promises = [reportingUser.notify(new PostReportingUserStatusNotification(report))]
+    try {
+      const promises = [reportingUser.notify(new PostReportingUserStatusNotification(report))]
 
-    if (report.status === PostReportStatus.ACCEPTED) {
-      promises.push(postAuthor.notify(new UserPostReportedNotification(report)))
+      if (report.status === PostReportStatus.ACCEPTED) {
+        promises.push(postAuthor.notify(new UserPostReportedNotification(report)))
+      }
+
+      await Promise.all(promises)
+    } catch (error) {
+      logger.error(`Error in notifing users: ${JSON.stringify(error, null, 2)}`)
     }
-
-    await Promise.all(promises)
   }
 
   private async serialize(currentUserId: UUID, report: PostReport): Promise<PostReportResponse> {

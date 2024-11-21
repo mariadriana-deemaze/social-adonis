@@ -57,9 +57,9 @@ export default class User extends compose(BaseModel, AuthFinder, Notifiable('use
   static rememberMeTokens = DbRememberMeTokensProvider.forModel(User)
 
   // NOTE: Should be attached differently
-  @computed({ serializeAs: null })
-  get notificationPreference(): NotificationChannelName {
-    return 'database'
+  @computed()
+  get notificationPreference(): NotificationChannelName | NotificationChannelName[] {
+    return ['database', 'mail']
   }
 
   @column.dateTime({ autoCreate: true })

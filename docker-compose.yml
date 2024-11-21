@@ -26,10 +26,17 @@ services:
   mailhog:
     container_name: mailhog
     image: mailhog/mailhog
+    tty: true
+    restart: on-failure
     volumes:
       - mailhog_volume:/data
     ports:
-      - 8025:8025
+      - 1025:1025 # smtp server
+      - 8025:8025 # UI
+    environment:
+      MAIL_MAILER: smtp
+      MAIL_HOST: 127.0.0.1
+      MAIL_PORT: 1025
     networks:
       - social-adonis-network
 
