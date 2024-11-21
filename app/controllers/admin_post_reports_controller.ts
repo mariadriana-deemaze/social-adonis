@@ -3,7 +3,6 @@ import { inject } from '@adonisjs/core'
 import AdminPostReportService from '#services/admin_post_report_service'
 import { PaginatedResponse } from '#interfaces/pagination'
 import { PostReportResponse } from '#interfaces/post'
-import { adminUpdatePostReportValidator } from '#validators/post_report'
 import PostReport from '#models/post_report'
 import { errorsReducer } from '#utils/index'
 import { errors } from '@vinejs/vine'
@@ -42,13 +41,10 @@ export default class AdminPostReportsController {
       return ctx.response.forbidden('Only admin is able to take action on report status.')
     }
 
-    // TODO: Pass to service
+    const payload = ctx.request.body()
+
     try {
-      const payload = ctx.request.body()
-      const data = await adminUpdatePostReportValidator.validate(payload)
-      report.status = data.status
-      await report.save()
-      await this.service.notify(report)
+      await this.service.update(report, payload)
       return this.index(ctx)
     } catch (error) {
       if (error instanceof errors.E_VALIDATION_ERROR) {

@@ -7,6 +7,7 @@ import PostReportingUserStatusNotification from '#notifications/post_reporting_u
 import UserPostReportedNotification from '#notifications/user_post_reported_notification'
 import PostsService from '#services/posts_service'
 import { UserService } from '#services/user_service'
+import { adminUpdatePostReportValidator } from '#validators/post_report'
 import { inject } from '@adonisjs/core'
 import logger from '@adonisjs/core/services/logger'
 import { UUID } from 'node:crypto'
@@ -55,12 +56,19 @@ export default class AdminPostReportService {
     }
   }
 
+  async update(report: PostReport, payload: Record<string, string>) {
+    const data = await adminUpdatePostReportValidator.validate(payload)
+    report.status = data.status
+    await report.save()
+    await this.notify(report)
+  }
+
   /**
    * This action performs two notification types:
    * 1 - Notify the post author of the post being blocked, in case it is blocked.
    * 2 - Notify the post reporting user of the taken action.
    */
-  async notify(report: PostReport): Promise<void> {
+  private async notify(report: PostReport): Promise<void> {
     await report.load('post')
     const reportingUser = await User.find(report.userId)
     const postAuthor = await User.find(report.post.userId)

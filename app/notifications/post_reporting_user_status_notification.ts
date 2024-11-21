@@ -1,14 +1,14 @@
 import { NotificationChannelName, NotificationContract } from '@osenco/adonisjs-notifications/types'
 import { PostReportStatus } from '#enums/post'
+import { NotificationData } from '#interfaces/notification'
+import PostReportingUserStatusMail from '#mails/post_reporting_user_status_mail'
 import type User from '#models/user'
 import type PostReport from '#models/post_report'
-import { NotificationData } from '#interfaces/notification'
-import PlatformMailNotification from '#mails/notify_notification'
 
 export default class PostReportingUserStatusNotification implements NotificationContract<User> {
   private readonly report
   protected subject = ''
-  protected body = ''
+  protected message = ''
 
   constructor(report: PostReport) {
     this.report = report
@@ -23,20 +23,17 @@ export default class PostReportingUserStatusNotification implements Notification
     return {
       user: notifiable.toJSON(),
       title: this.subject,
-      message: this.body,
+      message: this.message,
     }
   }
 
   toMail(notifiable: User) {
-    return new PlatformMailNotification(notifiable, {
-      subject: this.subject,
-      body: this.body,
-    })
+    return new PostReportingUserStatusMail(notifiable, this.report)
   }
 
   #templateData() {
     this.subject = `Thank you for the report on the post ${this.report.post.id}.`
-    this.body =
+    this.message =
       `We wanted to let you know that we have taken action in the reported content.
     ${
       this.report.status === PostReportStatus.ACCEPTED

@@ -8,17 +8,17 @@ export default class UserNotificationsController {
     const data: NotificationResponse[] = []
     const notifications = (await currentUser.unreadNotifications()) as unknown as NotificationRow[]
     for (const notification of notifications) {
+      const json = notification.toJSON()
+
       const serializedNotification: NotificationResponse = {
-        id: notification.id,
-        user: notification.data.user,
-        data: notification.data,
-        // @ts-ignore
-        readAt: notification.readAt,
-        // @ts-ignore
-        createdAt: notification.createdAt,
-        // @ts-ignore
-        updatedAt: notification.updatedAt,
+        id: json.id,
+        user: json.data.user,
+        data: json.data,
+        readAt: json.readAt,
+        createdAt: json.createdAt,
+        updatedAt: json.updatedAt,
       }
+
       data.push(serializedNotification)
     }
     return data

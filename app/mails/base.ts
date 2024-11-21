@@ -1,9 +1,9 @@
 import User from '#models/user'
 import { BaseMail } from '@adonisjs/mail'
 
-export default class PlatformMailNotification extends BaseMail {
+export default class PlatformBaseMailNotification extends BaseMail {
   from = 'info@social-adonis.com'
-  subject = ''
+  subject = 'Social Adonis'
   body = ''
 
   constructor(
@@ -11,7 +11,10 @@ export default class PlatformMailNotification extends BaseMail {
     params: { subject: string; body: string }
   ) {
     super()
-    Object.assign(this, params)
+    Object.assign(this, {
+      subject: this.subject + ' | ' + params.subject,
+      body: params.body,
+    })
   }
 
   prepare() {
