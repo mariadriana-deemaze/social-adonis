@@ -14,6 +14,8 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         )}
         ref={ref}
         {...props}
+        // FIX-ME: https://github.com/shadcn-ui/ui/issues/2105
+        onKeyDown={(e) => e.stopPropagation()}
       />
     )
   }

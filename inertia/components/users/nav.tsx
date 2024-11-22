@@ -75,25 +75,42 @@ export default function UserNavBar({ user }: { user: UserResponse | null }) {
                       </DropdownMenuLabel>
                       <DropdownMenuSeparator />
                       <DropdownMenuGroup>
-                        <DropdownMenuItem>
-                          <Link href={route('users.show', { params: { id: user?.id! } }).path}>
+                        <DropdownMenuItem className="flex content-center relative">
+                          <Link
+                            className="flex flex-row items-center relative w-full"
+                            href={route('users.show', { params: { id: user?.id! } }).path}
+                          >
                             Profile
+                            <DropdownMenuShortcut className="absolute right-0">
+                              ⇧⌘P
+                            </DropdownMenuShortcut>
                           </Link>
-                          <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Link href={route('settings.show', { params: { id: user?.id! } }).path}>
+                        <DropdownMenuItem className="flex content-center relative">
+                          <Link
+                            className="flex flex-row items-center relative w-full"
+                            href={route('settings.show', { params: { id: user?.id! } }).path}
+                          >
                             Settings
+                            <DropdownMenuShortcut className="absolute right-0">
+                              ⌘S
+                            </DropdownMenuShortcut>
                           </Link>
-                          <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
                         </DropdownMenuItem>
                       </DropdownMenuGroup>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem>
-                        <Link as="button" href={route('auth.destroy').path} method="delete">
+                      <DropdownMenuItem className="flex content-center relative">
+                        <Link
+                          className="flex flex-row items-center relative w-full"
+                          as="button"
+                          href={route('auth.destroy').path}
+                          method="delete"
+                        >
                           Log out
+                          <DropdownMenuShortcut className="absolute right-0">
+                            ⇧⌘Q
+                          </DropdownMenuShortcut>
                         </Link>
-                        <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
