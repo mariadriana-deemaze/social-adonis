@@ -115,9 +115,9 @@ export default function NotificationsDropdown() {
             (notifications.length > 0 ? (
               <>
                 <div className="px-2 w-full flex flex-row gap-3 items-center justify-between">
-                  <p className="text-sm">Mark all as read</p>
+                  <p className="text-xs">Mark all as read</p>
                   <Button
-                    className="bg-gray-100 hover:bg-gray-200 border border-gray-200"
+                    className="bg-gray-50 hover:bg-gray-100 border border-gray-100 h-6 w-6"
                     size="sm-icon"
                     onClick={markAllAsRead}
                   >

@@ -56,18 +56,16 @@ export default function UserNavBar({ user }: { user: UserResponse | null }) {
                         <Avatar className="h-8 w-8">
                           <AvatarImage
                             src={user?.attachments ? user?.attachments?.avatar?.link : '#'}
-                            alt={`${user.name} avatar image`}
+                            alt={`${user.fullname}'s avatar image`}
                           />
-                          <AvatarFallback>{user.name ? user.name[0] : '-'}</AvatarFallback>
+                          <AvatarFallback>{user.fullname[0] || '-'}</AvatarFallback>
                         </Avatar>
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56" align="end" forceMount>
                       <DropdownMenuLabel className="font-normal">
                         <div className="flex flex-col space-y-1">
-                          <p className="text-sm font-medium leading-none">
-                            {user.name} {user.surname}
-                          </p>
+                          <p className="text-sm font-medium leading-none">{user.fullname}</p>
                           <p className="text-xs truncate leading-none text-muted-foreground">
                             {user.email}
                           </p>

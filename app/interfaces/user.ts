@@ -8,6 +8,7 @@ export interface UserResponse extends BaseEntity {
   role: AccountRole
   name: string | null
   surname: string | null
+  fullname: string
   username: string
   email: string
   attachments: {

@@ -86,15 +86,21 @@ export default class UserNotificationsController {
 
           break
         }
-        case NotificationType.UserPostReportedNotification:
+        case NotificationType.UserPostReportedNotification: {
           serializedNotification.data = {
             ...serializedNotification.data,
             message: serializedNotification.data.message.replace(
               ':postId',
               notification.data.postId
             ),
+            user: {
+              ...serializedNotification.data.user,
+              name: 'Moderation team',
+              username: 'Moderation team',
+            },
           }
           break
+        }
         case NotificationType.PostReportingUserStatusNotification:
           serializedNotification.data = {
             ...serializedNotification.data,
