@@ -42,8 +42,8 @@ export default function Template({ user, report }: { user: User; report: PostRep
         </p>
         <p className={paragraph}>
           Custom template for user_post_reported_mail. We wanted to let you know that we have taken
-          action in blocking the ${report.post.id}, as it's content has been reported by other
-          users, and the content moderation has prooceeded in it's favour.
+          action in blocking the ${report.postId}, as it's content has been reported by other users,
+          and the content moderation has prooceeded in it's favour.
         </p>
 
         <button className="bg-blue-500 h-10 rounded-md text-white">

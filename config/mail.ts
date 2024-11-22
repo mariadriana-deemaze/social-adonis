@@ -24,6 +24,11 @@ const mailConfig = defineConfig({
       }, */
     }),
   },
+
+  from: {
+    address: 'info@example.com',
+    name: 'Social Adonis',
+  },
 })
 
 export default mailConfig

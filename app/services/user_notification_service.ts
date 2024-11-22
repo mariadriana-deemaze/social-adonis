@@ -11,7 +11,7 @@ import { UUID } from 'node:crypto'
 
 @inject()
 export default class UserNotificationService {
-  constructor(private readonly userService: UserService) { }
+  constructor(private readonly userService: UserService) {}
 
   private readonly modUser: UserResponse = {
     id: 'e05fbfe1-30b6-4f0c-814e-824c18bdc996',
@@ -28,7 +28,6 @@ export default class UserNotificationService {
       avatar: null,
     },
   }
-
 
   async readAll(user: User) {
     const unreadNotifications = await user.unreadNotifications()
