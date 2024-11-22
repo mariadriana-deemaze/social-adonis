@@ -54,12 +54,14 @@ export default class PostsService {
   /**
    * Finds a post and it's author, by record id.
    */
-  async findOne(id: UUID): Promise<Post | null> {
-    const result: Post[] | null = await Post.query()
-      .withScopes((scope) => scope.visible())
-      .where('id', id)
-      .preload('user')
-      .preload('reactions')
+  async findOne(id: UUID, visibleOnly?: boolean): Promise<Post | null> {
+    const query = Post.query().where('id', id).preload('user').preload('reactions')
+
+    if (visibleOnly) {
+      query.withScopes((scope) => scope.visible())
+    }
+
+    const result = await query
     return result ? result[0] : null
   }
 
@@ -160,6 +162,7 @@ export default class PostsService {
     const resource: PostResponse = {
       id: data.id,
       content: data.content,
+      status: data.status,
       user,
       link,
       attachments,
