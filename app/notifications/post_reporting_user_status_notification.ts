@@ -1,6 +1,9 @@
-import { NotificationChannelName, NotificationContract } from '@osenco/adonisjs-notifications/types'
+import {
+  NotificationChannelName,
+  NotificationContract,
+  PostReportingUserStatusNotificationData,
+} from '@osenco/adonisjs-notifications/types'
 import { PostReportStatus } from '#enums/post'
-import { NotificationData } from '#interfaces/notification'
 import PostReportingUserStatusMail from '#mails/post_reporting_user_status_mail'
 import { NotificationType } from '#enums/notification'
 import type User from '#models/user'
@@ -20,10 +23,11 @@ export default class PostReportingUserStatusNotification implements Notification
     return notifiable.notificationPreference
   }
 
-  toDatabase(notifiable: User): NotificationData {
+  toDatabase(notifiable: User): PostReportingUserStatusNotificationData {
     return {
       type: NotificationType.PostReportingUserStatusNotification,
       userId: notifiable.id,
+      postId: this.report.postId,
       title: this.subject,
       message: this.message,
     }
@@ -34,7 +38,7 @@ export default class PostReportingUserStatusNotification implements Notification
   }
 
   #templateData() {
-    this.subject = `Thank you for the report on the post ${this.report.post.id}.`
+    this.subject = `Thank you for the report on the post :postId.`
     this.message =
       `We wanted to let you know that we have taken action in the reported content.
     ${

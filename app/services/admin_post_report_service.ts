@@ -74,7 +74,7 @@ export default class AdminPostReportService {
     const postAuthor = await User.find(report.post.userId)
 
     if (!reportingUser || !postAuthor) {
-      logger.error('Error in submitting the report notifications.')
+      logger.error('Error in sending the report notifications.')
       return
     }
 
@@ -87,7 +87,7 @@ export default class AdminPostReportService {
 
       await Promise.all(promises)
     } catch (error) {
-      logger.error(`Error in notifing users: ${JSON.stringify(error, null, 2)}`)
+      logger.error(`Error in notifying users: ${JSON.stringify(error, null, 2)}`)
     }
   }
 

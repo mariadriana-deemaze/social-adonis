@@ -40,6 +40,11 @@ export default class User extends compose(BaseModel, AuthFinder, Notifiable('use
   @column()
   role: AccountRole = AccountRole.USER
 
+  @computed()
+  get fullName() {
+    return ((this?.name || '') + ' ' + (this?.surname || '')).trim()
+  }
+
   @computed({ serializeAs: null })
   get isAdmin() {
     return this.role === AccountRole.ADMIN
