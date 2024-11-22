@@ -15,6 +15,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { NotificationType } from '#enums/notification'
 import { PostReactionType } from '#enums/post'
 import { Link } from '@inertiajs/react'
+import PostReactionIcon from '@/components/posts/post_reaction_icon'
 
 export default function NotificationsDropdown() {
   const [notificationsLoadState, setNotificationsLoadState] = useState<
@@ -27,15 +28,6 @@ export default function NotificationsDropdown() {
     NotificationType.PostReportingUserStatusNotification,
     NotificationType.UserPostReportedNotification,
   ]
-
-  const REACTIONS: Record<PostReactionType, string> = {
-    [PostReactionType.LIKE]: '👍',
-    [PostReactionType.THANKFUL]: '🙌',
-    [PostReactionType.FUNNY]: '🤣',
-    [PostReactionType.CONGRATULATIONS]: '🎉',
-    [PostReactionType.ANGRY]: '😡',
-    [PostReactionType.LOVE]: '😍',
-  }
 
   async function getUserNotifications() {
     const request = await fetch(route('notifications.index').path, { method: 'GET' })
@@ -163,13 +155,10 @@ export default function NotificationsDropdown() {
                               {notification.data.type ===
                                 NotificationType.PostOwnerReactionNotification && (
                                 <div className="absolute p-0 m-0 -bottom-2 -right-2 h-5 w-5 rounded-full bg-white border border-white">
-                                  <span className="absolute -bottom-[4px] right-[1px]">
-                                    {
-                                      REACTIONS[
-                                        notification.data.postReactionType as PostReactionType
-                                      ]
-                                    }
-                                  </span>
+                                  <PostReactionIcon
+                                    type={notification.data.postReactionType as PostReactionType}
+                                    className="absolute bottom-1 right-[1px]"
+                                  />
                                 </div>
                               )}
                             </div>
