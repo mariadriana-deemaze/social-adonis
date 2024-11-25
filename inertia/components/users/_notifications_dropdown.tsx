@@ -71,7 +71,7 @@ export default function NotificationsDropdown() {
             {hasNotifications && (
               <div className="flex justify-center absolute bg-white right-0 top-[1px] h-3 w-3 rounded-full">
                 <div className="self-center absolute animate-in duration-700 h-1 w-1 bg-blue-500 rounded-full" />
-                <div className="self-center absolute animate-pulse duration-[2000] h-2 w-2 bg-blue-500 rounded-full opacity-20" />
+                <div className="self-center absolute animate-pulse duration-1000 h-2 w-2 bg-blue-500 rounded-full opacity-20" />
               </div>
             )}
             <BellDot size={20} />
