@@ -1,3 +1,4 @@
+import { NotificationType } from '#enums/notification'
 import { PostReactionType } from '#enums/post'
 import Post from '#models/post'
 import PostReaction from '#models/post_reaction'
@@ -67,7 +68,23 @@ export default class PostReactionService {
 
     try {
       if (currentUser.id === post.userId) return
-      await post.user.notify(new PostOwnerReactionNotification(currentUser, post, type))
+
+      // Covering the case where the user updates a reaction
+      const unread = await post.user.unreadNotifications()
+
+      const matching = unread.find(
+        (notification) =>
+          notification.data.userId === currentUser.id &&
+          notification.data.postId === post.id &&
+          notification.data.type === NotificationType.PostOwnerReactionNotification
+      )
+
+      if (matching) {
+        matching.data.postReactionType = type
+        await matching.save()
+      } else {
+        await post.user.notify(new PostOwnerReactionNotification(currentUser, post, type))
+      }
     } catch (error) {
       logger.error(`Error in notifying user: ${JSON.stringify(error, null, 2)}`)
     }

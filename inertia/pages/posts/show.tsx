@@ -24,7 +24,7 @@ export default function Show({ post, user }: InferPageProps<PostsController, 'sh
             <p className="text-sm">Go back to feed</p>
           </div>
         </div>
-        <div className="flex flex-col gap-4">
+        <div className="w-full flex flex-col gap-4">
           {post.status === PostStatus.REPORTED && (
             <InfoPanel
               type="error"

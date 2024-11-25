@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown_menu'
 import { NotificationResponse } from '#interfaces/notification'
-import { BadgeInfo, BellDot, CheckCheck, Loader2 } from 'lucide-react'
+import { BadgeInfo, BellDot, CheckCheck, Clock, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import InfoPanel from '@/components/generic/info_panel'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -16,6 +16,7 @@ import { NotificationType } from '#enums/notification'
 import { PostReactionType } from '#enums/post'
 import { Link } from '@inertiajs/react'
 import PostReactionIcon from '@/components/posts/post_reaction_icon'
+import { formatDistanceToNow } from 'date-fns'
 
 export default function NotificationsDropdown() {
   const [notificationsLoadState, setNotificationsLoadState] = useState<
@@ -184,6 +185,13 @@ export default function NotificationsDropdown() {
                             <Link href={link}>{notification.data.message}</Link>
                           </p>
                         </div>
+                        <span className="flex text-xs text-gray-400 gap-1 items-center">
+                          <Clock size={10} />
+                          {formatDistanceToNow(
+                            new Date(notification.updatedAt || notification.createdAt)
+                          )}{' '}
+                          ago
+                        </span>
                       </div>
                     </div>
                   )
