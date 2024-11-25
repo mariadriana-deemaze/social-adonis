@@ -64,6 +64,7 @@ router
 
     router
       .group(() => {
+        router.get('/', [UsersController, 'index']).as('users.index')
         router.get(':id', [FeedController, 'show']).as('users.show') // TODO: Make public, and contextualize `ctx.auth.authenticate` via middleware.
         router.get(':id/settings', [UsersController, 'show']).as('settings.show')
         router.patch(':id', [UsersController, 'update']).as('users.update')

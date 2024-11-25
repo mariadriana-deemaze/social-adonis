@@ -1,3 +1,4 @@
+import { PaginatedResponse } from './../interfaces/pagination'
 import { AttachmentResponse } from '#interfaces/attachment'
 import { UserResponse } from '#interfaces/user'
 import { AttachmentModel, AttachmentType } from '#models/attachment'
@@ -11,6 +12,32 @@ export class UserService {
 
   constructor() {
     this.attachmentService = new AttachmentService()
+  }
+
+  async index(
+    searchTerm: string,
+    { page, limit = 10 }: { page: number; limit?: number }
+  ): Promise<PaginatedResponse<UserResponse>> {
+    const search = `%${searchTerm}%`
+
+    const result = await User.query()
+      .whereILike('username', search)
+      // .orWhereIn('name', search)
+      .orderBy('updated_at', 'desc')
+      .paginate(page, limit)
+
+    const { meta } = result.toJSON()
+
+    const data: UserResponse[] = []
+    for (const user of result) {
+      const resource = await this.serialize(user)
+      data.push(resource)
+    }
+
+    return {
+      data,
+      meta,
+    }
   }
 
   async findOne(id: UUID): Promise<UserResponse | null> {
