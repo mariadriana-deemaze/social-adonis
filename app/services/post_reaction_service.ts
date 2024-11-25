@@ -1,5 +1,10 @@
+import { NotificationType } from '#enums/notification'
 import { PostReactionType } from '#enums/post'
+import Post from '#models/post'
 import PostReaction from '#models/post_reaction'
+import User from '#models/user'
+import PostOwnerReactionNotification from '#notifications/post_owner_reaction_notification'
+import logger from '@adonisjs/core/services/logger'
 import type { UUID } from 'node:crypto'
 
 export default class PostReactionService {
@@ -29,6 +34,9 @@ export default class PostReactionService {
         type,
       })
     }
+
+    await this.notify(userId, resource.postId, type)
+
     return [!!existant, resource]
   }
 
@@ -42,5 +50,43 @@ export default class PostReactionService {
     const reaction = await this.show(userId, postId)
     if (!reaction) return
     await reaction.delete()
+  }
+
+  /**
+   * Notifies the post owner of someone reacting to their post.
+   */
+  private async notify(userId: UUID, postId: UUID, type: PostReactionType) {
+    const currentUser = await User.find(userId)
+    const post = await Post.find(postId)
+
+    if (!post || !currentUser) {
+      logger.error('Error in sending the post owner notifications.')
+      return
+    }
+
+    await post.load('user')
+
+    try {
+      if (currentUser.id === post.userId) return
+
+      // Covering the case where the user updates a reaction
+      const unread = await post.user.unreadNotifications()
+
+      const matching = unread.find(
+        (notification) =>
+          notification.data.userId === currentUser.id &&
+          notification.data.postId === post.id &&
+          notification.data.type === NotificationType.PostOwnerReactionNotification
+      )
+
+      if (matching) {
+        matching.data.postReactionType = type
+        await matching.save()
+      } else {
+        await post.user.notify(new PostOwnerReactionNotification(currentUser, post, type))
+      }
+    } catch (error) {
+      logger.error(`Error in notifying user: ${JSON.stringify(error, null, 2)}`)
+    }
   }
 }

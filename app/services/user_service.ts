@@ -125,6 +125,7 @@ export class UserService {
       role: data.role,
       name: data.name,
       surname: data.surname,
+      fullname: data.fullName,
       username: data.username,
       email: data.email,
       attachments,

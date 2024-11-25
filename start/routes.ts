@@ -15,6 +15,7 @@ const PostsController = () => import('#controllers/posts_controller')
 const UsersController = () => import('#controllers/users_controller')
 const PostReactionsController = () => import('#controllers/post_reactions_controller')
 const PostReportsController = () => import('#controllers/post_reports_controller')
+const UserNotificationsController = () => import('#controllers/user_notifications_controller')
 const AdminAuthController = () => import('#controllers/admin_auth_controller')
 const AdminPostReportsController = () => import('#controllers/admin_post_reports_controller')
 
@@ -53,6 +54,13 @@ router
 router
   .group(() => {
     router.delete('auth/sign-out', [AuthController, 'destroy']).as('auth.destroy')
+
+    router
+      .group(() => {
+        router.get('/', [UserNotificationsController, 'index']).as('notifications.index')
+        router.post('/', [UserNotificationsController, 'update']).as('notifications.update')
+      })
+      .prefix('notifications')
 
     router
       .group(() => {

@@ -23,6 +23,23 @@ services:
     networks:
       - social-adonis-network
 
+  mailhog:
+    container_name: mailhog
+    image: mailhog/mailhog
+    tty: true
+    restart: on-failure
+    volumes:
+      - mailhog_volume:/data
+    ports:
+      - 1025:1025 # smtp server
+      - 8025:8025 # UI
+    environment:
+      MAIL_MAILER: smtp
+      MAIL_HOST: 127.0.0.1
+      MAIL_PORT: 1025
+    networks:
+      - social-adonis-network
+
   adonis_app:
     container_name: adonis_app
     build:
@@ -30,6 +47,7 @@ services:
       target: deps
     ports:
       - 3000:3000
+      - 24678:24678
     env_file:
       - .env
     environment:
@@ -46,6 +64,7 @@ services:
 volumes:
   pg15_volume:
   redis_volume:
+  mailhog_volume:
 
 networks:
   social-adonis-network:

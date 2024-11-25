@@ -6,6 +6,7 @@ module.exports = {
     './resources/**/*.edge',
     './resources/**/*.{js,ts,jsx,tsx,vue}',
     './inertia/**/*.{js,ts,jsx,tsx,vue}',
+    './app/mails/templates/**/*.tsx',
   ],
   prefix: '',
   theme: {

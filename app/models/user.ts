@@ -2,12 +2,14 @@ import { DateTime } from 'luxon'
 import hash from '@adonisjs/core/services/hash'
 import { compose } from '@adonisjs/core/helpers'
 import { BaseModel, column, computed, hasMany } from '@adonisjs/lucid/orm'
-import type { HasMany } from '@adonisjs/lucid/types/relations'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { DbRememberMeTokensProvider } from '@adonisjs/auth/session'
-import { randomUUID, type UUID } from 'node:crypto'
 import Session from '#models/session'
 import Post from '#models/post'
+import Notifiable from '@osenco/adonisjs-notifications/mixins/notifiable'
+import { randomUUID, type UUID } from 'node:crypto'
+import type { HasMany } from '@adonisjs/lucid/types/relations'
+import type { NotificationChannelName } from '@osenco/adonisjs-notifications/types'
 
 export enum AccountRole {
   USER = 'USER',
@@ -19,7 +21,7 @@ const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   passwordColumnName: 'password',
 })
 
-export default class User extends compose(BaseModel, AuthFinder) {
+export default class User extends compose(BaseModel, AuthFinder, Notifiable('user_notifications')) {
   @column({ isPrimary: true })
   declare id: UUID
 
@@ -38,6 +40,11 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column()
   role: AccountRole = AccountRole.USER
 
+  @computed()
+  get fullName() {
+    return ((this?.name || '') + ' ' + (this?.surname || '')).trim()
+  }
+
   @computed({ serializeAs: null })
   get isAdmin() {
     return this.role === AccountRole.ADMIN
@@ -53,6 +60,12 @@ export default class User extends compose(BaseModel, AuthFinder) {
   declare posts: HasMany<typeof Post>
 
   static rememberMeTokens = DbRememberMeTokensProvider.forModel(User)
+
+  // NOTE: Should be attached differently
+  @computed()
+  get notificationPreference(): NotificationChannelName | NotificationChannelName[] {
+    return ['database', 'mail']
+  }
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

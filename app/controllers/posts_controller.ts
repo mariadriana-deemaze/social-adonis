@@ -7,6 +7,7 @@ import Post from '#models/post'
 import { errorsReducer } from '#utils/index'
 import { PostResponse } from 'app/interfaces/post'
 import { PageObject } from '@adonisjs/inertia/types'
+import { PostStatus } from '#enums/post'
 
 @inject()
 export default class PostsController {
@@ -20,7 +21,7 @@ export default class PostsController {
   > {
     const currentUserId = ctx.auth.user?.id!
     const post = await this.service.findOne(ctx.params.id)
-    if (!post) {
+    if (!post || (post?.status === PostStatus.REPORTED && post.userId !== currentUserId)) {
       return ctx.inertia.render('errors/not_found', {
         post: null,
         error: { title: 'Not found', message: 'We could not find the specified post.' },
@@ -63,7 +64,7 @@ export default class PostsController {
 
   async update(ctx: HttpContext) {
     const currentUserId = ctx.auth.user?.id!
-    const post = await this.service.findOne(ctx.params.id)
+    const post = await this.service.findOne(ctx.params.id, false)
     if (!post) {
       return ctx.inertia.render('errors/not_found', {
         post: null,

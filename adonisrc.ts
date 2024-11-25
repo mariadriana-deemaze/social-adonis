@@ -15,6 +15,8 @@ export default defineConfig({
     () => import('@adonisjs/lucid/commands'),
     () => import('@adonisjs/bouncer/commands'),
     () => import('@izzyjs/route/commands'),
+    () => import('@osenco/adonisjs-notifications/commands'),
+    () => import('@adonisjs/mail/commands'),
   ],
 
   /*
@@ -46,6 +48,8 @@ export default defineConfig({
     () => import('@adonisjs/bouncer/bouncer_provider'),
     () => import('@adonisjs/drive/drive_provider'),
     () => import('@izzyjs/route/izzy_provider'),
+    () => import('@osenco/adonisjs-notifications/notification_provider'),
+    () => import('@adonisjs/mail/mail_provider'),
   ],
 
   /*
@@ -60,6 +64,10 @@ export default defineConfig({
     () => import('#start/routes'),
     () => import('#start/kernel'),
     () => import('#start/validator'),
+    {
+      file: () => import('#start/repl'),
+      environment: ['repl'],
+    },
   ],
 
   /*
@@ -107,5 +115,8 @@ export default defineConfig({
   hooks: {
     onBuildStarting: [() => import('@adonisjs/vite/build_hook')],
     onDevServerStarted: [() => import('@izzyjs/route/dev_hook')],
+  },
+  directories: {
+    notifications: 'app/notifications',
   },
 })

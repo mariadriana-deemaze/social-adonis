@@ -1,9 +1,15 @@
+import { PostReportStatus } from '#enums/post'
 import { PaginatedResponse } from '#interfaces/pagination'
 import { PostReportResponse } from '#interfaces/post'
 import PostReport from '#models/post_report'
+import User from '#models/user'
+import PostReportingUserStatusNotification from '#notifications/post_reporting_user_status_notification'
+import UserPostReportedNotification from '#notifications/user_post_reported_notification'
 import PostsService from '#services/posts_service'
 import { UserService } from '#services/user_service'
+import { adminUpdatePostReportValidator } from '#validators/post_report'
 import { inject } from '@adonisjs/core'
+import logger from '@adonisjs/core/services/logger'
 import { UUID } from 'node:crypto'
 
 @inject()
@@ -47,6 +53,41 @@ export default class AdminPostReportService {
     return {
       data: serialized,
       meta,
+    }
+  }
+
+  async update(report: PostReport, payload: Record<string, string>) {
+    const data = await adminUpdatePostReportValidator.validate(payload)
+    report.status = data.status
+    await report.save()
+    await this.notify(report)
+  }
+
+  /**
+   * This action performs two notification types:
+   * 1 - Notify the post author of the post being blocked, in case it is blocked.
+   * 2 - Notify the post reporting user of the taken action.
+   */
+  private async notify(report: PostReport): Promise<void> {
+    await report.load('post')
+    const reportingUser = await User.find(report.userId)
+    const postAuthor = await User.find(report.post.userId)
+
+    if (!reportingUser || !postAuthor) {
+      logger.error('Error in sending the report notifications.')
+      return
+    }
+
+    try {
+      const promises = [reportingUser.notify(new PostReportingUserStatusNotification(report))]
+
+      if (report.status === PostReportStatus.ACCEPTED) {
+        promises.push(postAuthor.notify(new UserPostReportedNotification(report)))
+      }
+
+      await Promise.all(promises)
+    } catch (error) {
+      logger.error(`Error in notifying users: ${JSON.stringify(error, null, 2)}`)
     }
   }
 
