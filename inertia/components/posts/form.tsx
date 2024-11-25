@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { MAX_POST_CONTENT_SIZE, MIN_POST_CONTENT_SIZE } from '#validators/post'
 import FileUploadPreview from '@/components/generic/file_upload_preview'
 import { Button } from '@/components/ui/button'
@@ -10,6 +10,8 @@ import { useForm, usePage } from '@inertiajs/react'
 import { Paperclip } from 'lucide-react'
 import { PostResponse } from 'app/interfaces/post'
 import { route } from '@izzyjs/route/client'
+import { /* AutoComplete, */ Option } from '@/components/ui/autocomplete'
+import { UserResponse } from '#interfaces/user'
 
 const MAX_FILES = 3
 
@@ -20,6 +22,12 @@ export default function Form({
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
   post?: PostResponse
 }) {
+  const [openUserAutocomplete, setOpenUserAutocomplete] = useState(false)
+  const [usersList, setUsersList] = useState<Option[]>([])
+  const [value] = useState<Option>()
+  const [isLoading] = useState(false)
+  const [isDisabled] = useState(false)
+
   const { errors } = usePage().props
 
   const { toast } = useToast()
@@ -45,8 +53,43 @@ export default function Form({
   })
 
   const uploadImages = useRef<HTMLInputElement | null>(null)
+  // const autoCompleteInput = useRef<HTMLInputElement | null>(null)
 
   const method = post ? 'patch' : 'post'
+
+  function postContentChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
+    // TODO: Approach differently, as capture mode
+    const event = e.nativeEvent as InputEvent
+
+    if (event.data === '@') {
+      // Enter autocomplete mode
+      setOpenUserAutocomplete(true)
+      // Set focus
+    }
+
+    setData('content', e.target.value)
+  }
+
+  async function fetchUserList(searchTerm: string) {
+    const request = await fetch(
+      route('users.index', {
+        qs: {
+          search: searchTerm,
+        },
+      }).path
+    )
+    if (request.ok) {
+      const json = await request.json()
+      setUsersList(
+        json.data.map((user: UserResponse) => {
+          return {
+            label: `@${user.username}`,
+            value: user.username,
+          }
+        })
+      )
+    }
+  }
 
   function addFiles(e: React.ChangeEvent<HTMLInputElement>) {
     if (!e.target.files) return
@@ -89,6 +132,11 @@ export default function Form({
       })
     }
   }, [errors])
+
+  useEffect(() => {
+    fetchUserList('SOA_')
+  }, [openUserAutocomplete])
+
   return (
     <form
       onSubmit={handleSubmit}
@@ -98,12 +146,39 @@ export default function Form({
         <Label htmlFor="content" className="text-left">
           Post content
         </Label>
-        <Textarea
-          id="content"
-          className="no-scrollbar"
-          value={data.content}
-          onChange={(e) => setData('content', e.target.value)}
-        />
+        <div className="relative">
+          <span className="text-sm">
+            Current value: {value ? value?.label : 'No value selected'}
+          </span>
+          <span className="text-sm">Loading state: {isLoading ? 'true' : 'false'}</span>
+          <span className="text-sm">Disabled: {isDisabled ? 'true' : 'false'}</span>
+
+          <Textarea
+            id="content"
+            className="no-scrollbar"
+            value={data.content}
+            onChange={postContentChange}
+          />
+          {openUserAutocomplete && (
+            <div className="absolute w-full -bottom-20 border border-slate-200 rounded-sm bg-white shadow-lg">
+              {/* // TODO: Approach differently, as capture mode */}
+
+              {usersList.map((item) => (
+                <p key={`item-${item.value}`}>{item.label}</p>
+              ))}
+              {/* <AutoComplete
+                ref={autoCompleteInput}
+                options={usersList}
+                emptyMessage="No matching user."
+                placeholder="Find users"
+                isLoading={isLoading}
+                onValueChange={setValue}
+                value={value}
+                disabled={isDisabled}
+              /> */}
+            </div>
+          )}
+        </div>
         <span className={cn('text-xs', invalidPostContent ? 'text-red-700' : 'text-gray-500')}>
           {data.content.length}/{MAX_POST_CONTENT_SIZE}
         </span>
