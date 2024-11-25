@@ -2,7 +2,6 @@ import User from '#models/user'
 import { BaseMail } from '@adonisjs/mail'
 
 export default class PlatformBaseMailNotification extends BaseMail {
-  from = 'info@social-adonis.com'
   subject = 'Social Adonis'
   body = ''
 
@@ -18,6 +17,6 @@ export default class PlatformBaseMailNotification extends BaseMail {
   }
 
   prepare() {
-    this.message.subject(this.subject).from(this.from).to(this.user.email).html(this.body)
+    this.message.subject(this.subject).to(this.user.email).html(this.body)
   }
 }

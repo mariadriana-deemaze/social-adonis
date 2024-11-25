@@ -76,6 +76,7 @@
     "@adonisjs/static": "^1.1.1",
     "@adonisjs/vite": "^3.0.0",
     "@aws-sdk/client-s3": "^3.686.0",
+    "@aws-sdk/client-ses": "^3.699.0",
     "@aws-sdk/s3-request-presigner": "^3.686.0",
     "@inertiajs/react": "^1.2.0",
     "@izzyjs/route": "^1.2.0",

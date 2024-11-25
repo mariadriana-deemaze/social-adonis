@@ -2,7 +2,8 @@ import env from '#start/env'
 import { defineConfig, transports } from '@adonisjs/mail'
 
 const mailConfig = defineConfig({
-  default: 'smtp',
+  //default: env.get('NODE_ENV') === 'production' ? 'ses' : 'smtp',
+  default: 'ses',
 
   /**
    * The mailers object can be used to configure multiple mailers
@@ -11,22 +12,30 @@ const mailConfig = defineConfig({
    */
   mailers: {
     smtp: transports.smtp({
-      host: env.get('SMTP_HOST'),
-      port: env.get('SMTP_PORT'),
+      host: env.get('LOCAL_SMTP_HOST'),
+      port: env.get('LOCAL_SMTP_PORT'),
+    }),
+    ses: transports.ses({
       /**
-       * Uncomment the auth block if your SMTP
-       * server needs authentication
+       * Forwarded to aws sdk
        */
-      /* auth: {
-        type: 'login',
-        user: env.get('SMTP_USERNAME'),
-        pass: env.get('SMTP_PASSWORD'),
-      }, */
+      apiVersion: '2010-12-01',
+      region: 'eu-north-1',
+      credentials: {
+        accessKeyId: env.get('AWS_ACCESS_KEY_ID'),
+        secretAccessKey: env.get('AWS_SECRET_ACCESS_KEY'),
+      },
+
+      /**
+       * Nodemailer specific
+       */
+      sendingRate: 10,
+      maxConnections: 5,
     }),
   },
 
   from: {
-    address: 'info@example.com',
+    address: env.get('FROM_MAIL'),
     name: 'Social Adonis',
   },
 })
