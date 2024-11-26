@@ -9,13 +9,13 @@ import {
   DropdownMenuItem,
   DropdownMenuShortcut,
 } from '@/components/ui/dropdown_menu'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import AdonisLogo from '@/components/svg/logo'
 import { UserResponse } from '#interfaces/user'
 import { cn } from '@/lib/utils'
 import { route } from '@izzyjs/route/client'
 import NotificationsDropdown from '@/components/users/_notifications_dropdown'
+import { UserAvatar } from '@/components/generic/user_avatar'
 
 export default function UserNavBar({ user }: { user: UserResponse | null }) {
   const LINKS: Record<'title' | 'link', string>[] = [
@@ -53,13 +53,7 @@ export default function UserNavBar({ user }: { user: UserResponse | null }) {
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage
-                            src={user?.attachments ? user?.attachments?.avatar?.link : '#'}
-                            alt={`${user.fullname}'s avatar image`}
-                          />
-                          <AvatarFallback>{user.fullname[0] || '-'}</AvatarFallback>
-                        </Avatar>
+                        <UserAvatar user={user} className="h-8 w-8" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56" align="end" forceMount>

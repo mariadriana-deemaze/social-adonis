@@ -18,18 +18,18 @@ import {
   DropdownMenuTrigger,
   DropdownMenuItem,
 } from '@/components/ui/dropdown_menu'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { UpdatePost } from '@/components/posts/update'
 import { DeletePost } from '@/components/posts/delete'
+import { ReportPost } from '@/components/posts/report'
+import { UserAvatar } from '@/components/generic/user_avatar'
+import PostReactionIcon, { POST_REACTION_ICONS } from '@/components/posts/post_reaction_icon'
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover_card'
 import { PostResponse } from 'app/interfaces/post'
 import { AttachmentResponse } from 'app/interfaces/attachment'
 import { formatDistanceToNow } from 'date-fns'
 import { PostReactionType } from '#enums/post'
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover_card'
 import { UserResponse } from '#interfaces/user'
-import { ReportPost } from '@/components/posts/report'
 import { route } from '@izzyjs/route/client'
-import PostReactionIcon, { POST_REACTION_ICONS } from '@/components/posts/post_reaction_icon'
 
 function PostContentParser({
   content,
@@ -418,13 +418,7 @@ export default function PostCard({
           }
         >
           <div className="flex flex-row gap-3">
-            <Avatar className="h-8 w-8">
-              <AvatarImage
-                src={post.user.attachments.avatar?.link}
-                alt={`${post.user.name} avatar image`}
-              />
-              <AvatarFallback>{post.user.name ? post.user.name[0] : '-'}</AvatarFallback>
-            </Avatar>
+            <UserAvatar user={post.user} className="h-8 w-8" />
             <div className="flex flex-col gap-1">
               <p className="text-xs text-gray-600 text-ellipsis truncate max-w-40 md:max-w-screen-lg">
                 @{post.user.username}
