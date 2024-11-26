@@ -1,19 +1,31 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef } from 'react'
 import { MAX_POST_CONTENT_SIZE, MIN_POST_CONTENT_SIZE } from '#validators/post'
 import FileUploadPreview from '@/components/generic/file_upload_preview'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/components/ui/use_toast'
 import { cn } from '@/lib/utils'
 import { useForm, usePage } from '@inertiajs/react'
 import { Paperclip } from 'lucide-react'
 import { PostResponse } from 'app/interfaces/post'
 import { route } from '@izzyjs/route/client'
-import { /* AutoComplete, */ Option } from '@/components/ui/autocomplete'
 import { UserResponse } from '#interfaces/user'
+import HighlightedInput from '@/components/generic/highlighted_input'
+import { UserAvatar } from '@/components/generic/user_avatar'
 
 const MAX_FILES = 3
+
+const mentionParser = (selected: UserResponse[]) => {
+  return selected.reduce((acc, item) => {
+    acc = acc
+      .trim()
+      .replace(
+        item.username,
+        `<a href="/${item.username}" style="color: blue; background: transparent">@$&</a>`
+      )
+    return acc
+  }, '')
+}
 
 export default function Form({
   setOpen,
@@ -22,12 +34,6 @@ export default function Form({
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
   post?: PostResponse
 }) {
-  const [openUserAutocomplete, setOpenUserAutocomplete] = useState(false)
-  const [usersList, setUsersList] = useState<Option[]>([])
-  const [value] = useState<Option>()
-  const [isLoading] = useState(false)
-  const [isDisabled] = useState(false)
-
   const { errors } = usePage().props
 
   const { toast } = useToast()
@@ -53,24 +59,10 @@ export default function Form({
   })
 
   const uploadImages = useRef<HTMLInputElement | null>(null)
-  // const autoCompleteInput = useRef<HTMLInputElement | null>(null)
 
   const method = post ? 'patch' : 'post'
 
-  function postContentChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
-    // TODO: Approach differently, as capture mode
-    const event = e.nativeEvent as InputEvent
-
-    if (event.data === '@') {
-      // Enter autocomplete mode
-      setOpenUserAutocomplete(true)
-      // Set focus
-    }
-
-    setData('content', e.target.value)
-  }
-
-  async function fetchUserList(searchTerm: string) {
+  async function handleFetch(searchTerm: string) {
     const request = await fetch(
       route('users.index', {
         qs: {
@@ -78,17 +70,13 @@ export default function Form({
         },
       }).path
     )
+
     if (request.ok) {
       const json = await request.json()
-      setUsersList(
-        json.data.map((user: UserResponse) => {
-          return {
-            label: `@${user.username}`,
-            value: user.username,
-          }
-        })
-      )
+      return json.data
     }
+
+    return []
   }
 
   function addFiles(e: React.ChangeEvent<HTMLInputElement>) {
@@ -133,10 +121,6 @@ export default function Form({
     }
   }, [errors])
 
-  useEffect(() => {
-    fetchUserList('SOA_')
-  }, [openUserAutocomplete])
-
   return (
     <form
       onSubmit={handleSubmit}
@@ -147,37 +131,29 @@ export default function Form({
           Post content
         </Label>
         <div className="relative">
-          <span className="text-sm">
-            Current value: {value ? value?.label : 'No value selected'}
-          </span>
-          <span className="text-sm">Loading state: {isLoading ? 'true' : 'false'}</span>
-          <span className="text-sm">Disabled: {isDisabled ? 'true' : 'false'}</span>
-
-          <Textarea
+          <HighlightedInput<UserResponse>
             id="content"
-            className="no-scrollbar"
+            className="no-scrollbar z-10"
             value={data.content}
-            onChange={postContentChange}
+            parser={mentionParser}
+            fetcher={handleFetch}
+            onChange={(e) => setData('content', e.target.value)}
+            Item={({ item, searchTerm, select }) => (
+              <div
+                className={`react-${item.username} flex flex-row gap-2 items-center text-sm truncate text-ellipsis`}
+                onClick={() => {
+                  setData('content', data.content.replace(searchTerm, item.username))
+                  select(item)
+                }}
+              >
+                <UserAvatar user={item} className="h-6 w-6" />
+                <div className="flex flex-col py-1 px-0">
+                  <p className="font-medium text-xs">{item.fullname}</p>
+                  <p className="text-xs text-blue-500">@{item.username}</p>
+                </div>
+              </div>
+            )}
           />
-          {openUserAutocomplete && (
-            <div className="absolute w-full -bottom-20 border border-slate-200 rounded-sm bg-white shadow-lg">
-              {/* // TODO: Approach differently, as capture mode */}
-
-              {usersList.map((item) => (
-                <p key={`item-${item.value}`}>{item.label}</p>
-              ))}
-              {/* <AutoComplete
-                ref={autoCompleteInput}
-                options={usersList}
-                emptyMessage="No matching user."
-                placeholder="Find users"
-                isLoading={isLoading}
-                onValueChange={setValue}
-                value={value}
-                disabled={isDisabled}
-              /> */}
-            </div>
-          )}
         </div>
         <span className={cn('text-xs', invalidPostContent ? 'text-red-700' : 'text-gray-500')}>
           {data.content.length}/{MAX_POST_CONTENT_SIZE}

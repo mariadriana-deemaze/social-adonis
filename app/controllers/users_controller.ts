@@ -14,7 +14,7 @@ export default class UsersController {
   async index(ctx: HttpContext) {
     const searchTerm = ctx.request.qs().search || ''
     const page = ctx.request.qs().page || 1
-    return this.service.index(searchTerm, { page })
+    return this.service.index(searchTerm, { page, limit: 5 })
   }
 
   async show(ctx: HttpContext): Promise<
