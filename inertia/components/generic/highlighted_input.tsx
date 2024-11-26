@@ -2,19 +2,39 @@ import React, { Reducer, useEffect, useMemo, useReducer } from 'react'
 import { Textarea, TextareaProps } from '@/components/ui/textarea'
 import { Card } from '@/components/ui/card'
 
+interface SlottableItemProps<T> {
+  item: T
+  searchTerm: string
+  select: (item: T) => void
+}
+
 interface HighlightedInputProps<T> extends TextareaProps {
-  captureTrigger?: string
-  parser: (selection: T[]) => string
+  /**
+   * Define the trigger that will run on the parser
+   */
+  captureTrigger: RegExp
+
+  /**
+   * Define the callback that will run as parser against the defined trigger capture group regex
+   * @param content - The controlled input content value.
+   * @param selection - The selected elements list.
+   */
+  parser: (content: string, selection: T[]) => string
+
+  /**
+   *
+   * @param searchTerm  - The query param term for the next batch of list items.
+   */
   fetcher: (searchTerm: string) => Promise<T[]>
-  Item: ({
-    item,
-    searchTerm,
-    select,
-  }: {
-    item: T
-    searchTerm: string
-    select: (item: T) => void
-  }) => React.ReactNode
+
+  /**
+   * React component to render as a slottable list option item.
+   *
+   * @property {T} item - Receives a generic <T>.
+   * @property {string} searchTerm - The current search string.
+   * @property {function} select - The select option triger.
+   */
+  Item: ({ item, searchTerm, select }: SlottableItemProps<T>) => React.ReactNode
 }
 
 export enum ReducerActionType {
@@ -22,9 +42,9 @@ export enum ReducerActionType {
   CLOSE_LIST = 'CLOSE_LIST',
   UPDATE_LIST = 'UPDATE_LIST',
   ADD_SELECTED = 'ADD_SELECTED',
-  REMOVE_SELECTED = 'REMOVE_SELECTED',
   UPDATE_SEARCH_TERM = 'UPDATE_SEARCH_TERM',
   CLEAR_SEARCH_TERM = 'CLEAR_SEARCH_TERM',
+  RECYCLE_SELECT_MATCHES = 'RECYCLE_SELECT_MATCHES',
 }
 
 export type ReducerContextState<T> = {
@@ -44,10 +64,6 @@ export type ReducerContextActionOptions<T> =
       state: { selected: T }
     }
   | {
-      type: ReducerActionType.REMOVE_SELECTED
-      state: { selected: T }
-    }
-  | {
       type: ReducerActionType.OPEN_LIST
     }
   | {
@@ -62,10 +78,16 @@ export type ReducerContextActionOptions<T> =
         searchTerm: string
       }
     }
+  | {
+      type: ReducerActionType.RECYCLE_SELECT_MATCHES
+      state: {
+        value: string
+      }
+    }
 
 export default function HighlightedInput<T>({
   Item,
-  captureTrigger = '@',
+  captureTrigger,
   parser,
   fetcher,
   ...rest
@@ -96,12 +118,6 @@ export default function HighlightedInput<T>({
         return current
       }
 
-      case ReducerActionType.ADD_SELECTED: {
-        current.selected = [...current.selected, action.state.selected]
-        current.open = false
-        return current
-      }
-
       case ReducerActionType.UPDATE_SEARCH_TERM: {
         current.searchTerm = action.state.searchTerm
         return current
@@ -112,9 +128,16 @@ export default function HighlightedInput<T>({
         return current
       }
 
-      case ReducerActionType.REMOVE_SELECTED: {
-        current.selected = current.selected.filter((item) => item !== action.state.selected)
+      case ReducerActionType.ADD_SELECTED: {
+        current.selected = [...current.selected, action.state.selected]
         current.open = false
+        return current
+      }
+
+      case ReducerActionType.RECYCLE_SELECT_MATCHES: {
+        const matches = action.state.value.match(captureTrigger)?.map((m) => m.replace('@', ''))
+        // @ts-ignore - Externalize somehow. The solution might be keeping the capturing RegExp proprietary of this input.
+        current.selected = current.selected.filter((item) => matches?.includes(item.username))
         return current
       }
 
@@ -123,11 +146,9 @@ export default function HighlightedInput<T>({
     }
   }, initialState)
 
-  const CAPTURE_MODE = new RegExp(`(?:^|\\s)(${captureTrigger}([^ ]*))$`)
-
   function onChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
-    const isCapturing = CAPTURE_MODE.test(e.target.value)
-    const matches = e.target.value.match(CAPTURE_MODE)
+    const matches = e.target.value.match(captureTrigger)
+    const isCapturing = !!matches?.length
 
     if (isCapturing && !state.open) {
       dispatch({ type: ReducerActionType.OPEN_LIST })
@@ -139,7 +160,7 @@ export default function HighlightedInput<T>({
       dispatch({
         type: ReducerActionType.UPDATE_SEARCH_TERM,
         state: {
-          searchTerm: matches[matches.length - 1],
+          searchTerm: matches[matches.length - 1].replace('@', ''),
         },
       })
     } else {
@@ -148,6 +169,13 @@ export default function HighlightedInput<T>({
       })
     }
 
+    dispatch({
+      type: ReducerActionType.RECYCLE_SELECT_MATCHES,
+      state: {
+        value: e.target.value,
+      },
+    })
+
     if (rest?.onChange) rest?.onChange(e)
   }
 
@@ -155,6 +183,7 @@ export default function HighlightedInput<T>({
     dispatch({ type: ReducerActionType.ADD_SELECTED, state: { selected: item } })
   }
 
+  // TODO: Move to reducer, and debounce.
   async function fetchMore() {
     const items = await fetcher(state.searchTerm)
     dispatch({
@@ -166,21 +195,17 @@ export default function HighlightedInput<T>({
   }
 
   let highlightedContent = useMemo(() => {
-    let content = rest.value
-    if (parser) content = parser(state.selected)
-    return String(content)
-  }, [state.selected])
-
-  useEffect(() => {
-    console.log('highlightedContent ->', highlightedContent)
-  }, [highlightedContent])
+    let content = String(rest.value)
+    if (parser) content = parser(content, state.selected)
+    return content
+  }, [rest.value])
 
   useEffect(() => {
     fetchMore()
   }, [state.open, state.searchTerm])
 
   return (
-    <div>
+    <div className="relative w-full">
       <div className="absolute w-full h-full py-[0.55rem] px-[0.80rem] whitespace-pre-wrap break-words text-transparent pointer-events-none z-0 bg-blend-color">
         <p
           className="text-sm"

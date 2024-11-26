@@ -15,18 +15,6 @@ import { UserAvatar } from '@/components/generic/user_avatar'
 
 const MAX_FILES = 3
 
-const mentionParser = (selected: UserResponse[]) => {
-  return selected.reduce((acc, item) => {
-    acc = acc
-      .trim()
-      .replace(
-        item.username,
-        `<a href="/${item.username}" style="color: blue; background: transparent">@$&</a>`
-      )
-    return acc
-  }, '')
-}
-
 export default function Form({
   setOpen,
   post,
@@ -91,6 +79,36 @@ export default function Form({
     setData('images', e.target.files)
   }
 
+  function mentionParser(currentContent: string, selected: UserResponse[]) {
+    console.log('mentionParser ->', selected)
+    let original = currentContent
+    return selected.reduce((acc, item) => {
+      acc = acc
+        .trim()
+        .replace(
+          '@' + item.username,
+          `<a href="/${item.username}" style="color: #3b82f6; background: white; font-weight: 700; letter-spacing: -0.20px;">$&</a>`
+        )
+      return acc
+    }, original)
+  }
+
+  function itemSelect(
+    item: UserResponse,
+    searchTerm: string,
+    select: (item: UserResponse) => void
+  ) {
+    const splitContent = data.content.split(' ')
+    setData(
+      'content',
+      data.content.replace(
+        searchTerm ? splitContent[splitContent.length - 1] : searchTerm,
+        '@' + item.username
+      )
+    )
+    select(item)
+  }
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (method === 'patch' && data) {
@@ -134,6 +152,7 @@ export default function Form({
           <HighlightedInput<UserResponse>
             id="content"
             className="no-scrollbar z-10"
+            captureTrigger={new RegExp(/@\w+/g)}
             value={data.content}
             parser={mentionParser}
             fetcher={handleFetch}
@@ -141,10 +160,7 @@ export default function Form({
             Item={({ item, searchTerm, select }) => (
               <div
                 className={`react-${item.username} flex flex-row gap-2 items-center text-sm truncate text-ellipsis`}
-                onClick={() => {
-                  setData('content', data.content.replace(searchTerm, item.username))
-                  select(item)
-                }}
+                onClick={() => itemSelect(item, searchTerm, select)}
               >
                 <UserAvatar user={item} className="h-6 w-6" />
                 <div className="flex flex-col py-1 px-0">

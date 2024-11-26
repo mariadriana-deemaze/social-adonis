@@ -11,6 +11,8 @@ import { ModelObject } from '@adonisjs/lucid/types/model'
 import type { HttpContext } from '@adonisjs/core/http'
 import type { UUID } from 'node:crypto'
 import { UserService } from '#services/user_service'
+import { UserResponse } from '#interfaces/user'
+import User from '#models/user'
 
 export default class PostsService {
   private readonly userService: UserService
@@ -132,6 +134,27 @@ export default class PostsService {
    */
   async deleteAttachments(id: UUID): Promise<void> {
     return this.attachmentService.deleteMany(AttachmentModel.POST, id)
+  }
+
+  /**
+   * Parse content in search of other user mentions, and returns matches.
+   */
+  async processMentions(content: string): Promise<UserResponse[]> {
+    const matches = content.match(new RegExp(/@\w+/g))?.map((m) => m.replace('@', '')) || []
+    // matches?.forEach((match) =>this.)
+
+    const result: UserResponse[] = []
+    for (const match of matches) {
+      // TODO: Abstract to service
+      const user = await User.query().whereILike('username', `%${match}%`).limit(1)
+      if (user) {
+        const serialized = await this.userService.serialize(user[0])
+        result.push(serialized)
+      }
+      //this.userService.
+    }
+
+    return result
   }
 
   /**
