@@ -10,9 +10,11 @@ export default function Feed({ posts, user }: InferPageProps<FeedController, 'in
     <>
       <Head title="Feed" />
       <FeedList url={route('feed.show').path} currentUser={user} posts={posts} />
-      <div className="z-10 fixed left-5 bottom-5">
-        <CreatePost />
-      </div>
+      {user && (
+        <div className="z-10 fixed left-5 bottom-5">
+          <CreatePost />
+        </div>
+      )}
     </>
   )
 }
