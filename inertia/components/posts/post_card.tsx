@@ -31,24 +31,45 @@ import { PostReactionType } from '#enums/post'
 import { UserResponse } from '#interfaces/user'
 import { route } from '@izzyjs/route/client'
 
+// NOTE: Would it be better to move this logic to the BE?
 function PostContentParser({
   content,
   preview,
+  mentions,
 }: {
   content: string
   preview: PostResponse['link']
+  mentions: PostResponse['mentions']
 }) {
   const parsed = useMemo(() => {
+    let html = content
+
     if (preview) {
-      return content.replace(
+      html = html.replace(
         preview.link,
         `<a class="text-cyan-600" href=${preview.link} target="_blank">${preview.link}</a>`
       )
     }
-    return content
+
+    if (mentions) {
+      Object.entries(mentions).forEach(([username, info]) => {
+        html = html.replace(
+          '@' + username,
+          `<a class="text-cyan-600" href=${route('users.show', {
+            params: {
+              id: info.id,
+            },
+          })}>@${username}</a>`
+        )
+      })
+    }
+    return html
   }, [content])
   return (
-    <div className="pb-5 break-words post-content" dangerouslySetInnerHTML={{ __html: parsed }} />
+    <div
+      className="pb-5 break-words whitespace-break-spaces post-content"
+      dangerouslySetInnerHTML={{ __html: parsed }}
+    />
   )
 }
 
@@ -455,10 +476,14 @@ export default function PostCard({
               }).path
             }
           >
-            <PostContentParser content={post.content} preview={post.link} />
+            <PostContentParser
+              content={post.content}
+              preview={post.link}
+              mentions={post.mentions}
+            />
           </Link>
         ) : (
-          <PostContentParser content={post.content} preview={post.link} />
+          <PostContentParser content={post.content} preview={post.link} mentions={post.mentions} />
         )}
 
         {post.link && <LinkPreview preview={post.link} />}
