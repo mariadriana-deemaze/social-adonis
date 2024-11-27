@@ -1,4 +1,4 @@
-import React, { Reducer, useEffect, useMemo, useReducer } from 'react'
+import React, { Reducer, useEffect, useMemo, useReducer, useRef } from 'react'
 import { Textarea, TextareaProps } from '@/components/ui/textarea'
 import { Card } from '@/components/ui/card'
 
@@ -22,10 +22,20 @@ interface HighlightedInputProps<T> extends TextareaProps {
   parser: (content: string, selection: T[]) => string
 
   /**
+   * Define a key in T, to act as a matching predicate.
+   */
+  matcherPredicate: keyof T
+
+  /**
    *
    * @param searchTerm  - The query param term for the next batch of list items.
    */
   fetcher: (searchTerm: string) => Promise<T[]>
+
+  /**
+   * Default text to highlight upon initialization.
+   */
+  defaultHightlights: T[]
 
   /**
    * React component to render as a slottable list option item.
@@ -90,12 +100,14 @@ export default function HighlightedInput<T>({
   captureTrigger,
   parser,
   fetcher,
+  matcherPredicate,
+  defaultHightlights,
   ...rest
 }: HighlightedInputProps<T>) {
   const initialState: ReducerContextState<T> = {
     list: [],
     open: false,
-    selected: [],
+    selected: defaultHightlights ?? [],
     searchTerm: '',
   }
 
@@ -136,8 +148,9 @@ export default function HighlightedInput<T>({
 
       case ReducerActionType.RECYCLE_SELECT_MATCHES: {
         const matches = action.state.value.match(captureTrigger)?.map((m) => m.replace('@', ''))
-        // @ts-ignore - Externalize somehow. The solution might be keeping the capturing RegExp proprietary of this input.
-        current.selected = current.selected.filter((item) => matches?.includes(item.username))
+        current.selected = current.selected.filter((item) =>
+          matches?.includes(item[matcherPredicate as keyof T] as string)
+        )
         return current
       }
 
@@ -146,9 +159,12 @@ export default function HighlightedInput<T>({
     }
   }, initialState)
 
+  const textAreaRef = useRef<HTMLTextAreaElement>(null)
+  const highlighterRef = useRef<HTMLDivElement>(null)
+
   function onChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
     const matches = e.target.value.match(captureTrigger)
-    const isCapturing = !!matches?.length
+    const isCapturing = matches ? matches?.length > state.selected.length : false
 
     if (isCapturing && !state.open) {
       dispatch({ type: ReducerActionType.OPEN_LIST })
@@ -179,6 +195,12 @@ export default function HighlightedInput<T>({
     if (rest?.onChange) rest?.onChange(e)
   }
 
+  async function syncScroll({ currentTarget }: React.UIEvent<HTMLTextAreaElement, UIEvent>) {
+    if (highlighterRef?.current) {
+      highlighterRef.current.scrollTop = currentTarget.scrollTop
+    }
+  }
+
   async function handleSelect(item: T) {
     dispatch({ type: ReducerActionType.ADD_SELECTED, state: { selected: item } })
   }
@@ -201,12 +223,15 @@ export default function HighlightedInput<T>({
   }, [rest.value])
 
   useEffect(() => {
-    fetchMore()
+    if (state.open) fetchMore()
   }, [state.open, state.searchTerm])
 
   return (
     <div className="relative w-full">
-      <div className="absolute w-full h-full py-[0.55rem] px-[0.80rem] whitespace-pre-wrap break-words text-transparent pointer-events-none z-0 bg-blend-color">
+      <div
+        ref={highlighterRef}
+        className="absolute overflow-y-scroll w-full h-full py-[0.55rem] px-[0.80rem] whitespace-pre-wrap break-words text-transparent pointer-events-none z-0 bg-blend-color"
+      >
         <p
           className="text-sm"
           dangerouslySetInnerHTML={{
@@ -214,7 +239,13 @@ export default function HighlightedInput<T>({
           }}
         />
       </div>
-      <Textarea {...rest} onChange={onChange} className="no-scrollbar z-10" />
+      <Textarea
+        ref={textAreaRef}
+        className="no-scrollbar z-10"
+        {...rest}
+        onScroll={syncScroll}
+        onChange={onChange}
+      />
       {state.open && state.list.length > 0 && (
         <div className="relative w-full">
           <Card className="absolute top-[calc(100%_+_5px)] w-full flex flex-col gap-2 px-2 py-1 divide-y divide-dashed">

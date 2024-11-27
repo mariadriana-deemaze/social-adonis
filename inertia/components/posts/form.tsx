@@ -12,6 +12,7 @@ import { route } from '@izzyjs/route/client'
 import { UserResponse } from '#interfaces/user'
 import HighlightedInput from '@/components/generic/highlighted_input'
 import { UserAvatar } from '@/components/generic/user_avatar'
+import { REGEX, replaceLast } from '#utils/index'
 
 const MAX_FILES = 3
 
@@ -80,14 +81,13 @@ export default function Form({
   }
 
   function mentionParser(currentContent: string, selected: UserResponse[]) {
-    console.log('mentionParser ->', selected)
     let original = currentContent
     return selected.reduce((acc, item) => {
       acc = acc
         .trim()
         .replace(
           '@' + item.username,
-          `<a href="/${item.username}" style="color: #3b82f6; background: white; font-weight: 700; letter-spacing: -0.20px;">$&</a>`
+          `<a href="/${item.username}" style="color: #0891b2; background: white; font-weight: 700; letter-spacing: -0.20px;">$&</a>`
         )
       return acc
     }, original)
@@ -101,7 +101,8 @@ export default function Form({
     const splitContent = data.content.split(' ')
     setData(
       'content',
-      data.content.replace(
+      replaceLast(
+        data.content,
         searchTerm ? splitContent[splitContent.length - 1] : searchTerm,
         '@' + item.username
       )
@@ -151,11 +152,13 @@ export default function Form({
         <div className="relative">
           <HighlightedInput<UserResponse>
             id="content"
+            defaultHightlights={Object.values(post?.mentions || {})}
             className="no-scrollbar z-10"
-            captureTrigger={new RegExp(/@\w+/g)}
-            value={data.content}
+            captureTrigger={new RegExp(REGEX.MENTIONS)}
+            matcherPredicate={'username'}
             parser={mentionParser}
             fetcher={handleFetch}
+            value={data.content}
             onChange={(e) => setData('content', e.target.value)}
             Item={({ item, searchTerm, select }) => (
               <div
