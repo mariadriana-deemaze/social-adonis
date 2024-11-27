@@ -11,7 +11,7 @@ import {
   scope,
 } from '@adonisjs/lucid/orm'
 import User from '#models/user'
-import { extractFirstLink, sanitizePostContent } from '#utils/index'
+import { extractFirstLink, REGEX, sanitizePostContent } from '#utils/index'
 import PostReaction from '#models/post_reaction'
 import PostReport from '#models/post_report'
 import { PostStatus } from '#enums/post'
@@ -53,6 +53,15 @@ export default class Post extends BaseModel {
   @computed()
   get link(): string | null {
     return extractFirstLink(this.content)
+  }
+
+  @computed()
+  get matches(): Map<string, string[]> {
+    const mapped = new Map<string, string[]>()
+    const possibleMentions =
+      this.content.match(new RegExp(REGEX.MENTIONS))?.map((m) => m.replace('@', '')) || []
+    mapped.set('@', possibleMentions)
+    return mapped
   }
 
   @beforeSave()

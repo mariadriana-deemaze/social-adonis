@@ -139,21 +139,16 @@ export default class PostsService {
   /**
    * Parse content in search of other user mentions, and returns matches.
    */
-  async processMentions(content: string): Promise<UserResponse[]> {
-    const matches = content.match(new RegExp(/@\w+/g))?.map((m) => m.replace('@', '')) || []
-    // matches?.forEach((match) =>this.)
-
-    const result: UserResponse[] = []
-    for (const match of matches) {
-      // TODO: Abstract to service
-      const user = await User.query().whereILike('username', `%${match}%`).limit(1)
+  async processMentions(post: Post): Promise<Map<string, UserResponse>> {
+    const matches = post.matches.get('@') || []
+    const result: Map<string, UserResponse> = new Map()
+    for (const username of matches) {
+      const user = await User.findBy('username', username)
       if (user) {
-        const serialized = await this.userService.serialize(user[0])
-        result.push(serialized)
+        const serialized = await this.userService.serialize(user)
+        result.set(user.username, serialized)
       }
-      //this.userService.
     }
-
     return result
   }
 
@@ -165,6 +160,7 @@ export default class PostsService {
     const user = await this.userService.serialize(post.user)
     const attachments = await this.attachmentService.findMany(AttachmentModel.POST, post.id)
     const link = await this.linkService.show(post.link)
+    const mentions = await this.processMentions(post)
 
     let accumulator: Record<PostReactionType, number> = {
       [PostReactionType.LIKE]: 0,
@@ -185,6 +181,7 @@ export default class PostsService {
     const resource: PostResponse = {
       id: data.id,
       content: data.content,
+      mentions: Object.fromEntries(mentions),
       status: data.status,
       user,
       link,
