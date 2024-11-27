@@ -68,6 +68,7 @@ export default defineConfig({
       file: () => import('#start/repl'),
       environment: ['repl'],
     },
+    () => import('#start/events'),
   ],
 
   /*

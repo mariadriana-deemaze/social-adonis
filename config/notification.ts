@@ -38,4 +38,10 @@ declare module '@osenco/adonisjs-notifications/types' {
     postId: UUID
     postReactionType: PostReactionType
   }
+
+  interface PostMentionNotificationData extends DatabaseChannelData {
+    type: NotificationType.PostMentionNotification
+    userId: UUID
+    postId: UUID
+  }
 }
