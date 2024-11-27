@@ -55,15 +55,10 @@ export default class UserNotificationService {
         updatedAt: json.updatedAt,
       }
 
-      let user = users.get(notification.notifiableId)
+      let user = await this.getSetMap<UserResponse>('user', notification.notifiableId, users)
       if (!user) {
-        const serialized = await this.userService.findOne(notification.data.userId)
-        if (!serialized) {
-          logger.error(`Attempted to notify. UserId ${notification.data.userId} not found.`)
-          break
-        }
-        user = serialized
-        users.set(serialized.id, serialized)
+        logger.error(`Attempted to notify. UserId ${notification.data.userId} not found.`)
+        break
       }
 
       serializedNotification.data = { ...json.data, user }
@@ -71,16 +66,10 @@ export default class UserNotificationService {
       // Replace template strings
       switch (notification.data.type) {
         case NotificationType.PostOwnerReactionNotification: {
-          let post = posts.get(notification.data.postId)
-
+          let post = await this.getSetMap<Post>('post', notification.data.postId, posts)
           if (!post) {
-            const p = await Post.find(notification.data.postId)
-            if (!p) {
-              logger.error(`Attempted to notify. PostId ${notification.data.postId} not found.`)
-              break
-            }
-            posts.set(notification.data.postId, p)
-            post = p
+            logger.error(`Attempted to notify. PostId ${notification.data.postId} not found.`)
+            break
           }
 
           serializedNotification.data = {
@@ -91,6 +80,7 @@ export default class UserNotificationService {
 
           break
         }
+
         case NotificationType.UserPostReportedNotification: {
           serializedNotification.data = {
             ...serializedNotification.data,
@@ -102,6 +92,30 @@ export default class UserNotificationService {
           }
           break
         }
+
+        case NotificationType.PostMentionNotification: {
+          let postAuthor = await this.getSetMap<UserResponse>(
+            'user',
+            notification.data.userId,
+            users
+          )
+          let post = await this.getSetMap<Post>('post', notification.data.postId, posts)
+          if (!postAuthor || !post) {
+            logger.error(`Attempted to notify. Resource not found.`)
+            break
+          }
+
+          serializedNotification.data = {
+            ...serializedNotification.data,
+            title: serializedNotification.data.title.replace(
+              ':authorFullName',
+              postAuthor.name ?? ''
+            ),
+            message: serializedNotification.data.message.replace(':content', post.content),
+          }
+          break
+        }
+
         case NotificationType.PostReportingUserStatusNotification:
           serializedNotification.data = {
             ...serializedNotification.data,
@@ -118,5 +132,31 @@ export default class UserNotificationService {
     }
 
     return data
+  }
+
+  private async getSetMap<T>(
+    type: 'user' | 'post',
+    id: UUID,
+    map: Map<UUID, T>
+  ): Promise<T | null> {
+    let resource: T | null = map.get(id) || null
+
+    if (!resource) {
+      let item = null as T
+
+      if (type === 'user') {
+        item = (await this.userService.findOne(id)) as unknown as T
+      }
+
+      if (type === 'post') {
+        item = (await Post.find(id)) as unknown as T
+      }
+
+      map.set(id, item)
+    }
+
+    resource = map.get(id) || null
+
+    return resource
   }
 }

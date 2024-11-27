@@ -161,7 +161,7 @@ function PostGallery({ attachments }: { attachments: AttachmentResponse[] }) {
   return (
     <div>
       <div className="grid gap-4">
-        <div className="flex flex-row justify-center aspect-auto h-[calc(100vh_-_300px)] max-h-[700px] relative rounded-lg overflow-hidden">
+        <div className="flex flex-row justify-center border border-slate-300 aspect-auto h-[calc(100vh_-_300px)] max-h-[700px] relative rounded-lg overflow-hidden">
           {attachments.length > 1 && (
             <>
               <Button
