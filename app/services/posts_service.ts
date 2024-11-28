@@ -8,11 +8,11 @@ import { PaginatedResponse } from 'app/interfaces/pagination'
 import { PostReactionType } from '#enums/post'
 import PostReaction from '#models/post_reaction'
 import { ModelObject } from '@adonisjs/lucid/types/model'
-import type { HttpContext } from '@adonisjs/core/http'
-import type { UUID } from 'node:crypto'
 import { UserService } from '#services/user_service'
 import { UserResponse } from '#interfaces/user'
 import User from '#models/user'
+import type { HttpContext } from '@adonisjs/core/http'
+import type { UUID } from 'node:crypto'
 
 export default class PostsService {
   private readonly userService: UserService
@@ -95,11 +95,6 @@ export default class PostsService {
       data,
       meta,
     }
-  }
-
-  async pin(post: Post, pin: boolean) {
-    post.pinned = pin
-    await post.save()
   }
 
   /**
