@@ -505,7 +505,7 @@ export default function PostCard({
         </Link>
 
         {postState.pinned && (
-          <div className="absolute -top-4 -left-4 -rotate-45">
+          <div id="pinned-post-icon" className="absolute -top-4 -left-4 -rotate-45">
             <Pin className="text-slate-400 fill-slate-300" size={12} />
             <div className="absolute left-[2px] top-[12px] h-[1px] w-2 bg-slate-400" />
             <div className="absolute left-[4px] top-[14px] h-[1px] w-1 bg-slate-400" />
