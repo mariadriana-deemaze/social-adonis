@@ -11,6 +11,7 @@ import {
   Trash2,
   Flag,
   Pin,
+  BadgeCheck,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -493,9 +494,14 @@ export default function PostCard({
           <div className="flex flex-row gap-3">
             <UserAvatar user={post.user} className="h-8 w-8" />
             <div className="flex flex-col gap-1">
-              <p className="text-xs text-gray-600 text-ellipsis truncate max-w-40 md:max-w-screen-lg">
-                @{post.user.username}
-              </p>
+              <div className="flex flex-row gap-2 items-center">
+                <p className="text-xs text-gray-600 text-ellipsis truncate max-w-40 md:max-w-screen-lg">
+                  @{post.user.username}
+                </p>
+                {post.user.verified && (
+                  <BadgeCheck size={14} className="fill-blue-500 stroke-white" />
+                )}
+              </div>
               <span className="flex text-xs text-gray-400 gap-1 items-center">
                 <Clock size={10} />
                 {formatDistanceToNow(new Date(post.createdAt))} ago

@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { InferPageProps } from '@adonisjs/inertia/types'
 import { lightFormat } from 'date-fns'
 import { Head } from '@inertiajs/react'
-import { CalendarHeart, FilePen } from 'lucide-react'
+import { BadgeCheck, CalendarHeart, FilePen } from 'lucide-react'
 import { CreatePost } from '@/components/posts/create'
 import { UserResponse } from '#interfaces/user'
 import { route } from '@izzyjs/route/client'
@@ -23,9 +23,12 @@ function UserCard({ user, totalPosts }: { user: UserResponse; totalPosts: number
               className="h-28 w-28 lg:h-20 lg:w-20 border-4 border-white shadow-lg"
             />
           </div>
-          <div>
-            <h4 className="text-md">{user.name}</h4>
-            <p className="text-xs max-w-fit truncate text-ellipsis text-muted-foreground">
+          <div className="flex flex-col items-center">
+            <div className="flex flex-row gap-1 items-center justify-center">
+              <h4 className="text-md text-ellipsis truncate max-w-72 lg:max-w-40">{user.name}</h4>
+              {user.verified && <BadgeCheck size={16} className="fill-blue-500 stroke-white" />}
+            </div>
+            <p className="text-xs max-w-72 lg:max-w-40 truncate text-ellipsis text-muted-foreground">
               @{user.username}
             </p>
           </div>

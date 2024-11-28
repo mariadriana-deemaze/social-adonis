@@ -150,6 +150,7 @@ export class UserService {
     const resource: UserResponse = {
       id: data.id,
       role: data.role,
+      verified: data.verified,
       name: data.name,
       surname: data.surname,
       fullname: data.fullName,
