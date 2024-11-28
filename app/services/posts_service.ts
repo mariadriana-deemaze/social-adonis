@@ -97,6 +97,11 @@ export default class PostsService {
     }
   }
 
+  async pin(post: Post, pin: boolean) {
+    post.pinned = pin
+    await post.save()
+  }
+
   /**
    * Deals with the post attachments extraction from request, as well as apply the necessary validations.
    * Thereafter, delegates to the service responsible of handling the attachment providers.

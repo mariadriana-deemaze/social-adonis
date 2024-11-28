@@ -18,6 +18,7 @@ const PostReportsController = () => import('#controllers/post_reports_controller
 const UserNotificationsController = () => import('#controllers/user_notifications_controller')
 const AdminAuthController = () => import('#controllers/admin_auth_controller')
 const AdminPostReportsController = () => import('#controllers/admin_post_reports_controller')
+const PostPinsController = () => import('#controllers/post_pins_controller')
 
 /**
  *
@@ -78,6 +79,8 @@ router
         router.get(':id', [PostsController, 'show']).as('posts.show')
         router.patch(':id', [PostsController, 'update']).as('posts.update')
         router.delete(':id', [PostsController, 'destroy']).as('posts.destroy')
+
+        router.post(':id/pin', [PostPinsController, 'update']).as('posts_pins.update')
 
         router.post(':id/react', [PostReactionsController, 'create']).as('posts_reactions.store')
         router
