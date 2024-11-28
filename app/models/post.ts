@@ -34,6 +34,9 @@ export default class Post extends BaseModel {
   @column()
   declare status: PostStatus
 
+  @column()
+  declare pinned: boolean
+
   @hasMany(() => PostReaction)
   declare reactions: HasMany<typeof PostReaction>
 
