@@ -8,8 +8,11 @@ export const PostFactory = factory
   .define(Post, async ({ faker }) => {
     return {
       content: faker.lorem.paragraph(),
+      pinned: faker.datatype.boolean(),
     }
   })
+  .state('pinned', (post) => (post.pinned = true))
+  .state('unpinned', (post) => (post.pinned = false))
   .relation('user', () => User)
   .relation('reactions', () => PostReactionFactory)
   .relation('reports', () => PostReportFactory)

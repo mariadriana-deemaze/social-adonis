@@ -4,15 +4,15 @@ import type { UUID } from 'node:crypto'
 
 export default class PostPinService {
   /**
-   * Returns ammount of posts pinned by a user.
+   * Returns amount of posts pinned by a user.
    */
   async count(userId: UUID): Promise<number> {
     const query = (await db
       .from('posts')
       .where('user_id', userId)
       .andWhere('pinned', true)
-      .count('*')) as [{ count: number }]
-    return query[0].count
+      .count('*')) as [{ count: string }]
+    return +query[0].count
   }
 
   /**
