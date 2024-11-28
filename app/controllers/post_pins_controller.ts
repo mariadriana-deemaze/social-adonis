@@ -24,6 +24,8 @@ export default class PostPinsController {
       return ctx.response.conflict('Exceeded max amount of pinned posts.')
     }
 
-    await this.service.pin(post, pin)
+    const pinned = await this.service.pin(post, pin)
+
+    return ctx.response.ok({ pinned })
   }
 }

@@ -185,6 +185,7 @@ export default class PostsService {
       status: data.status,
       user,
       link,
+      pinned: data.pinned,
       attachments,
       reactions: {
         reacted:

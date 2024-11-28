@@ -18,8 +18,9 @@ export default class PostPinService {
   /**
    * Handles the action of pinning a post
    */
-  async pin(post: Post, pin: boolean): Promise<void> {
+  async pin(post: Post, pin: boolean): Promise<boolean> {
     post.pinned = pin
     await post.save()
+    return pin
   }
 }
