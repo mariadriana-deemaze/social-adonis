@@ -9,6 +9,8 @@ import { CreatePost } from '@/components/posts/create'
 import { UserResponse } from '#interfaces/user'
 import { route } from '@izzyjs/route/client'
 import { UserAvatar } from '@/components/generic/user_avatar'
+import { useState } from 'react'
+import { cn } from '@/lib/utils'
 
 function UserCard({ user, totalPosts }: { user: UserResponse; totalPosts: number }) {
   return (
@@ -56,6 +58,8 @@ function UserCard({ user, totalPosts }: { user: UserResponse; totalPosts: number
 }
 
 export default function Show({ user, posts, profile }: InferPageProps<FeedController, 'show'>) {
+  const [coverLoadState, setCoverLoadState] = useState<'loading' | 'loaded'>('loading')
+
   if (!posts || !profile) return <>Loading..</>
   return (
     <>
@@ -64,7 +68,11 @@ export default function Show({ user, posts, profile }: InferPageProps<FeedContro
         <div className="relative bg-slate-300 border border-gray-200 h-52 w-full rounded-2xl mb-4 shadow-inner">
           <div className="w-full h-full rounded-2xl overflow-hidden">
             <img
-              className="w-full h-full object-cover overflow"
+              onLoad={() => setCoverLoadState('loaded')}
+              className={cn(
+                'w-full h-full object-cover overflow',
+                coverLoadState === 'loaded' ? 'block animate-in fade-in duration-1000' : 'hidden'
+              )}
               src={profile.attachments.cover?.link}
             />
           </div>
@@ -74,7 +82,7 @@ export default function Show({ user, posts, profile }: InferPageProps<FeedContro
         </div>
       </div>
       <div className="relative flex flex-col lg:flex-row gap-2 w-full">
-        <div className="hidden lg:block h-full w-full max-w-full lg:max-w-72">
+        <div className="hidden lg:block h-full w-full max-w-full lg:max-w-64">
           <UserCard user={profile} totalPosts={posts.meta.total} />
         </div>
         <div className="w-full">
