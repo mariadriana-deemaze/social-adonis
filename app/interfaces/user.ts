@@ -11,6 +11,7 @@ export interface UserResponse extends BaseEntity {
   fullname: string
   username: string
   email: string
+  verified: boolean
   attachments: {
     cover: AttachmentResponse | null
     avatar: AttachmentResponse | null

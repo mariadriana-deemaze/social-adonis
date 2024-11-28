@@ -38,6 +38,9 @@ export default class User extends compose(BaseModel, AuthFinder, Notifiable('use
   declare email: string
 
   @column()
+  declare verified: boolean
+
+  @column()
   role: AccountRole = AccountRole.USER
 
   @computed()
