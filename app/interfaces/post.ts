@@ -19,6 +19,7 @@ export interface LinkResponse {
 export interface PostResponse extends BaseEntity {
   id: UUID
   content: string
+  mentions: Record<string, UserResponse>
   status: PostStatus
   attachments: {
     images: AttachmentResponse[]

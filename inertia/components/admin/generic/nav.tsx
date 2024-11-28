@@ -8,13 +8,13 @@ import {
   DropdownMenuItem,
   DropdownMenuShortcut,
 } from '@/components/ui/dropdown_menu'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import AdonisLogo from '@/components/svg/logo'
 import { cn } from '@/lib/utils'
 import { UserResponse } from '#interfaces/user'
 import { route } from '@izzyjs/route/client'
 import { PostReportStatus } from '#enums/post'
+import { UserAvatar } from '@/components/generic/user_avatar'
 
 export default function NavBar({ user }: { user: UserResponse | null }) {
   const LINKS: Record<'title' | 'link', string>[] = [
@@ -52,13 +52,7 @@ export default function NavBar({ user }: { user: UserResponse | null }) {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage
-                        src={user?.attachments ? user?.attachments?.avatar?.link : '#'}
-                        alt={`${user.name} avatar image`}
-                      />
-                      <AvatarFallback>{user.name ? user.name[0] : '-'}</AvatarFallback>
-                    </Avatar>
+                    <UserAvatar user={user} className="h-8 w-8" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="end" forceMount>

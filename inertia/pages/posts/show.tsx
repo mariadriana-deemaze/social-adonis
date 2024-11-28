@@ -4,7 +4,8 @@ import InfoPanel from '@/components/generic/info_panel'
 import PostCard from '@/components/posts/post_card'
 import { Button } from '@/components/ui/button'
 import { InferPageProps } from '@adonisjs/inertia/types'
-import { Head } from '@inertiajs/react'
+import { Head, router } from '@inertiajs/react'
+import { route } from '@izzyjs/route/client'
 import { MoveLeft } from 'lucide-react'
 
 export default function Show({ post, user }: InferPageProps<PostsController, 'show'>) {
@@ -16,7 +17,7 @@ export default function Show({ post, user }: InferPageProps<PostsController, 'sh
         <div className="my-6">
           <div
             className="flex flex-row gap-2 items-center cursor-pointer hover:opacity-80 duration-200"
-            onClick={() => window.history.back()}
+            onClick={() => router.visit(route('feed.show').path)}
           >
             <Button variant="ghost" size="sm-icon">
               <MoveLeft />

@@ -3,7 +3,6 @@ import {
   BaseModel,
   beforeDelete,
   beforeSave,
-  beforeUpdate,
   belongsTo,
   column,
   computed,
@@ -11,10 +10,11 @@ import {
   scope,
 } from '@adonisjs/lucid/orm'
 import User from '#models/user'
-import { extractFirstLink, sanitizePostContent } from '#utils/index'
+import { extractFirstLink, REGEX, sanitizePostContent } from '#utils/index'
 import PostReaction from '#models/post_reaction'
 import PostReport from '#models/post_report'
 import { PostStatus } from '#enums/post'
+import emitter from '@adonisjs/core/services/emitter'
 import type { UUID } from 'node:crypto'
 import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 
@@ -55,10 +55,22 @@ export default class Post extends BaseModel {
     return extractFirstLink(this.content)
   }
 
+  @computed()
+  get matches(): Map<string, string[]> {
+    const mapped = new Map<string, string[]>()
+    const possibleMentions =
+      this.content.match(new RegExp(REGEX.MENTIONS))?.map((m) => m.replace('@', '')) || []
+    mapped.set('@', possibleMentions)
+    return mapped
+  }
+
   @beforeSave()
-  @beforeUpdate()
   static sanitizeContent(post: Post) {
     post.content = sanitizePostContent(post.content)
+    const mentions = post.matches.get('@')
+    // TODO: Future concept
+    // const tags = post.matches.get('#')
+    if (mentions) emitter.emit('post:mention', [mentions, post])
   }
 
   @beforeDelete()

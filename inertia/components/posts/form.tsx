@@ -3,13 +3,16 @@ import { MAX_POST_CONTENT_SIZE, MIN_POST_CONTENT_SIZE } from '#validators/post'
 import FileUploadPreview from '@/components/generic/file_upload_preview'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/components/ui/use_toast'
 import { cn } from '@/lib/utils'
 import { useForm, usePage } from '@inertiajs/react'
 import { Paperclip } from 'lucide-react'
 import { PostResponse } from 'app/interfaces/post'
 import { route } from '@izzyjs/route/client'
+import { UserResponse } from '#interfaces/user'
+import HighlightedInput from '@/components/generic/highlighted_input'
+import { UserAvatar } from '@/components/generic/user_avatar'
+import { REGEX, replaceLast } from '#utils/index'
 
 const MAX_FILES = 3
 
@@ -48,6 +51,23 @@ export default function Form({
 
   const method = post ? 'patch' : 'post'
 
+  async function handleFetch(searchTerm: string) {
+    const request = await fetch(
+      route('users.index', {
+        qs: {
+          search: searchTerm,
+        },
+      }).path
+    )
+
+    if (request.ok) {
+      const json = await request.json()
+      return json.data
+    }
+
+    return []
+  }
+
   function addFiles(e: React.ChangeEvent<HTMLInputElement>) {
     if (!e.target.files) return
     if (e.target.files?.length > MAX_FILES) {
@@ -58,6 +78,36 @@ export default function Form({
       return
     }
     setData('images', e.target.files)
+  }
+
+  function mentionParser(currentContent: string, selected: UserResponse[]) {
+    let original = currentContent
+    return selected.reduce((acc, item) => {
+      acc = acc
+        .trim()
+        .replace(
+          '@' + item.username,
+          `<a href="/${item.username}" style="color: #0891b2; letter-spacing: 0px;">$&</a>`
+        )
+      return acc
+    }, original)
+  }
+
+  function itemSelect(
+    item: UserResponse,
+    searchTerm: string,
+    select: (item: UserResponse) => void
+  ) {
+    const splitContent = data.content.split(' ')
+    setData(
+      'content',
+      replaceLast(
+        data.content,
+        searchTerm ? splitContent[splitContent.length - 1] : searchTerm,
+        '@' + item.username
+      )
+    )
+    select(item)
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -89,6 +139,7 @@ export default function Form({
       })
     }
   }, [errors])
+
   return (
     <form
       onSubmit={handleSubmit}
@@ -98,12 +149,31 @@ export default function Form({
         <Label htmlFor="content" className="text-left">
           Post content
         </Label>
-        <Textarea
-          id="content"
-          className="no-scrollbar"
-          value={data.content}
-          onChange={(e) => setData('content', e.target.value)}
-        />
+        <div className="relative">
+          <HighlightedInput<UserResponse>
+            id="content"
+            defaultHightlights={Object.values(post?.mentions || {})}
+            className="no-scrollbar z-10"
+            captureTrigger={new RegExp(REGEX.MENTIONS)}
+            matcherPredicate={'username'}
+            parser={mentionParser}
+            fetcher={handleFetch}
+            value={data.content}
+            onChange={(e) => setData('content', e.target.value)}
+            Item={({ item, searchTerm, select }) => (
+              <div
+                className={`react-${item.username} flex flex-row gap-2 items-center text-sm truncate text-ellipsis`}
+                onClick={() => itemSelect(item, searchTerm, select)}
+              >
+                <UserAvatar user={item} className="h-6 w-6" />
+                <div className="flex flex-col py-1 px-0">
+                  <p className="font-medium text-xs">{item.fullname}</p>
+                  <p className="text-xs text-blue-500">@{item.username}</p>
+                </div>
+              </div>
+            )}
+          />
+        </div>
         <span className={cn('text-xs', invalidPostContent ? 'text-red-700' : 'text-gray-500')}>
           {data.content.length}/{MAX_POST_CONTENT_SIZE}
         </span>

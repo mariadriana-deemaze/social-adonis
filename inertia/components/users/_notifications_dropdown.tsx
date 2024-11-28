@@ -7,15 +7,15 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown_menu'
-import { NotificationResponse } from '#interfaces/notification'
-import { BadgeInfo, BellDot, CheckCheck, Clock, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import InfoPanel from '@/components/generic/info_panel'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import PostReactionIcon from '@/components/posts/post_reaction_icon'
+import { UserAvatar } from '@/components/generic/user_avatar'
+import { Link } from '@inertiajs/react'
+import { NotificationResponse } from '#interfaces/notification'
+import { BadgeInfo, BellDot, CheckCheck, Clock, Loader2 } from 'lucide-react'
 import { NotificationType } from '#enums/notification'
 import { PostReactionType } from '#enums/post'
-import { Link } from '@inertiajs/react'
-import PostReactionIcon from '@/components/posts/post_reaction_icon'
 import { formatDistanceToNow } from 'date-fns'
 
 export default function NotificationsDropdown() {
@@ -140,19 +140,7 @@ export default function NotificationsDropdown() {
                           </div>
                         ) : (
                           <div className="relative h-8 w-8">
-                            <Avatar className="h-8 w-8">
-                              <AvatarImage
-                                src={
-                                  notification.data.user?.attachments
-                                    ? notification.data.user?.attachments?.avatar?.link
-                                    : '#'
-                                }
-                                alt={`${notification.data.user.name} avatar image`}
-                              />
-                              <AvatarFallback>
-                                {notification.data.user.name ? notification.data.user.name[0] : '-'}
-                              </AvatarFallback>
-                            </Avatar>
+                            <UserAvatar user={notification.data.user} className="h-8 w-8" />
                             {notification.data.type ===
                               NotificationType.PostOwnerReactionNotification && (
                               <div className="absolute p-0 m-0 -bottom-2 -right-2 h-5 w-5 rounded-full bg-white border border-white">

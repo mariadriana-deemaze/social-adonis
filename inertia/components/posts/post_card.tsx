@@ -18,37 +18,58 @@ import {
   DropdownMenuTrigger,
   DropdownMenuItem,
 } from '@/components/ui/dropdown_menu'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { UpdatePost } from '@/components/posts/update'
 import { DeletePost } from '@/components/posts/delete'
+import { ReportPost } from '@/components/posts/report'
+import { UserAvatar } from '@/components/generic/user_avatar'
+import PostReactionIcon, { POST_REACTION_ICONS } from '@/components/posts/post_reaction_icon'
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover_card'
 import { PostResponse } from 'app/interfaces/post'
 import { AttachmentResponse } from 'app/interfaces/attachment'
 import { formatDistanceToNow } from 'date-fns'
 import { PostReactionType } from '#enums/post'
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover_card'
 import { UserResponse } from '#interfaces/user'
-import { ReportPost } from '@/components/posts/report'
 import { route } from '@izzyjs/route/client'
-import PostReactionIcon, { POST_REACTION_ICONS } from '@/components/posts/post_reaction_icon'
 
+// NOTE: Would it be better to move this logic to the BE?
 function PostContentParser({
   content,
   preview,
+  mentions,
 }: {
   content: string
   preview: PostResponse['link']
+  mentions: PostResponse['mentions']
 }) {
   const parsed = useMemo(() => {
+    let html = content
+
     if (preview) {
-      return content.replace(
+      html = html.replace(
         preview.link,
         `<a class="text-cyan-600" href=${preview.link} target="_blank">${preview.link}</a>`
       )
     }
-    return content
+
+    if (mentions) {
+      Object.entries(mentions).forEach(([username, info]) => {
+        html = html.replace(
+          '@' + username,
+          `<a class="text-cyan-600" href=${route('users.show', {
+            params: {
+              id: info.id,
+            },
+          })}>@${username}</a>`
+        )
+      })
+    }
+    return html
   }, [content])
   return (
-    <div className="pb-5 break-words post-content" dangerouslySetInnerHTML={{ __html: parsed }} />
+    <div
+      className="pb-5 break-words whitespace-break-spaces post-content"
+      dangerouslySetInnerHTML={{ __html: parsed }}
+    />
   )
 }
 
@@ -140,7 +161,7 @@ function PostGallery({ attachments }: { attachments: AttachmentResponse[] }) {
   return (
     <div>
       <div className="grid gap-4">
-        <div className="flex flex-row justify-center aspect-auto h-[calc(100vh_-_300px)] max-h-[700px] relative rounded-lg overflow-hidden">
+        <div className="flex flex-row justify-center border border-slate-300 aspect-auto h-[calc(100vh_-_300px)] max-h-[700px] relative rounded-lg overflow-hidden">
           {attachments.length > 1 && (
             <>
               <Button
@@ -383,6 +404,7 @@ function PostActions({
                 key={`${post.id}_${action}_${index}`}
                 className="flex flex-row gap-4 p-0 text-gray-600"
                 onSelect={(e) => e.preventDefault()}
+                asChild
               >
                 <Element />
               </DropdownMenuItem>
@@ -418,13 +440,7 @@ export default function PostCard({
           }
         >
           <div className="flex flex-row gap-3">
-            <Avatar className="h-8 w-8">
-              <AvatarImage
-                src={post.user.attachments.avatar?.link}
-                alt={`${post.user.name} avatar image`}
-              />
-              <AvatarFallback>{post.user.name ? post.user.name[0] : '-'}</AvatarFallback>
-            </Avatar>
+            <UserAvatar user={post.user} className="h-8 w-8" />
             <div className="flex flex-col gap-1">
               <p className="text-xs text-gray-600 text-ellipsis truncate max-w-40 md:max-w-screen-lg">
                 @{post.user.username}
@@ -461,10 +477,14 @@ export default function PostCard({
               }).path
             }
           >
-            <PostContentParser content={post.content} preview={post.link} />
+            <PostContentParser
+              content={post.content}
+              preview={post.link}
+              mentions={post.mentions}
+            />
           </Link>
         ) : (
-          <PostContentParser content={post.content} preview={post.link} />
+          <PostContentParser content={post.content} preview={post.link} mentions={post.mentions} />
         )}
 
         {post.link && <LinkPreview preview={post.link} />}

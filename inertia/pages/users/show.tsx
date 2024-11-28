@@ -1,6 +1,5 @@
 import FeedController from '#controllers/feed_controller'
 import FeedList from '@/components/posts/feed_list'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Card, CardContent } from '@/components/ui/card'
 import { InferPageProps } from '@adonisjs/inertia/types'
 import { lightFormat } from 'date-fns'
@@ -9,6 +8,7 @@ import { CalendarHeart, FilePen } from 'lucide-react'
 import { CreatePost } from '@/components/posts/create'
 import { UserResponse } from '#interfaces/user'
 import { route } from '@izzyjs/route/client'
+import { UserAvatar } from '@/components/generic/user_avatar'
 
 function UserCard({ user, totalPosts }: { user: UserResponse; totalPosts: number }) {
   return (
@@ -16,10 +16,7 @@ function UserCard({ user, totalPosts }: { user: UserResponse; totalPosts: number
       <CardContent className="relative w-full flex flex-col text-center p-3 lg:p-1 pt-2 divide-y divide-dashed">
         <div className="relative w-auto lg:w-full flex flex-row lg:flex-col gap-4 self-center lg:self-start items-center pb-2 lg:p-5">
           <div className="flex flex-row gap-3">
-            <Avatar className="h-14 w-14 lg:h-20 lg:w-20">
-              <AvatarImage src={user.attachments.avatar?.link} alt={`${user.name} avatar image`} />
-              <AvatarFallback>{user.name ? user.name[0] : '-'}</AvatarFallback>
-            </Avatar>
+            <UserAvatar user={user} className="h-14 w-14 lg:h-20 lg:w-20" />
           </div>
           <div>
             <h4 className="text-md">{user.name}</h4>

@@ -21,6 +21,16 @@ export function extractFirstLink(content: string): string | null {
 }
 
 /**
+ * Replace last occurrence of a match from a string.
+ */
+export function replaceLast(text: string, searchValue: string, replaceValue: string) {
+  const lastOccurrenceIndex = text.lastIndexOf(searchValue)
+  return `${text.slice(0, lastOccurrenceIndex)}${replaceValue}${text.slice(
+    lastOccurrenceIndex + searchValue.length
+  )}`
+}
+
+/**
  *
  */
 export function sanitizePostContent(content: string): string {
@@ -36,4 +46,5 @@ export function sanitizePostContent(content: string): string {
 export const REGEX = {
   ALPHA_STRING: /^[A-z]+$/,
   ALPHANUMERIC_STRING: /^[A-z0-9]+$/,
+  MENTIONS: /@[a-zA-Z0-9_-]+/g,
 }

@@ -11,6 +11,8 @@ import { ModelObject } from '@adonisjs/lucid/types/model'
 import type { HttpContext } from '@adonisjs/core/http'
 import type { UUID } from 'node:crypto'
 import { UserService } from '#services/user_service'
+import { UserResponse } from '#interfaces/user'
+import User from '#models/user'
 
 export default class PostsService {
   private readonly userService: UserService
@@ -135,6 +137,22 @@ export default class PostsService {
   }
 
   /**
+   * Parse content in search of other user mentions, and returns matches.
+   */
+  async processMentions(post: Post): Promise<Map<string, UserResponse>> {
+    const matches = post.matches.get('@') || []
+    const result: Map<string, UserResponse> = new Map()
+    for (const username of matches) {
+      const user = await User.findBy('username', username)
+      if (user) {
+        const serialized = await this.userService.serialize(user)
+        result.set(user.username, serialized)
+      }
+    }
+    return result
+  }
+
+  /**
    * Handles the process on serializing the post data, and aggregating it's many associations.
    */
   async serialize(currentUserId: UUID, post: Post): Promise<PostResponse> {
@@ -142,6 +160,7 @@ export default class PostsService {
     const user = await this.userService.serialize(post.user)
     const attachments = await this.attachmentService.findMany(AttachmentModel.POST, post.id)
     const link = await this.linkService.show(post.link)
+    const mentions = await this.processMentions(post)
 
     let accumulator: Record<PostReactionType, number> = {
       [PostReactionType.LIKE]: 0,
@@ -162,6 +181,7 @@ export default class PostsService {
     const resource: PostResponse = {
       id: data.id,
       content: data.content,
+      mentions: Object.fromEntries(mentions),
       status: data.status,
       user,
       link,
