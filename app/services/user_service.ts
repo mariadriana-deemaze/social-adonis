@@ -22,7 +22,7 @@ export class UserService {
 
     const result = await User.query()
       .whereILike('username', search)
-      // .orWhereIn('name', search)
+      .orWhereILike('name', search)
       .orderBy('updated_at', 'desc')
       .paginate(page, limit)
 

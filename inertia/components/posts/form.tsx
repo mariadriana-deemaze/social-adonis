@@ -87,7 +87,7 @@ export default function Form({
         .trim()
         .replace(
           '@' + item.username,
-          `<a href="/${item.username}" style="color: #0891b2; background: white; font-weight: 700; letter-spacing: -0.20px;">$&</a>`
+          `<a href="/${item.username}" style="color: #0891b2; letter-spacing: 0px;">$&</a>`
         )
       return acc
     }, original)

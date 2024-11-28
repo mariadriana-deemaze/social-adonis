@@ -230,7 +230,7 @@ export default function HighlightedInput<T>({
     <div className="relative w-full">
       <div
         ref={highlighterRef}
-        className="absolute overflow-y-scroll w-full h-full py-[0.55rem] px-[0.80rem] whitespace-pre-wrap break-words text-transparent pointer-events-none z-0 bg-blend-color"
+        className="absolute overflow-y-scroll w-full h-full py-[0.56rem] px-[0.81rem] whitespace-pre-wrap break-words text-transparent pointer-events-none z-0 bg-blend-color"
       >
         <p
           className="text-sm"
