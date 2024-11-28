@@ -14,14 +14,14 @@ export default class PostPinsController {
     const post = await Post.findOrFail(postId)
 
     if (await ctx.bouncer.with(policy).denies('edit', post)) {
-      return ctx.response.forbidden('Not the author of this post.')
+      return ctx.response.forbidden({ message: 'Not the author of this post.' })
     }
 
     const pin = !post.pinned
     const count = await this.service.count(userId)
 
     if (count >= 2 && pin) {
-      return ctx.response.conflict('Exceeded max amount of pinned posts.')
+      return ctx.response.conflict({ message: 'Exceeded max amount of pinned posts.' })
     }
 
     const pinned = await this.service.pin(post, pin)

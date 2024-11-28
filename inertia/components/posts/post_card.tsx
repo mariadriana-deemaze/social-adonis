@@ -31,6 +31,8 @@ import { formatDistanceToNow } from 'date-fns'
 import { PostReactionType } from '#enums/post'
 import { UserResponse } from '#interfaces/user'
 import { route } from '@izzyjs/route/client'
+import { useToast } from '@/components/ui/use_toast'
+import { cn } from '@/lib/utils'
 
 type PostActions = 'update' | 'delete' | 'report' | 'pin'
 
@@ -352,6 +354,8 @@ function PostActions({
   setPostState: Dispatch<SetStateAction<PostResponse>>
   abilities: Partial<Array<PostActions>>
 }) {
+  const { toast } = useToast()
+
   async function updatePin() {
     const request = await fetch(
       route('posts_pins.update', {
@@ -372,6 +376,9 @@ function PostActions({
       setPostState((prevState) => {
         return { ...prevState, pinned }
       })
+    } else {
+      const { message } = await request.json()
+      toast({ title: 'Unable to pin post', description: message })
     }
   }
 
@@ -408,7 +415,10 @@ function PostActions({
         className="flex flex-row gap-3 items-center w-full hover:cursor-pointer"
       >
         <Button type="button" className="pin-post-trigger" variant="ghost" size="sm-icon">
-          <Pin size={15} />
+          <Pin
+            className={cn('text-black', post.pinned ? 'fill-slate-400' : 'fill-white')}
+            size={15}
+          />
         </Button>
         <p className="font-normal text-xs text-current">Pin</p>
       </div>

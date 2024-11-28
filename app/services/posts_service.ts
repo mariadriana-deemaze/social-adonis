@@ -78,6 +78,7 @@ export default class PostsService {
     const result = await Post.query()
       .where('user_id', userId)
       .withScopes((scope) => scope.visible())
+      .orderBy('pinned', 'desc')
       .orderBy('updated_at', 'desc')
       .preload('user')
       .preload('reactions')
