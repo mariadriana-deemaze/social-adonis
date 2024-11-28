@@ -404,6 +404,7 @@ function PostActions({
                 key={`${post.id}_${action}_${index}`}
                 className="flex flex-row gap-4 p-0 text-gray-600"
                 onSelect={(e) => e.preventDefault()}
+                asChild
               >
                 <Element />
               </DropdownMenuItem>

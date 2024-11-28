@@ -14,7 +14,7 @@ export class UserService {
     this.attachmentService = new AttachmentService()
   }
 
-  async index(
+  async search(
     searchTerm: string,
     { page, limit = 10 }: { page: number; limit?: number }
   ): Promise<PaginatedResponse<UserResponse>> {

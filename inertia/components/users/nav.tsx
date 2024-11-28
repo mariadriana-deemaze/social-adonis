@@ -67,7 +67,10 @@ export default function UserNavBar({ user }: { user: UserResponse | null }) {
                       </DropdownMenuLabel>
                       <DropdownMenuSeparator />
                       <DropdownMenuGroup>
-                        <DropdownMenuItem className="flex content-center relative">
+                        <DropdownMenuItem
+                          className="flex content-center relative cursor-pointer"
+                          asChild
+                        >
                           <Link
                             className="flex flex-row items-center relative w-full"
                             href={route('users.show', { params: { id: user?.id! } }).path}
@@ -78,7 +81,10 @@ export default function UserNavBar({ user }: { user: UserResponse | null }) {
                             </DropdownMenuShortcut>
                           </Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="flex content-center relative">
+                        <DropdownMenuItem
+                          className="flex content-center relative cursor-pointer"
+                          asChild
+                        >
                           <Link
                             className="flex flex-row items-center relative w-full"
                             href={route('settings.show', { params: { id: user?.id! } }).path}
@@ -91,7 +97,10 @@ export default function UserNavBar({ user }: { user: UserResponse | null }) {
                         </DropdownMenuItem>
                       </DropdownMenuGroup>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem className="flex content-center relative">
+                      <DropdownMenuItem
+                        className="flex content-center relative cursor-pointer"
+                        asChild
+                      >
                         <Link
                           className="flex flex-row items-center relative w-full"
                           as="button"
