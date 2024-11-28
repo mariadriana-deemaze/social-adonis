@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/components/ui/use_toast'
+import { cn } from '@/lib/utils'
 import { InferPageProps } from '@adonisjs/inertia/types'
 import { Head, useForm, usePage } from '@inertiajs/react'
 import { route } from '@izzyjs/route/client'
@@ -15,6 +16,8 @@ import { ChangeEvent, useEffect, useRef, useState } from 'react'
 export default function UserSettings({
   user,
 }: InferPageProps<UsersController, 'show'> & { user: UserResponse }) {
+  const [avatarLoadState, setAvatarLoadState] = useState<'loading' | 'loaded'>('loading')
+  const [coverLoadState, setCoverLoadState] = useState<'loading' | 'loaded'>('loading')
   const [avatarPreview, setAvatarPreview] = useState(
     () => user.attachments.avatar?.link || undefined
   )
@@ -97,8 +100,14 @@ export default function UserSettings({
             <div className="w-full h-full rounded-2xl overflow-hidden">
               {coverPreview && (
                 <img
-                  className="w-full h-full object-cover rounded-lg overflow"
                   src={coverPreview}
+                  onLoad={() => setCoverLoadState('loaded')}
+                  className={cn(
+                    'w-full h-full object-cover rounded-lg overflow',
+                    coverLoadState === 'loaded'
+                      ? 'block animate-in fade-in duration-1000'
+                      : 'hidden'
+                  )}
                 />
               )}
             </div>
@@ -106,7 +115,16 @@ export default function UserSettings({
             <div className="absolute h-32 w-32 left-[calc(50%_-_62px)] -bottom-10">
               <div className="relative w-full h-full">
                 <Avatar className="h-32 w-32 shadow-lg">
-                  <AvatarImage src={avatarPreview} alt={`${user.name} avatar image`} />
+                  <AvatarImage
+                    src={avatarPreview}
+                    alt={`${user.name} avatar image`}
+                    onLoad={() => setAvatarLoadState('loaded')}
+                    className={cn(
+                      avatarLoadState === 'loaded'
+                        ? 'block animate-in fade-in duration-1000'
+                        : 'hidden'
+                    )}
+                  />
                   <AvatarFallback>{user.name ? user.name[0] : '-'}</AvatarFallback>
                 </Avatar>
 

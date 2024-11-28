@@ -1,4 +1,4 @@
-import { ReactElement, useMemo, useState } from 'react'
+import { Dispatch, ReactElement, SetStateAction, useMemo, useState } from 'react'
 import { Link } from '@inertiajs/react'
 import {
   ArrowLeft,
@@ -10,6 +10,7 @@ import {
   Pencil,
   Trash2,
   Flag,
+  Pin,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -30,6 +31,10 @@ import { formatDistanceToNow } from 'date-fns'
 import { PostReactionType } from '#enums/post'
 import { UserResponse } from '#interfaces/user'
 import { route } from '@izzyjs/route/client'
+import { useToast } from '@/components/ui/use_toast'
+import { cn } from '@/lib/utils'
+
+type PostActions = 'update' | 'delete' | 'report' | 'pin'
 
 // NOTE: Would it be better to move this logic to the BE?
 function PostContentParser({
@@ -342,34 +347,51 @@ function PostReaction({
 
 function PostActions({
   post,
+  setPostState,
   abilities,
 }: {
   post: PostResponse
-  abilities: Partial<Array<'update' | 'delete' | 'report'>>
+  setPostState: Dispatch<SetStateAction<PostResponse>>
+  abilities: Partial<Array<PostActions>>
 }) {
-  const actions: Record<'update' | 'delete' | 'report', () => ReactElement> = {
+  const { toast } = useToast()
+
+  async function updatePin() {
+    const request = await fetch(
+      route('posts_pins.update', {
+        params: {
+          id: post.id,
+        },
+      }).path,
+      {
+        method: 'post',
+        headers: {
+          'content-type': 'application/json',
+        },
+      }
+    )
+
+    if (request.ok) {
+      const { pinned } = await request.json()
+      setPostState((prevState) => {
+        return { ...prevState, pinned }
+      })
+    } else {
+      const { message } = await request.json()
+      toast({ title: 'Unable to pin post', description: message })
+    }
+  }
+
+  const actions: Record<PostActions, () => ReactElement> = {
     update: () => (
       <UpdatePost
         post={post}
         trigger={
           <div className="flex flex-row gap-3 items-center w-full hover:cursor-pointer">
-            <Button className="update-post-trigger" variant="ghost" size="sm-icon">
+            <Button type="button" className="update-post-trigger" variant="ghost" size="sm-icon">
               <Pencil size={15} />
             </Button>
             <p className="font-normal text-xs text-current">Update</p>
-          </div>
-        }
-      />
-    ),
-    delete: () => (
-      <DeletePost
-        post={post}
-        trigger={
-          <div className="flex flex-row gap-3 items-center w-full hover:cursor-pointer">
-            <Button className="delete-post-trigger" variant="ghost" size="sm-icon">
-              <Trash2 size={15} />
-            </Button>
-            <p className="font-normal text-xs text-current">Delete</p>
           </div>
         }
       />
@@ -379,10 +401,37 @@ function PostActions({
         post={post}
         trigger={
           <div className="flex flex-row gap-3 items-center w-full hover:cursor-pointer">
-            <Button className="report-post-trigger" variant="ghost" size="sm-icon">
+            <Button type="button" className="report-post-trigger" variant="ghost" size="sm-icon">
               <Flag size={15} />
             </Button>
             <p className="font-normal text-xs text-current">Report</p>
+          </div>
+        }
+      />
+    ),
+    pin: () => (
+      <div
+        onClick={updatePin}
+        className="flex flex-row gap-3 items-center w-full hover:cursor-pointer"
+      >
+        <Button type="button" className="pin-post-trigger" variant="ghost" size="sm-icon">
+          <Pin
+            className={cn('text-black', post.pinned ? 'fill-slate-400' : 'fill-white')}
+            size={15}
+          />
+        </Button>
+        <p className="font-normal text-xs text-current">Pin</p>
+      </div>
+    ),
+    delete: () => (
+      <DeletePost
+        post={post}
+        trigger={
+          <div className="flex flex-row gap-3 items-center w-full hover:cursor-pointer">
+            <Button type="button" className="delete-post-trigger" variant="ghost" size="sm-icon">
+              <Trash2 size={15} />
+            </Button>
+            <p className="font-normal text-xs text-current">Delete</p>
           </div>
         }
       />
@@ -427,9 +476,11 @@ export default function PostCard({
   actions?: boolean
   redirect?: boolean
 }) {
+  const [postState, setPostState] = useState<PostResponse>(post)
+
   return (
     <article className="flex flex-col w-full border pt-6 px-6 bg-white rounded-sm">
-      <div className="flex flex-row pb-3 justify-between border-b border-b-gray-200">
+      <div className="relative flex flex-row pb-3 justify-between border-b border-b-gray-200">
         <Link
           href={
             route('users.show', {
@@ -453,11 +504,20 @@ export default function PostCard({
           </div>
         </Link>
 
+        {postState.pinned && (
+          <div id="pinned-post-icon" className="absolute -top-4 -left-4 -rotate-45">
+            <Pin className="text-blue-400 fill-slate-300" size={12} />
+            <div className="absolute left-[2px] top-[12px] h-[1px] w-2 bg-blue-400" />
+            <div className="absolute left-[4px] top-[14px] h-[1px] w-1 bg-blue-400" />
+          </div>
+        )}
+
         {/* // TODO: Review on how to best manage this, be wise. Explore habilities viewing send from the BE. */}
         {actions && (
           <PostActions
-            post={post}
-            abilities={post.user.id !== user?.id ? ['report'] : ['update', 'delete']}
+            post={postState}
+            setPostState={setPostState}
+            abilities={post.user.id !== user?.id ? ['report'] : ['update', 'delete', 'pin']}
           />
         )}
       </div>

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import FeedController from '#controllers/feed_controller'
 import FeedList from '@/components/posts/feed_list'
 import { Card, CardContent } from '@/components/ui/card'
@@ -9,18 +10,22 @@ import { CreatePost } from '@/components/posts/create'
 import { UserResponse } from '#interfaces/user'
 import { route } from '@izzyjs/route/client'
 import { UserAvatar } from '@/components/generic/user_avatar'
+import { cn } from '@/lib/utils'
 
 function UserCard({ user, totalPosts }: { user: UserResponse; totalPosts: number }) {
   return (
     <Card className="user-profile-card sticky top-20 flex flex-row w-full align-middle rounded-b-sm rounded-t-none lg:rounded-sm">
       <CardContent className="relative w-full flex flex-col text-center p-3 lg:p-1 pt-2 divide-y divide-dashed">
-        <div className="relative w-auto lg:w-full flex flex-row lg:flex-col gap-4 self-center lg:self-start items-center pb-2 lg:p-5">
-          <div className="flex flex-row gap-3">
-            <UserAvatar user={user} className="h-14 w-14 lg:h-20 lg:w-20" />
+        <div className="relative w-auto lg:w-full flex flex-row lg:flex-col gap-4 self-center lg:self-start items-center pb-2 mt-8 mb-2 lg:py-5 lg:px-2 lg:my-0">
+          <div className="absolute lg:relative -top-32 lg:top-0 w-full flex flex-row justify-center gap-3">
+            <UserAvatar
+              user={user}
+              className="h-28 w-28 lg:h-20 lg:w-20 border-4 border-white shadow-lg"
+            />
           </div>
           <div>
             <h4 className="text-md">{user.name}</h4>
-            <p className="text-xs max-w-28 truncate text-ellipsis text-muted-foreground">
+            <p className="text-xs max-w-fit truncate text-ellipsis text-muted-foreground">
               @{user.username}
             </p>
           </div>
@@ -56,6 +61,7 @@ function UserCard({ user, totalPosts }: { user: UserResponse; totalPosts: number
 }
 
 export default function Show({ user, posts, profile }: InferPageProps<FeedController, 'show'>) {
+  const [coverLoadState, setCoverLoadState] = useState<'loading' | 'loaded'>('loading')
   if (!posts || !profile) return <>Loading..</>
   return (
     <>
@@ -64,7 +70,11 @@ export default function Show({ user, posts, profile }: InferPageProps<FeedContro
         <div className="relative bg-slate-300 border border-gray-200 h-52 w-full rounded-2xl mb-4 shadow-inner">
           <div className="w-full h-full rounded-2xl overflow-hidden">
             <img
-              className="w-full h-full object-cover overflow"
+              onLoad={() => setCoverLoadState('loaded')}
+              className={cn(
+                'w-full h-full object-cover overflow',
+                coverLoadState === 'loaded' ? 'block animate-in fade-in duration-1000' : 'hidden'
+              )}
               src={profile.attachments.cover?.link}
             />
           </div>
@@ -74,7 +84,7 @@ export default function Show({ user, posts, profile }: InferPageProps<FeedContro
         </div>
       </div>
       <div className="relative flex flex-col lg:flex-row gap-2 w-full">
-        <div className="hidden lg:block h-full w-full max-w-full lg:max-w-72">
+        <div className="hidden lg:block h-full w-full max-w-full lg:max-w-64">
           <UserCard user={profile} totalPosts={posts.meta.total} />
         </div>
         <div className="w-full">
@@ -88,6 +98,7 @@ export default function Show({ user, posts, profile }: InferPageProps<FeedContro
               <CreatePost />
             </div>
           )}
+          {/*  <ScrollTop /> */}
         </div>
       </div>
     </>
