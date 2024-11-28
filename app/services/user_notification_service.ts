@@ -112,6 +112,7 @@ export default class UserNotificationService {
               postAuthor.name ?? ''
             ),
             message: serializedNotification.data.message.replace(':content', post.content),
+            user: postAuthor,
           }
           break
         }
