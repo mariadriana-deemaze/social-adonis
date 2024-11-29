@@ -4,6 +4,14 @@ import HeadOG from '@/components/generic/head_og'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/components/ui/use_toast'
@@ -23,6 +31,7 @@ export default function UserSettings({
     () => user.attachments.avatar?.link || undefined
   )
   const [coverPreview, setCoverPreview] = useState(() => user.attachments.cover?.link || undefined)
+  const [deleteIntentModal, setDeleteIntentModal] = useState(false)
 
   if (!user) return <></>
 
@@ -30,7 +39,13 @@ export default function UserSettings({
 
   const { toast } = useToast()
 
-  const { data, setData, patch, processing } = useForm<{
+  const {
+    data,
+    setData,
+    patch,
+    delete: deleteReq,
+    processing,
+  } = useForm<{
     name: string
     surname: string
     username: string
@@ -51,7 +66,7 @@ export default function UserSettings({
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    patch(route('users.update', { params: { id: user?.id! } }).path, {
+    patch(route('users.update').path, {
       preserveState: true,
       preserveScroll: true,
       onSuccess: () => {
@@ -86,9 +101,20 @@ export default function UserSettings({
     fileReader.readAsDataURL(e.target.files[0])
   }
 
+  function deleteAccount() {
+    deleteReq(route('users.destroy').path, {
+      preserveState: true,
+      preserveScroll: true,
+      data: undefined,
+      onSuccess: () => {
+        toast({ title: 'Account succesfully deleted.' })
+      },
+    })
+  }
+
   useEffect(() => {
     if (props?.errors && Object.entries(props.errors).length) {
-      toast({ title: 'Error updating profile details.' })
+      toast({ title: props?.errors.message || 'Error updating profile details.' })
     }
   }, [props?.errors])
 
@@ -99,7 +125,7 @@ export default function UserSettings({
         description="Your profile settings on Social Adonis."
         url={route('settings.show').path}
       />
-      <div className="relative flex flex-col pt-0 w-full">
+      <div className="relative flex flex-col pt-0 w-full items-center gap-4 pb-5">
         <form className="flex flex-col items-center gap-4 w-full" onSubmit={handleSubmit}>
           <div className="relative bg-slate-300 h-64 w-full rounded-2xl mb-20 shadow-inner">
             <div className="w-full h-full rounded-2xl overflow-hidden">
@@ -231,6 +257,40 @@ export default function UserSettings({
             </CardContent>
           </Card>
         </form>
+
+        <Card className="flex flex-col lg:flex-row justify-between items-center bg-gray-100 w-full max-w-screen-md border-red-100">
+          <CardHeader className="text-center lg:text-left text-wrap">
+            <CardTitle className="text-md">Danger zone</CardTitle>
+            <CardDescription>Permanently delete account.</CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col lg:pb-0">
+            <Dialog open={deleteIntentModal} onOpenChange={setDeleteIntentModal}>
+              <DialogTrigger asChild>
+                <Button variant="destructive" className="w-52">
+                  Delete account
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="default-dialog">
+                <DialogHeader>
+                  <DialogTitle>Delete account</DialogTitle>
+                  <DialogDescription>Confirm deletion</DialogDescription>
+                </DialogHeader>
+                <p className="text-center text-sm">
+                  This is a non-reversible action. Everything related to your account, as well as
+                  your connections and content will be lost forever - into the void.
+                </p>
+                <div className="flex flex-row w-full justify-center gap-4">
+                  <Button onClick={() => setDeleteIntentModal(false)} type="button">
+                    Cancel
+                  </Button>
+                  <Button type="button" onClick={deleteAccount} variant="destructive">
+                    Delete
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </CardContent>
+        </Card>
       </div>
     </>
   )
