@@ -113,11 +113,11 @@ a {
   }
 
   .feed-list {
-    @apply mb-5 flex flex-col gap-2 w-full pb-20;
+    @apply mb-5 flex w-full flex-col gap-2 pb-20;
   }
 
   .default-dialog {
-    @apply max-w-[calc(100vw_-_20px)] md:max-w-[425px] rounded-lg;
+    @apply max-w-[calc(100vw_-_20px)] rounded-lg md:max-w-[425px];
   }
 
   .hn-screen {

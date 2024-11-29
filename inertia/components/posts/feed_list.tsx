@@ -56,26 +56,26 @@ export default function FeedList({
   return (
     <div className="feed-list w-full">
       {!allPosts ? (
-        <Loader2 className="h-5 w-5 mr-2 animate-spin text-muted" />
+        <Loader2 className="mr-2 h-5 w-5 animate-spin text-muted" />
       ) : (
         allPosts?.map((post, index) => (
           <PostCard key={index} user={currentUser} post={post} actions={!!currentUser} redirect />
         ))
       )}
-      <div className="flex justify-center py-5 w-full min-w-full">
+      <div className="flex w-full min-w-full justify-center py-5">
         {posts?.data?.length > 0 ? (
           <>
             {hasMorePosts ? (
-              <p ref={ref} className="text-sm text-gray-600 self-center cursor-pointer">
+              <p ref={ref} className="cursor-pointer self-center text-sm text-gray-600">
                 fetch more around here
               </p>
             ) : (
-              <p className="text-sm text-gray-600 self-center">Go touch grass outside.</p>
+              <p className="self-center text-sm text-gray-600">Go touch grass outside.</p>
             )}
           </>
         ) : (
-          <div className="flex w-full hn-screen items-center justify-center">
-            <p className="text-sm text-gray-600 self-center">Nothing to see here. 🍃</p>
+          <div className="hn-screen flex w-full items-center justify-center">
+            <p className="self-center text-sm text-gray-600">Nothing to see here. 🍃</p>
           </div>
         )}
       </div>

@@ -125,8 +125,8 @@ export function ReportPost({ post, trigger }: { post: PostResponse; trigger: Rea
           <DialogDescription>Help keep our community safe for everyone.</DialogDescription>
         </DialogHeader>
         {!submitted ? (
-          <form className="flex flex-col w-full mt-6 gap-6" onSubmit={handleSubmit}>
-            <div className="flex flex-col w-full gap-2">
+          <form className="mt-6 flex w-full flex-col gap-6" onSubmit={handleSubmit}>
+            <div className="flex w-full flex-col gap-2">
               <Label htmlFor="reason" className="text-left">
                 What's the reason?
               </Label>
@@ -153,7 +153,7 @@ export function ReportPost({ post, trigger }: { post: PostResponse; trigger: Rea
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex flex-col w-full gap-2">
+            <div className="flex w-full flex-col gap-2">
               <Label htmlFor="description" className="text-left">
                 Briefly provide further details.
               </Label>
@@ -185,13 +185,13 @@ export function ReportPost({ post, trigger }: { post: PostResponse; trigger: Rea
         ) : (
           <>
             <hr />
-            <div className="flex flex-col w-full text-center items-center py-5 gap-6">
-              <div className="flex flex-col justify-center items-center h-14 w-14 border-l border-b border-l-green-200 border-b-green-200 bg-gradient-to-tr from-green-100 to-transparent rounded-full">
+            <div className="flex w-full flex-col items-center gap-6 py-5 text-center">
+              <div className="flex h-14 w-14 flex-col items-center justify-center rounded-full border-b border-l border-b-green-200 border-l-green-200 bg-gradient-to-tr from-green-100 to-transparent">
                 <Send className="text-green-500" />
               </div>
-              <div className="flex flex-col w-full text-center items-center gap-2">
+              <div className="flex w-full flex-col items-center gap-2 text-center">
                 <h1 className="font-bold">Thank you for reporting</h1>
-                <p className="text-sm text-gray-500 max-w-xs">
+                <p className="max-w-xs text-sm text-gray-500">
                   Will be analysed by our moderators, and will notify you as soon as its processed.
                 </p>
               </div>

@@ -14,7 +14,7 @@ export default function InfoPanel({
   return (
     <div
       className={cn(
-        'flex flex-col border rounded-md mt-2 py-2 px-4 gap-1',
+        'mt-2 flex flex-col gap-1 rounded-md border px-4 py-2',
         type === 'success' && 'border-green-200 bg-green-100',
         type === 'info' && 'border-blue-200 bg-blue-100',
         type === 'error' && 'border-red-200 bg-red-100',

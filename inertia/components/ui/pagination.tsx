@@ -10,7 +10,7 @@ const Pagination = ({ className, ...props }: React.ComponentProps<'nav'>) => (
   <nav
     role="navigation"
     aria-label="pagination"
-    className={cn('mx-auto w-full flex justify-center', className)}
+    className={cn('mx-auto flex w-full justify-center', className)}
     {...props}
   />
 )
@@ -101,8 +101,8 @@ const DefaultPaginator = ({
   className?: React.ComponentProps<'nav'>['className']
 }) => {
   return (
-    <div className="default-paginator flex flex-col gap-0 w-full text-center border-t border-t-gray-100 mt-2">
-      <p className="default-paginator-total text-slate-400 pt-2 mt-2 text-sm">
+    <div className="default-paginator mt-2 flex w-full flex-col gap-0 border-t border-t-gray-100 text-center">
+      <p className="default-paginator-total mt-2 pt-2 text-sm text-slate-400">
         {meta.total} records
       </p>
       <Pagination className={cn('w-full', className)}>
@@ -125,7 +125,7 @@ const DefaultPaginator = ({
               </PaginationLink>
             </PaginationItem>
           )}
-          <PaginationItem className={cn(!meta?.nextPageUrl && 'opacity-30 cursor-not-allowed')}>
+          <PaginationItem className={cn(!meta?.nextPageUrl && 'cursor-not-allowed opacity-30')}>
             <PaginationNext href={meta?.nextPageUrl ? baseUrl + meta?.nextPageUrl : '#'} />
           </PaginationItem>
         </PaginationContent>

@@ -143,9 +143,9 @@ export default function Form({
   return (
     <form
       onSubmit={handleSubmit}
-      className={cn(processing ? 'opacity-20 pointer-events-none' : 'opacity-100')}
+      className={cn(processing ? 'pointer-events-none opacity-20' : 'opacity-100')}
     >
-      <div className="flex flex-col w-full mb-6 gap-2">
+      <div className="mb-6 flex w-full flex-col gap-2">
         <Label htmlFor="content" className="text-left">
           Post content
         </Label>
@@ -162,12 +162,12 @@ export default function Form({
             onChange={(e) => setData('content', e.target.value)}
             Item={({ item, searchTerm, select }) => (
               <div
-                className={`react-${item.username} flex flex-row gap-2 items-center text-sm truncate text-ellipsis`}
+                className={`react-${item.username} flex flex-row items-center gap-2 truncate text-ellipsis text-sm`}
                 onClick={() => itemSelect(item, searchTerm, select)}
               >
                 <UserAvatar user={item} className="h-6 w-6" />
-                <div className="flex flex-col py-1 px-0">
-                  <p className="font-medium text-xs">{item.fullname}</p>
+                <div className="flex flex-col px-0 py-1">
+                  <p className="text-xs font-medium">{item.fullname}</p>
                   <p className="text-xs text-blue-500">@{item.username}</p>
                 </div>
               </div>
@@ -180,7 +180,7 @@ export default function Form({
       </div>
 
       {/* // TODO: Different uploaders per file type. Abstract to single button, and apply switch to input accordingly. */}
-      <div className="flex flex-col bg-gray-100 p-2 rounded-e-lg gap-2">
+      <div className="flex flex-col gap-2 rounded-e-lg bg-gray-100 p-2">
         <input
           ref={uploadImages}
           type="file"
