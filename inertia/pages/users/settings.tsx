@@ -266,7 +266,7 @@ export default function UserSettings({
           <CardContent className="flex flex-col lg:pb-0">
             <Dialog open={deleteIntentModal} onOpenChange={setDeleteIntentModal}>
               <DialogTrigger asChild>
-                <Button variant="destructive" className="w-52">
+                <Button variant="destructive" className="w-52 trigger-delete-account">
                   Delete account
                 </Button>
               </DialogTrigger>
@@ -283,7 +283,12 @@ export default function UserSettings({
                   <Button onClick={() => setDeleteIntentModal(false)} type="button">
                     Cancel
                   </Button>
-                  <Button type="button" onClick={deleteAccount} variant="destructive">
+                  <Button
+                    className="delete-account"
+                    type="button"
+                    onClick={deleteAccount}
+                    variant="destructive"
+                  >
                     Delete
                   </Button>
                 </div>

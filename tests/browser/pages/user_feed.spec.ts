@@ -6,16 +6,18 @@ import { test } from '@japa/runner'
 test.group('Acessing user profile feed', (group) => {
   group.each.setup(() => testUtils.db().truncate())
 
-  test('Fails to access the user profile feed without being authenticated', async ({ visit }) => {
+  test('Successfully acesses the user profile feed without being authenticated', async ({
+    visit,
+  }) => {
     const user = await UserFactory.create()
-    const page = await visit(
-      route('users.show', {
-        params: {
-          id: user.id,
-        },
-      }).path
-    )
+    const url = route('users.show', {
+      params: {
+        id: user.id,
+      },
+    }).path
+    const page = await visit(url)
     await page.assertTextContains('body', 'Sign in')
+    await page.assertPath(url)
   })
 
   test('Successfully acesses own user profile feed while authenticated', async ({
