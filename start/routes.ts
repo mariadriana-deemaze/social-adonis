@@ -71,8 +71,8 @@ router
     router
       .group(() => {
         router.get('/', [UsersController, 'index']).as('users.index')
-        router.patch(':id', [UsersController, 'update']).as('users.update')
-        router.delete(':id', [UsersController, 'destroy']).as('users.destroy')
+        router.patch('/', [UsersController, 'update']).as('users.update')
+        router.delete('/', [UsersController, 'destroy']).as('users.destroy')
       })
       .prefix('users')
 
