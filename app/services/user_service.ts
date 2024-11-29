@@ -61,7 +61,7 @@ export class UserService {
   }
 
   async destroy(user: User) {
-    return user.delete()
+    await user.delete()
   }
 
   async storeAttachments(ctx: HttpContext) {
