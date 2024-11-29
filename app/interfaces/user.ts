@@ -12,6 +12,7 @@ export interface UserResponse extends BaseEntity {
   username: string
   email: string
   verified: boolean
+  followersCount: number
   attachments: {
     cover: AttachmentResponse | null
     avatar: AttachmentResponse | null
