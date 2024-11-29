@@ -1,5 +1,6 @@
 import { UserFactory } from '#database/factories/user_factory'
 import testUtils from '@adonisjs/core/services/test_utils'
+import { route } from '@izzyjs/route/client'
 import { test } from '@japa/runner'
 
 test.group('Acessing user profile feed', (group) => {
@@ -7,7 +8,13 @@ test.group('Acessing user profile feed', (group) => {
 
   test('Fails to access the user profile feed without being authenticated', async ({ visit }) => {
     const user = await UserFactory.create()
-    const page = await visit(`/users/${user.id}`)
+    const page = await visit(
+      route('users.show', {
+        params: {
+          id: user.id,
+        },
+      }).path
+    )
     await page.assertTextContains('body', 'Sign in')
   })
 
@@ -17,7 +24,13 @@ test.group('Acessing user profile feed', (group) => {
   }) => {
     const user = await UserFactory.with('posts', 2).create()
     await browserContext.withGuard('web').loginAs(user)
-    const page = await visit(`/users/${user.id}`)
+    const page = await visit(
+      route('users.show', {
+        params: {
+          id: user.id,
+        },
+      }).path
+    )
     const locator = page.getByText('Total posts').first()
     await page.assertText(locator, `Total posts ${user.posts.length}`)
   })
@@ -29,7 +42,13 @@ test.group('Acessing user profile feed', (group) => {
     const user = await UserFactory.with('posts', 2).create()
     const otherUser = await UserFactory.with('posts', 8).create()
     await browserContext.loginAs(user)
-    const page = await visit(`/users/${otherUser.id}`)
+    const page = await visit(
+      route('users.show', {
+        params: {
+          id: otherUser.id,
+        },
+      }).path
+    )
     const locator = page.getByText('Total posts').first()
     await page.assertText(locator, `Total posts ${otherUser.posts.length}`)
   })

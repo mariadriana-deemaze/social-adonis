@@ -2,11 +2,11 @@ import { UserFactory } from '#database/factories/user_factory'
 import User from '#models/user'
 import testUtils from '@adonisjs/core/services/test_utils'
 import { faker } from '@faker-js/faker'
+import { route } from '@izzyjs/route/client'
 import { test } from '@japa/runner'
 
 test.group('Post report', (group) => {
   let user: User | null = null
-  const postShow = '/posts/:id'
 
   group.each.setup(async () => {
     await testUtils.db().truncate()
@@ -16,10 +16,9 @@ test.group('Post report', (group) => {
   test('Successfuly creates a post report', async ({ browserContext, visit }) => {
     const authUser = user!
     const otherUser = await UserFactory.with('posts', 1).create()
-    const url = postShow.replace(':id', otherUser.posts[0].id)
     await browserContext.loginAs(authUser)
 
-    const page = await visit(url)
+    const page = await visit(route('posts.show', { params: { id: otherUser.posts[0].id } }).path)
     await page.locator('button.trigger-user-post-actions').click()
     await page.locator('button.report-post-trigger').click()
     await page.locator('button.select-reason').click() // FIX-ME: Review these tag classes. Too cumbersome.
@@ -39,10 +38,11 @@ test.group('Post report', (group) => {
         })
       )
     ).create()
-    const url = postShow.replace(':id', userPostReport.posts[0].id)
     await browserContext.loginAs(authUser)
 
-    const page = await visit(url)
+    const page = await visit(
+      route('posts.show', { params: { id: userPostReport.posts[0].id } }).path
+    )
     await page.locator('button.trigger-user-post-actions').click()
     await page.locator('button.report-post-trigger').click()
     await page.assertSelectedOptions('select', [userPostReport.posts[0].reports[0].reason])

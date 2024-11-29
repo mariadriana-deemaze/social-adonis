@@ -1,12 +1,13 @@
 import { UserFactory } from '#database/factories/user_factory'
 import testUtils from '@adonisjs/core/services/test_utils'
+import { route } from '@izzyjs/route/client'
 import { test } from '@japa/runner'
 
 test.group('Acessing feed', (group) => {
   group.each.setup(() => testUtils.db().truncate())
 
   test('Fails to access the feed without being authenticated', async ({ visit }) => {
-    const page = await visit('/feed')
+    const page = await visit(route('feed.show').path)
     await page.assertTextContains('body', 'Sign in')
   })
 
@@ -14,7 +15,7 @@ test.group('Acessing feed', (group) => {
     const user = await UserFactory.create()
     const created = await UserFactory.with('posts', 8).create()
     await browserContext.loginAs(user)
-    const page = await visit('/feed')
+    const page = await visit(route('feed.show').path)
     const locator = page.locator('.feed-list > article > .post-content')
     await page.assertElementsText(
       locator,
@@ -27,7 +28,7 @@ test.group('Acessing feed', (group) => {
     await UserFactory.with('posts', 8).create()
 
     await browserContext.loginAs(user)
-    const page = await visit('/feed')
+    const page = await visit(route('feed.show').path)
     await page.locator('button.create-post').click()
 
     const postContent = 'Lets get dat bread! 🍞'
@@ -42,7 +43,13 @@ test.group('Acessing feed', (group) => {
     await UserFactory.with('posts', 8).create()
 
     await browserContext.loginAs(user)
-    const page = await visit(`/posts/${user.posts[0].id}`)
+    const page = await visit(
+      route('posts.show', {
+        params: {
+          id: user.posts[0].id,
+        },
+      }).path
+    )
 
     await page.locator('button.trigger-user-post-actions').click()
     const updateButton = page.locator('button.update-post-trigger')
@@ -59,7 +66,13 @@ test.group('Acessing feed', (group) => {
     await UserFactory.with('posts', 8).create()
 
     await browserContext.loginAs(user)
-    const page = await visit(`/posts/${user.posts[0].id}`)
+    const page = await visit(
+      route('posts.show', {
+        params: {
+          id: user.posts[0].id,
+        },
+      }).path
+    )
 
     await page.locator('button.trigger-user-post-actions').click()
     const deleteButton = page.locator('button.delete-post-trigger')
@@ -75,7 +88,13 @@ test.group('Acessing feed', (group) => {
     const user = await UserFactory.with('posts', 1).create()
     const otherUser = await UserFactory.with('posts', 8).create()
     await browserContext.loginAs(user)
-    const page = await visit(`/posts/${otherUser.posts[0].id}`)
+    const page = await visit(
+      route('posts.show', {
+        params: {
+          id: otherUser.posts[0].id,
+        },
+      }).path
+    )
     await page.locator('button.trigger-user-post-actions').click()
     const updateAction = page.locator('button.update-post-trigger')
     const deleteAction = page.locator('button.delete-post-trigger')
@@ -88,7 +107,13 @@ test.group('Acessing feed', (group) => {
     const otherUser = await UserFactory.with('posts', 8).create()
 
     await browserContext.loginAs(user)
-    const page = await visit(`/posts/${otherUser.posts[0].id}`)
+    const page = await visit(
+      route('posts.show', {
+        params: {
+          id: otherUser.posts[0].id,
+        },
+      }).path
+    )
 
     const reactButton = page.locator('button.trigger-user-post-react')
     await reactButton.hover()

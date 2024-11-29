@@ -1,5 +1,6 @@
 import { UserResponse } from '#interfaces/user'
 import { UserService } from '#services/user_service'
+import env from '#start/env'
 import { defineConfig } from '@adonisjs/inertia'
 import type { InferSharedProps } from '@adonisjs/inertia/types'
 
@@ -24,6 +25,7 @@ const inertiaConfig = defineConfig({
     },
     queryParams: (ctx) => ctx.request.qs(),
     errors: (ctx) => ctx.session?.flashMessages.get('errors'),
+    domain: () => env.get('PRODUCTION_URL'),
   },
 
   /**

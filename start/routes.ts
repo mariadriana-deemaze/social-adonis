@@ -29,6 +29,11 @@ router
   .group(() => {
     router.on('/').renderInertia('home').as('home.show')
     router.get('/feed', [FeedController, 'index']).as('feed.show')
+    router
+      .group(() => {
+        router.get(':id', [FeedController, 'show']).as('users.show')
+      })
+      .prefix('users')
   })
   .use(middleware.guest())
 
@@ -66,12 +71,12 @@ router
     router
       .group(() => {
         router.get('/', [UsersController, 'index']).as('users.index')
-        router.get(':id', [FeedController, 'show']).as('users.show') // TODO: Make public, and contextualize `ctx.auth.authenticate` via middleware.
-        router.get(':id/settings', [UsersController, 'show']).as('settings.show')
         router.patch(':id', [UsersController, 'update']).as('users.update')
         router.delete(':id', [UsersController, 'destroy']).as('users.destroy')
       })
       .prefix('users')
+
+    router.get('settings', [UsersController, 'show']).as('settings.show')
 
     router
       .group(() => {
