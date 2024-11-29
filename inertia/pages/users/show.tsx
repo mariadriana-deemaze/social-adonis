@@ -71,7 +71,7 @@ export default function Show({ user, posts, profile }: InferPageProps<FeedContro
       <HeadOG
         title={`@${profile.username}`}
         description={`Discover ${profile.username} on Social Adonis.`}
-        image=""
+        image={profile.attachments.avatar?.link}
         url={
           route('users.show', {
             params: {
