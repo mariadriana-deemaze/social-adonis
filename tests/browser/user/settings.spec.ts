@@ -16,6 +16,11 @@ test.group('User settings', (group) => {
     user = await UserFactory.create()
   })
 
+  test('Fails to access the users settings without being authenticated', async ({ visit }) => {
+    const page = await visit(route('settings.show').path)
+    await page.assertTextContains('body', 'Sign in')
+  })
+
   test('Sucessfully updates profile', async ({ visit, browserContext, assert }) => {
     const authUser = user!
     await browserContext.loginAs(authUser)
@@ -78,5 +83,15 @@ test.group('User settings', (group) => {
       name: 'The name field format is invalid',
       surname: 'The surname field format is invalid',
     })
+  })
+
+  test('Successfully deletes profile', async ({ visit, browserContext }) => {
+    const authUser = user!
+    await browserContext.loginAs(authUser)
+    const page = await visit(url)
+    await page.locator('button.trigger-delete-account').click()
+    await page.locator('button.delete-account').click()
+    await page.waitForURL('/')
+    await page.assertTextContains('body', 'Sign in')
   })
 })

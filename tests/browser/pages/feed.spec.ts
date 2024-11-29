@@ -6,9 +6,11 @@ import { test } from '@japa/runner'
 test.group('Acessing feed', (group) => {
   group.each.setup(() => testUtils.db().truncate())
 
-  test('Fails to access the feed without being authenticated', async ({ visit }) => {
-    const page = await visit(route('feed.show').path)
+  test('Successfully acesses the feed without being authenticated', async ({ visit }) => {
+    const url = route('feed.show').path
+    const page = await visit(url)
     await page.assertTextContains('body', 'Sign in')
+    await page.assertPath(url)
   })
 
   test('Successfully acesses the feed while authenticated', async ({ visit, browserContext }) => {

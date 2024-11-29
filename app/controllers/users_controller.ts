@@ -6,10 +6,14 @@ import { errorsReducer } from '#utils/index'
 import { UserService } from '#services/user_service'
 import { UserResponse } from '#interfaces/user'
 import { PageObject } from '@adonisjs/inertia/types'
+import AuthService from '#services/auth_service'
 
 @inject()
 export default class UsersController {
-  constructor(private readonly service: UserService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly service: UserService
+  ) {}
 
   async index(ctx: HttpContext) {
     const searchTerm = ctx.request.qs().search || ''
@@ -57,7 +61,14 @@ export default class UsersController {
     }
   }
 
-  async destroy() {
-    // TODO: Implement.
+  async destroy(ctx: HttpContext) {
+    const user = ctx.auth.user!
+    try {
+      await this.service.destroy(user)
+      await this.authService.destroy(ctx)
+    } catch (error) {
+      ctx.session.flash('errors', { message: 'Error deleting user.' })
+      return ctx.response.redirect().back()
+    }
   }
 }
