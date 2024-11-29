@@ -57,27 +57,27 @@ function UserCard({
   }
 
   return (
-    <Card className="user-profile-card sticky top-20 flex flex-row w-full align-middle rounded-b-sm rounded-t-none lg:rounded-sm">
-      <CardContent className="relative w-full flex flex-col text-center p-3 lg:p-1 pt-2 divide-y divide-dashed">
-        <div className="relative w-auto lg:w-full flex flex-row lg:flex-col gap-4 self-center lg:self-start items-center pb-2 mt-8 mb-2 lg:py-5 lg:px-2 lg:my-0">
-          <div className="absolute lg:relative -top-32 lg:top-0 w-full flex flex-row justify-center gap-3">
+    <Card className="user-profile-card sticky top-20 flex w-full flex-row rounded-b-sm rounded-t-none align-middle lg:rounded-sm">
+      <CardContent className="relative flex w-full flex-col divide-y divide-dashed p-3 pt-2 text-center lg:p-1">
+        <div className="relative mb-2 mt-8 flex w-auto flex-row items-center gap-4 self-center pb-2 lg:my-0 lg:w-full lg:flex-col lg:self-start lg:px-2 lg:py-5">
+          <div className="absolute -top-32 flex w-full flex-row justify-center gap-3 lg:relative lg:top-0">
             <UserAvatar
               user={user}
-              className="h-28 w-28 lg:h-20 lg:w-20 border-4 border-white shadow-lg"
+              className="h-28 w-28 border-4 border-white shadow-lg lg:h-20 lg:w-20"
             />
           </div>
           <div className="flex flex-col items-center">
-            <div className="flex flex-row gap-1 items-center justify-center">
-              <h4 className="text-md text-ellipsis truncate max-w-72 lg:max-w-40">{user.name}</h4>
+            <div className="flex flex-row items-center justify-center gap-1">
+              <h4 className="text-md max-w-72 truncate text-ellipsis lg:max-w-40">{user.name}</h4>
               {user.verified && <BadgeCheck size={16} className="fill-blue-500 stroke-white" />}
             </div>
-            <p className="text-xs max-w-72 lg:max-w-40 truncate text-ellipsis text-muted-foreground">
+            <p className="max-w-72 truncate text-ellipsis text-xs text-muted-foreground lg:max-w-40">
               @{user.username}
             </p>
           </div>
         </div>
 
-        <div className="flex flex-col w-full gap-3 pt-2 pb-0 lg:p-3 justify-center">
+        <div className="flex w-full flex-col justify-center gap-3 pb-0 pt-2 lg:p-3">
           {!!currentUser && currentUser.id !== user.id && (
             <Button
               className="follow-action"
@@ -93,7 +93,7 @@ function UserCard({
 
           {/* // TODO: Refactor UI */}
           <div className="flex flex-col gap-1">
-            <div className="flex flex-row gap-2 items-center justify-center">
+            <div className="flex flex-row items-center justify-center gap-2">
               <UserCheck className="w-4 text-gray-400" />
               <p className="user-profile-card-total-followers text-xs lg:text-sm">
                 Followers
@@ -101,7 +101,7 @@ function UserCard({
               </p>
             </div>
 
-            <div className="flex flex-row gap-2 items-center justify-center">
+            <div className="flex flex-row items-center justify-center gap-2">
               <FilePen className="w-4 text-gray-400" />
               <p className="user-profile-card-total-posts text-xs lg:text-sm">
                 Total posts
@@ -109,7 +109,7 @@ function UserCard({
               </p>
             </div>
 
-            <div className="flex flex-row gap-2 items-center justify-center">
+            <div className="flex flex-row items-center justify-center gap-2">
               <CalendarHeart className="w-4 text-gray-400" />
               <p className="text-xs lg:text-sm">
                 Joined on
@@ -170,19 +170,19 @@ export default function Show({ user, posts, profile }: InferPageProps<FeedContro
           }).path
         }
       />
-      <div className="relative min-h-[340px] lg:min-h-max w-full mb-16 lg:mb-0">
-        <div className="relative bg-slate-300 border border-gray-200 h-52 w-full rounded-2xl mb-4 shadow-inner">
-          <div className="w-full h-full rounded-2xl overflow-hidden">
+      <div className="relative mb-16 min-h-[340px] w-full lg:mb-0 lg:min-h-max">
+        <div className="relative mb-4 h-52 w-full rounded-2xl border border-gray-200 bg-slate-300 shadow-inner">
+          <div className="h-full w-full overflow-hidden rounded-2xl">
             <img
               onLoad={() => setCoverLoadState('loaded')}
               className={cn(
-                'w-full h-full object-cover overflow',
-                coverLoadState === 'loaded' ? 'block animate-in fade-in duration-1000' : 'hidden'
+                'overflow h-full w-full object-cover',
+                coverLoadState === 'loaded' ? 'block duration-1000 animate-in fade-in' : 'hidden'
               )}
               src={profile.attachments.cover?.link}
             />
           </div>
-          <div className="absolute block lg:hidden -bottom-44 w-full">
+          <div className="absolute -bottom-44 block w-full lg:hidden">
             <UserCard
               currentUser={user}
               user={userData}
@@ -194,8 +194,8 @@ export default function Show({ user, posts, profile }: InferPageProps<FeedContro
           </div>
         </div>
       </div>
-      <div className="relative flex flex-col lg:flex-row gap-2 w-full">
-        <div className="hidden lg:block h-full w-full max-w-full lg:max-w-64">
+      <div className="relative flex w-full flex-col gap-2 lg:flex-row">
+        <div className="hidden h-full w-full max-w-full lg:block lg:max-w-64">
           <UserCard
             currentUser={user}
             user={userData}
@@ -212,7 +212,7 @@ export default function Show({ user, posts, profile }: InferPageProps<FeedContro
             posts={posts}
           />
           {user?.id === profile.id && (
-            <div className="z-10 fixed left-5 bottom-5">
+            <div className="fixed bottom-5 left-5 z-10">
               <CreatePost />
             </div>
           )}

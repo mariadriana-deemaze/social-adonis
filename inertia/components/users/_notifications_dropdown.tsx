@@ -69,9 +69,9 @@ export default function NotificationsDropdown() {
         <Button variant="ghost" size="icon" className="relative h-8 w-8 rounded-full">
           <div className="relative">
             {hasNotifications && (
-              <div className="flex justify-center absolute bg-white right-0 top-[1px] h-3 w-3 rounded-full">
-                <div className="self-center absolute animate-in duration-700 h-1 w-1 bg-blue-500 rounded-full" />
-                <div className="self-center absolute animate-pulse duration-1000 h-2 w-2 bg-blue-500 rounded-full opacity-20" />
+              <div className="absolute right-0 top-[1px] flex h-3 w-3 justify-center rounded-full bg-white">
+                <div className="absolute h-1 w-1 self-center rounded-full bg-blue-500 duration-700 animate-in" />
+                <div className="absolute h-2 w-2 animate-pulse self-center rounded-full bg-blue-500 opacity-20 duration-1000" />
               </div>
             )}
             <BellDot size={20} />
@@ -84,7 +84,7 @@ export default function NotificationsDropdown() {
             <p className="text-sm font-medium leading-none">
               Unread notifications{' '}
               {notifications.length > 0 && (
-                <span className="ml-1 bg-gray-100 w-10 h-8 px-2 rounded-lg text-xs font-bold text-gray-500">
+                <span className="ml-1 h-8 w-10 rounded-lg bg-gray-100 px-2 text-xs font-bold text-gray-500">
                   {notifications.length}
                 </span>
               )}
@@ -93,10 +93,10 @@ export default function NotificationsDropdown() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
 
-        <div className="flex flex-col gap-2 p-2 items-center">
+        <div className="flex flex-col items-center gap-2 p-2">
           {notificationsLoadState === 'loading' && (
             <div className="p-5">
-              <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
             </div>
           )}
 
@@ -107,10 +107,10 @@ export default function NotificationsDropdown() {
           {notificationsLoadState === 'loaded' &&
             (notifications.length > 0 ? (
               <>
-                <div className="px-2 w-full flex flex-row gap-3 items-center justify-between">
+                <div className="flex w-full flex-row items-center justify-between gap-3 px-2">
                   <p className="text-xs">Mark all as read</p>
                   <Button
-                    className="bg-gray-50 hover:bg-gray-100 border border-gray-100 h-6 w-6"
+                    className="h-6 w-6 border border-gray-100 bg-gray-50 hover:bg-gray-100"
                     size="sm-icon"
                     onClick={markAllAsRead}
                   >
@@ -131,11 +131,11 @@ export default function NotificationsDropdown() {
                   return (
                     <div
                       key={notification.data.user.id}
-                      className="flex flex-row gap-4 p-2 overflow-hidden hover:bg-gray-50 rounded-md"
+                      className="flex flex-row gap-4 overflow-hidden rounded-md p-2 hover:bg-gray-50"
                     >
                       <div className="flex flex-col gap-2">
                         {INFO_TYPES.includes(notification.data.type) ? (
-                          <div className="h-8 w-8 bg-gradient-to-tr from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-tr from-blue-500 to-blue-600">
                             <BadgeInfo size={22} className="text-white" />
                           </div>
                         ) : (
@@ -143,7 +143,7 @@ export default function NotificationsDropdown() {
                             <UserAvatar user={notification.data.user} className="h-8 w-8" />
                             {notification.data.type ===
                               NotificationType.PostOwnerReactionNotification && (
-                              <div className="absolute p-0 m-0 -bottom-2 -right-2 h-5 w-5 rounded-full bg-white border border-white">
+                              <div className="absolute -bottom-2 -right-2 m-0 h-5 w-5 rounded-full border border-white bg-white p-0">
                                 <PostReactionIcon
                                   type={notification.data.postReactionType as PostReactionType}
                                   className="absolute bottom-1 right-[1px]"
@@ -166,14 +166,14 @@ export default function NotificationsDropdown() {
                         </a>
                         {/* TODO: Improve UX - a link here could be useful, depending on the type. Maybe the link could be sent by the server, as well as we could store the type of notification */}
                         <div className="flex flex-col">
-                          <p className="text-xs font-semibold truncate line-clamp-2 text-ellipsis text-wrap">
+                          <p className="line-clamp-2 truncate text-ellipsis text-wrap text-xs font-semibold">
                             {notification.data.title}
                           </p>
-                          <p className="text-xs truncate line-clamp-2 text-ellipsis text-wrap">
+                          <p className="line-clamp-2 truncate text-ellipsis text-wrap text-xs">
                             <Link href={link}>{notification.data.message}</Link>
                           </p>
                         </div>
-                        <span className="flex text-xs text-gray-400 gap-1 items-center">
+                        <span className="flex items-center gap-1 text-xs text-gray-400">
                           <Clock size={10} />
                           {formatDistanceToNow(
                             new Date(notification.updatedAt || notification.createdAt)
@@ -193,9 +193,9 @@ export default function NotificationsDropdown() {
               </div>
             ))}
         </div>
-        <div className="text-center px-5 py-1 w-full border-t border-t-gray-100 bg-gray-50 cursor-not-allowed">
+        <div className="w-full cursor-not-allowed border-t border-t-gray-100 bg-gray-50 px-5 py-1 text-center">
           {/*  // TODO: Notificatons page */}
-          <a href="#" className="text-sm text-gray-700 pointer-events-none">
+          <a href="#" className="pointer-events-none text-sm text-gray-700">
             See all activity
           </a>
         </div>

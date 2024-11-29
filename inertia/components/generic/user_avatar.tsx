@@ -12,7 +12,7 @@ export const UserAvatar = ({ user, className }: { user: UserResponse; className?
         src={user?.attachments ? user?.attachments?.avatar?.link : '#'}
         alt={`${user.fullname}'s avatar image`}
         className={cn(
-          avatarLoadState === 'loaded' ? 'block animate-in fade-in duration-1000' : 'hidden'
+          avatarLoadState === 'loaded' ? 'block duration-1000 animate-in fade-in' : 'hidden'
         )}
       />
       <AvatarFallback>{user.fullname[0] || '-'}</AvatarFallback>

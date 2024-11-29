@@ -73,7 +73,7 @@ function PostContentParser({
   }, [content])
   return (
     <div
-      className="pb-5 break-words whitespace-break-spaces post-content"
+      className="post-content whitespace-break-spaces break-words pb-5"
       dangerouslySetInnerHTML={{ __html: parsed }}
     />
   )
@@ -81,20 +81,20 @@ function PostContentParser({
 
 function LinkPreview({ preview }: { preview: NonNullable<PostResponse['link']> }) {
   return (
-    <div className="flex flex-col lg:flex-row gap-2 h-auto lg:h-48 w-full max-w-[600px] bg-slate-100 hover:bg-slate-200 duration-500 border border-slate-200 p-3 rounded-md">
-      <div className="flex flex-row max-w-56 justify-center aspect-auto flex-shrink-0 relative rounded-lg">
+    <div className="flex h-auto w-full max-w-[600px] flex-col gap-2 rounded-md border border-slate-200 bg-slate-100 p-3 duration-500 hover:bg-slate-200 lg:h-48 lg:flex-row">
+      <div className="relative flex aspect-auto max-w-56 flex-shrink-0 flex-row justify-center rounded-lg">
         <img
           src={preview.metadata.thumbnail}
-          className="z-[1] rounded-lg max-w-full aspect-auto w-60 object-cover"
+          className="z-[1] aspect-auto w-60 max-w-full rounded-lg object-cover"
         />
       </div>
-      <div className="relative flex flex-col gap-2 lg:px-5 w-full overflow-hidden">
+      <div className="relative flex w-full flex-col gap-2 overflow-hidden lg:px-5">
         <div>
           <h4 className="truncate text-ellipsis font-bold">{preview.metadata.title}</h4>
           <a
             href={preview.link}
             target="_blank"
-            className="flex flex-row underline font-medium text-sm text-cyan-600 items-center truncate text-ellipsis"
+            className="flex flex-row items-center truncate text-ellipsis text-sm font-medium text-cyan-600 underline"
           >
             <span className="relative">
               <LinkIcon className="h-3" />
@@ -102,7 +102,7 @@ function LinkPreview({ preview }: { preview: NonNullable<PostResponse['link']> }
             {preview.link}
           </a>
         </div>
-        <p className="text-sm truncate text-wrap line-clamp-5">{preview.metadata.description}</p>
+        <p className="line-clamp-5 truncate text-wrap text-sm">{preview.metadata.description}</p>
       </div>
     </div>
   )
@@ -116,23 +116,23 @@ function PostImage({ image }: { image: AttachmentResponse }) {
   return (
     <>
       <div
-        className={`absolute flex flex-col bg-slate-900 duration-700 w-full h-full m-auto items-center z-[5] ${loaded ? 'opacity-0' : 'opacity-85'}`}
+        className={`absolute z-[5] m-auto flex h-full w-full flex-col items-center bg-slate-900 duration-700 ${loaded ? 'opacity-0' : 'opacity-85'}`}
       >
-        <Loader2 className="h-10 w-10 animate-spin text-muted m-auto" />
+        <Loader2 className="m-auto h-10 w-10 animate-spin text-muted" />
       </div>
-      <div className="group flex flex-row justify-center aspect-auto min-h-[calc(100vh_-_300px)] relative w-full rounded-lg overflow-hidden">
-        <div className="opacity-0 group-hover:opacity-100 absolute z-[5] left-2 bottom-2 bg-slate-900 text-white rounded-sm px-2 duration-200">
+      <div className="group relative flex aspect-auto min-h-[calc(100vh_-_300px)] w-full flex-row justify-center overflow-hidden rounded-lg">
+        <div className="absolute bottom-2 left-2 z-[5] rounded-sm bg-slate-900 px-2 text-white opacity-0 duration-200 group-hover:opacity-100">
           <p className="text-sm font-medium">{image.metadata.filename}</p>
           <p className="text-sm">{mbSize} MB</p>
         </div>
         <img
           onLoad={() => setLoaded(true)}
           src={image.link}
-          className={`z-[1] rounded-lg w-auto lg:max-h-[700px] duration-150 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+          className={`z-[1] w-auto rounded-lg duration-150 lg:max-h-[700px] ${loaded ? 'opacity-100' : 'opacity-0'}`}
         />
         <img
           src={image.link}
-          className={`absolute w-full opacity-50 object-cover blur-md duration-150`}
+          className={`absolute w-full object-cover opacity-50 blur-md duration-150`}
         />
       </div>
     </>
@@ -167,13 +167,13 @@ function PostGallery({ attachments }: { attachments: AttachmentResponse[] }) {
   return (
     <div>
       <div className="grid gap-4">
-        <div className="flex flex-row justify-center border border-slate-300 aspect-auto h-[calc(100vh_-_300px)] max-h-[700px] relative rounded-lg overflow-hidden">
+        <div className="relative flex aspect-auto h-[calc(100vh_-_300px)] max-h-[700px] flex-row justify-center overflow-hidden rounded-lg border border-slate-300">
           {attachments.length > 1 && (
             <>
               <Button
                 size="icon"
                 variant="outline"
-                className="absolute left-0 lg:left-5 z-[5] top-[calc(50%_-_20px)] cursor-pointer"
+                className="absolute left-0 top-[calc(50%_-_20px)] z-[5] cursor-pointer lg:left-5"
                 onClick={() => slide('left')}
               >
                 <ArrowLeft />
@@ -181,7 +181,7 @@ function PostGallery({ attachments }: { attachments: AttachmentResponse[] }) {
               <Button
                 size="icon"
                 variant="outline"
-                className="absolute right-0 lg:right-5 z-[5] top-[calc(50%_-_20px)] cursor-pointer"
+                className="absolute right-0 top-[calc(50%_-_20px)] z-[5] cursor-pointer lg:right-5"
                 onClick={() => slide('right')}
               >
                 <ArrowRight />
@@ -192,21 +192,21 @@ function PostGallery({ attachments }: { attachments: AttachmentResponse[] }) {
           {attachments.map((attachment, index) => (
             <div
               key={`principal_${attachment.id}_${index}`}
-              className={`w-full absolute ${index === imageIndex ? 'opacity-100' : 'opacity-0'}`}
+              className={`absolute w-full ${index === imageIndex ? 'opacity-100' : 'opacity-0'}`}
             >
               <PostImage key={`principal_${attachment.id}_${index}`} image={attachment} />
             </div>
           ))}
         </div>
         {attachments.length > 1 && (
-          <div className="flex flex-row gap-4 h-36 w-full overflow-hidden overflow-x-scroll">
+          <div className="flex h-36 w-full flex-row gap-4 overflow-hidden overflow-x-scroll">
             {attachments.map((attachment, index) => (
               <div
-                className={`relative overflow-hidden h-36 w-36 rounded-md border ${index === imageIndex && 'border-gray-200'}`}
+                className={`relative h-36 w-36 overflow-hidden rounded-md border ${index === imageIndex && 'border-gray-200'}`}
                 key={`${attachment.id}_${index}`}
               >
                 <img
-                  className="h-auto max-w-full hover:opacity-50 duration-700"
+                  className="h-auto max-w-full duration-700 hover:opacity-50"
                   src={attachment.link}
                   alt={attachment.metadata.filename}
                   onClick={() => setImageIndex(index)}
@@ -300,12 +300,12 @@ function PostReaction({
   }, [reaction.type])
 
   return (
-    <div className="flex flex-row gap-2 items-center">
+    <div className="flex flex-row items-center gap-2">
       {actions ? (
         <HoverCard>
           <HoverCardTrigger>
             <button
-              className={`trigger-user-post-react border rounded-full px-2 cursor-pointer ${reaction.type ? 'bg-blue-100 border-blue-400 hover:bg-blue-400-200' : 'bg-slate-50 border-slate-400 hover:bg-slate-200'}`}
+              className={`trigger-user-post-react cursor-pointer rounded-full border px-2 ${reaction.type ? 'hover:bg-blue-400-200 border-blue-400 bg-blue-100' : 'border-slate-400 bg-slate-50 hover:bg-slate-200'}`}
               disabled={isSubmitting}
             >
               {reaction.type ? <PostReactionIcon type={reaction.type} /> : '+'}
@@ -314,17 +314,17 @@ function PostReaction({
           <HoverCardContent
             align="start"
             side="top"
-            className="flex flex-row divide-x divide-dashed gap-2 px-2 py-1 w-auto"
+            className="flex w-auto flex-row gap-2 divide-x divide-dashed px-2 py-1"
           >
             {Object.entries(POST_REACTION_ICONS).map(
               ([key, value]: [key: string, value: string]) => (
                 <button
                   key={`reaction_${key}`}
                   type="button"
-                  className={`react-${key.toLowerCase()} flex flex-row gap-1 p-1 justify-center items-center`}
+                  className={`react-${key.toLowerCase()} flex flex-row items-center justify-center gap-1 p-1`}
                   onClick={actions ? () => reactToPost(key as PostReactionType) : () => {}}
                 >
-                  <p className="text-md hover:scale-110 duration-150">{value}</p>
+                  <p className="text-md duration-150 hover:scale-110">{value}</p>
                   <span className="text-xs text-gray-700">
                     {reactionCounts[key as PostReactionType]}
                   </span>
@@ -335,7 +335,7 @@ function PostReaction({
         </HoverCard>
       ) : (
         <button
-          className={`border rounded-full cursor-not-allowed px-2 ${reaction.type ? 'bg-blue-100 border-blue-400' : 'bg-slate-50 border-slate-400 '}`}
+          className={`cursor-not-allowed rounded-full border px-2 ${reaction.type ? 'border-blue-400 bg-blue-100' : 'border-slate-400 bg-slate-50'}`}
           disabled={true}
         >
           {reaction.type ? <PostReactionIcon type={reaction.type} /> : '+'}
@@ -388,11 +388,11 @@ function PostActions({
       <UpdatePost
         post={post}
         trigger={
-          <div className="flex flex-row gap-3 items-center w-full hover:cursor-pointer">
+          <div className="flex w-full flex-row items-center gap-3 hover:cursor-pointer">
             <Button type="button" className="update-post-trigger" variant="ghost" size="sm-icon">
               <Pencil size={15} />
             </Button>
-            <p className="font-normal text-xs text-current">Update</p>
+            <p className="text-xs font-normal text-current">Update</p>
           </div>
         }
       />
@@ -401,11 +401,11 @@ function PostActions({
       <ReportPost
         post={post}
         trigger={
-          <div className="flex flex-row gap-3 items-center w-full hover:cursor-pointer">
+          <div className="flex w-full flex-row items-center gap-3 hover:cursor-pointer">
             <Button type="button" className="report-post-trigger" variant="ghost" size="sm-icon">
               <Flag size={15} />
             </Button>
-            <p className="font-normal text-xs text-current">Report</p>
+            <p className="text-xs font-normal text-current">Report</p>
           </div>
         }
       />
@@ -413,7 +413,7 @@ function PostActions({
     pin: () => (
       <div
         onClick={updatePin}
-        className="flex flex-row gap-3 items-center w-full hover:cursor-pointer"
+        className="flex w-full flex-row items-center gap-3 hover:cursor-pointer"
       >
         <Button type="button" className="pin-post-trigger" variant="ghost" size="sm-icon">
           <Pin
@@ -421,18 +421,18 @@ function PostActions({
             size={15}
           />
         </Button>
-        <p className="font-normal text-xs text-current">Pin</p>
+        <p className="text-xs font-normal text-current">Pin</p>
       </div>
     ),
     delete: () => (
       <DeletePost
         post={post}
         trigger={
-          <div className="flex flex-row gap-3 items-center w-full hover:cursor-pointer">
+          <div className="flex w-full flex-row items-center gap-3 hover:cursor-pointer">
             <Button type="button" className="delete-post-trigger" variant="ghost" size="sm-icon">
               <Trash2 size={15} />
             </Button>
-            <p className="font-normal text-xs text-current">Delete</p>
+            <p className="text-xs font-normal text-current">Delete</p>
           </div>
         }
       />
@@ -480,8 +480,8 @@ export default function PostCard({
   const [postState, setPostState] = useState<PostResponse>(post)
 
   return (
-    <article className="flex flex-col w-full border pt-6 px-6 bg-white rounded-sm">
-      <div className="relative flex flex-row pb-3 justify-between border-b border-b-gray-200">
+    <article className="flex w-full flex-col rounded-sm border bg-white px-6 pt-6">
+      <div className="relative flex flex-row justify-between border-b border-b-gray-200 pb-3">
         <Link
           href={
             route('users.show', {
@@ -494,15 +494,15 @@ export default function PostCard({
           <div className="flex flex-row gap-3">
             <UserAvatar user={post.user} className="h-8 w-8" />
             <div className="flex flex-col gap-1">
-              <div className="flex flex-row gap-2 items-center">
-                <p className="text-xs text-gray-600 text-ellipsis truncate max-w-40 md:max-w-screen-lg">
+              <div className="flex flex-row items-center gap-2">
+                <p className="max-w-40 truncate text-ellipsis text-xs text-gray-600 md:max-w-screen-lg">
                   @{post.user.username}
                 </p>
                 {post.user.verified && (
                   <BadgeCheck size={14} className="fill-blue-500 stroke-white" />
                 )}
               </div>
-              <span className="flex text-xs text-gray-400 gap-1 items-center">
+              <span className="flex items-center gap-1 text-xs text-gray-400">
                 <Clock size={10} />
                 {formatDistanceToNow(new Date(post.createdAt))} ago
               </span>
@@ -511,8 +511,8 @@ export default function PostCard({
         </Link>
 
         {postState.pinned && (
-          <div id="pinned-post-icon" className="absolute -top-4 -left-4 -rotate-45">
-            <Pin className="text-blue-400 fill-slate-300" size={12} />
+          <div id="pinned-post-icon" className="absolute -left-4 -top-4 -rotate-45">
+            <Pin className="fill-slate-300 text-blue-400" size={12} />
             <div className="absolute left-[2px] top-[12px] h-[1px] w-2 bg-blue-400" />
             <div className="absolute left-[4px] top-[14px] h-[1px] w-1 bg-blue-400" />
           </div>
@@ -528,7 +528,7 @@ export default function PostCard({
         )}
       </div>
 
-      <div className="flex flex-col py-4 gap-4">
+      <div className="flex flex-col gap-4 py-4">
         {post.attachments.images.length > 0 && (
           <PostGallery attachments={post.attachments.images} />
         )}
@@ -556,7 +556,7 @@ export default function PostCard({
         {post.link && <LinkPreview preview={post.link} />}
       </div>
 
-      <div className="py-4 opacity-70 border-t border-t-gray-200">
+      <div className="border-t border-t-gray-200 py-4 opacity-70">
         <PostReaction actions={actions} post={post} currentUser={user} />
       </div>
     </article>
