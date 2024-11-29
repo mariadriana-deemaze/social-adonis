@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Head, Link, useForm } from '@inertiajs/react'
+import { Link, useForm } from '@inertiajs/react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label'
 import { useToast } from '@/components/ui/use_toast'
 import AdonisLogo from '@/components/svg/logo'
 import { route } from '@izzyjs/route/client'
+import HeadOG from '@/components/generic/head_og'
 
 export default function SignIn() {
   const { toast } = useToast()
@@ -29,7 +30,11 @@ export default function SignIn() {
 
   return (
     <>
-      <Head title="Sign in" />
+      <HeadOG
+        title="Sign in"
+        description="Sign in to social adonis."
+        url={route('auth.show').path}
+      />
       <div className="container gap-10">
         <AdonisLogo />
         <form className="flex flex-col items-center gap-4" onSubmit={handleSubmit}>

@@ -1,5 +1,6 @@
 import UsersController from '#controllers/users_controller'
 import { UserResponse } from '#interfaces/user'
+import HeadOG from '@/components/generic/head_og'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -8,7 +9,7 @@ import { Label } from '@/components/ui/label'
 import { useToast } from '@/components/ui/use_toast'
 import { cn } from '@/lib/utils'
 import { InferPageProps } from '@adonisjs/inertia/types'
-import { Head, useForm, usePage } from '@inertiajs/react'
+import { useForm, usePage } from '@inertiajs/react'
 import { route } from '@izzyjs/route/client'
 import { AtSign, Upload } from 'lucide-react'
 import { ChangeEvent, useEffect, useRef, useState } from 'react'
@@ -93,7 +94,11 @@ export default function UserSettings({
 
   return (
     <>
-      <Head title={`${user.username} Setting's`} />
+      <HeadOG
+        title={`${user.username} Setting's`}
+        description="Your profile settings on Social Adonis."
+        url={route('settings.show').path}
+      />
       <div className="relative flex flex-col pt-0 w-full">
         <form className="flex flex-col items-center gap-4 w-full" onSubmit={handleSubmit}>
           <div className="relative bg-slate-300 h-64 w-full rounded-2xl mb-20 shadow-inner">

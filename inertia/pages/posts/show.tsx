@@ -1,10 +1,11 @@
 import PostsController from '#controllers/posts_controller'
 import { PostStatus } from '#enums/post'
+import HeadOG from '@/components/generic/head_og'
 import InfoPanel from '@/components/generic/info_panel'
 import PostCard from '@/components/posts/post_card'
 import { Button } from '@/components/ui/button'
 import { InferPageProps } from '@adonisjs/inertia/types'
-import { Head, router } from '@inertiajs/react'
+import { router } from '@inertiajs/react'
 import { route } from '@izzyjs/route/client'
 import { MoveLeft } from 'lucide-react'
 
@@ -12,7 +13,11 @@ export default function Show({ post, user }: InferPageProps<PostsController, 'sh
   if (!post) return <>loading...</>
   return (
     <>
-      <Head title={`Post by @${post.user.username}`} />
+      <HeadOG
+        title={`Post by @${post.user.username}`}
+        description={post.content}
+        url={route('posts.show', { params: { id: post.id } }).path}
+      />
       <div className="w-full flex flex-col items-start pb-4">
         <div className="my-6">
           <div

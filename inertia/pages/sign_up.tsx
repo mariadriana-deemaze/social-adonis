@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
-import { Head, Link, useForm } from '@inertiajs/react'
+import { Link, useForm } from '@inertiajs/react'
+import HeadOG from '@/components/generic/head_og'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -31,7 +32,11 @@ export default function SignUp() {
 
   return (
     <>
-      <Head title="Sign up" />
+      <HeadOG
+        title="Sign up"
+        description="Sign up to social adonis."
+        url={route('auth.store').path}
+      />
       <div className="container gap-10">
         <AdonisLogo />
         <form className="flex flex-col items-center gap-4" onSubmit={handleSubmit}>

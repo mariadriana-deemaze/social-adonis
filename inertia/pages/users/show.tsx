@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import FeedController from '#controllers/feed_controller'
+import HeadOG from '@/components/generic/head_og'
 import FeedList from '@/components/posts/feed_list'
 import { Card, CardContent } from '@/components/ui/card'
 import { InferPageProps } from '@adonisjs/inertia/types'
 import { lightFormat } from 'date-fns'
-import { Head } from '@inertiajs/react'
 import { BadgeCheck, CalendarHeart, FilePen } from 'lucide-react'
 import { CreatePost } from '@/components/posts/create'
 import { UserResponse } from '#interfaces/user'
@@ -68,7 +68,18 @@ export default function Show({ user, posts, profile }: InferPageProps<FeedContro
   if (!posts || !profile) return <>Loading..</>
   return (
     <>
-      <Head title={`@${profile.username}`} />
+      <HeadOG
+        title={`@${profile.username}`}
+        description={`Discover ${profile.username} on Social Adonis.`}
+        image=""
+        url={
+          route('users.show', {
+            params: {
+              id: profile.id,
+            },
+          }).path
+        }
+      />
       <div className="relative min-h-[280px] lg:min-h-max w-full mb-16 lg:mb-0">
         <div className="relative bg-slate-300 border border-gray-200 h-52 w-full rounded-2xl mb-4 shadow-inner">
           <div className="w-full h-full rounded-2xl overflow-hidden">

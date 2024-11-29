@@ -87,7 +87,7 @@ export default function UserNavBar({ user }: { user: UserResponse | null }) {
                         >
                           <Link
                             className="flex flex-row items-center relative w-full"
-                            href={route('settings.show', { params: { id: user?.id! } }).path}
+                            href={route('settings.show').path}
                           >
                             Settings
                             <DropdownMenuShortcut className="absolute right-0">
