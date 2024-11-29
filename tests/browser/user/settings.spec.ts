@@ -4,16 +4,16 @@ import User from '#models/user'
 import testUtils from '@adonisjs/core/services/test_utils'
 import { InferPageProps, SharedProps } from '@adonisjs/inertia/types'
 import { faker } from '@faker-js/faker'
+import { route } from '@izzyjs/route/client'
 import { test } from '@japa/runner'
 
 test.group('User settings', (group) => {
   let user: User | null = null
-  let url = '/users/:id/settings'
+  let url = route('settings.show').path
 
   group.each.setup(async () => {
     await testUtils.db().truncate()
     user = await UserFactory.create()
-    url = url.replace(':id', user.id)
   })
 
   test('Sucessfully updates profile', async ({ visit, browserContext, assert }) => {

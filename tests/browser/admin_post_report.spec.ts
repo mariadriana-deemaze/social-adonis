@@ -1,11 +1,11 @@
 import { UserFactory } from '#database/factories/user_factory'
 import { PostReportReason, PostReportStatus } from '#enums/post'
 import testUtils from '@adonisjs/core/services/test_utils'
+import { route } from '@izzyjs/route/client'
 import { test } from '@japa/runner'
 
 test.group('Admin post report', (group) => {
-  // FIX-ME: Izzy
-  const url = '/admin/posts/reports'
+  const url = route('admin_posts_reports.index').path
 
   group.each.setup(() => testUtils.db().truncate())
 
