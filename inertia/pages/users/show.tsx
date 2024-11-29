@@ -1,18 +1,81 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import FeedController from '#controllers/feed_controller'
 import HeadOG from '@/components/generic/head_og'
 import FeedList from '@/components/posts/feed_list'
 import { Card, CardContent } from '@/components/ui/card'
 import { InferPageProps } from '@adonisjs/inertia/types'
 import { lightFormat } from 'date-fns'
-import { BadgeCheck, CalendarHeart, FilePen } from 'lucide-react'
+import { BadgeCheck, CalendarHeart, FilePen, UserCheck } from 'lucide-react'
 import { CreatePost } from '@/components/posts/create'
 import { UserResponse } from '#interfaces/user'
 import { route } from '@izzyjs/route/client'
 import { UserAvatar } from '@/components/generic/user_avatar'
 import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
 
-function UserCard({ user, totalPosts }: { user: UserResponse; totalPosts: number }) {
+function UserCard({
+  currentUser,
+  user,
+  totalPosts,
+}: {
+  currentUser: UserResponse | null
+  user: UserResponse
+  totalPosts: number
+}) {
+  const [userData, setUserData] = useState<UserResponse>(user)
+  const [follow, setFollow] = useState<'following' | 'not-following' | null>(null)
+
+  async function followStatus() {
+    const request = await fetch(
+      route('users_follows.show', {
+        params: {
+          userId: user.id,
+        },
+      }).path
+    )
+
+    if (request.ok) {
+      const json: { following: boolean } = await request.json()
+      if (json.following) {
+        setFollow('following')
+      } else {
+        setFollow('not-following')
+      }
+    }
+  }
+
+  async function followUser() {
+    const url = route('users_follows.store', {
+      params: {
+        userId: user.id,
+      },
+    }).path
+
+    if (follow === 'following') {
+      fetch(url, {
+        method: 'delete',
+      }).then(() => {
+        setFollow('not-following')
+        setUserData((prevState) => {
+          return { ...prevState, followersCount: prevState.followersCount - 1 }
+        })
+      })
+    } else {
+      fetch(url, {
+        method: 'post',
+      }).then(() => {
+        setFollow('following')
+        setUserData((prevState) => {
+          return { ...prevState, followersCount: prevState.followersCount + 1 }
+        })
+      })
+    }
+  }
+
+  useEffect(() => {
+    followStatus()
+  }, [])
+
   return (
     <Card className="user-profile-card sticky top-20 flex flex-row w-full align-middle rounded-b-sm rounded-t-none lg:rounded-sm">
       <CardContent className="relative w-full flex flex-col text-center p-3 lg:p-1 pt-2 divide-y divide-dashed">
@@ -35,6 +98,24 @@ function UserCard({ user, totalPosts }: { user: UserResponse; totalPosts: number
         </div>
 
         <div className="flex flex-col w-full pt-2 pb-0 lg:p-3 justify-center">
+          {!!currentUser && currentUser.id !== user.id && (
+            <Button size="sm" type="button" onClick={followUser} disabled={follow === null}>
+              {follow === 'following' && 'Unfollow'}
+              {(follow === 'not-following' || follow === null) && 'Follow'}
+            </Button>
+          )}
+
+          {/* // TODO: Refactor UI */}
+          <div className="flex w-full p-1 justify-center">
+            <div className="flex flex-row gap-2 items-center">
+              <UserCheck className="w-4 text-gray-400" />
+              <p className="user-profile-card-total-posts text-xs lg:text-sm">
+                Followers
+                <span className="text-muted-foreground"> {userData.followersCount}</span>
+              </p>
+            </div>
+          </div>
+
           <div className="flex w-full p-1 justify-center">
             <div className="flex flex-row gap-2 items-center">
               <FilePen className="w-4 text-gray-400" />
@@ -93,13 +174,13 @@ export default function Show({ user, posts, profile }: InferPageProps<FeedContro
             />
           </div>
           <div className="absolute block lg:hidden -bottom-28 w-full">
-            <UserCard user={profile} totalPosts={posts.meta.total} />
+            <UserCard currentUser={user} user={profile} totalPosts={posts.meta.total} />
           </div>
         </div>
       </div>
       <div className="relative flex flex-col lg:flex-row gap-2 w-full">
         <div className="hidden lg:block h-full w-full max-w-full lg:max-w-64">
-          <UserCard user={profile} totalPosts={posts.meta.total} />
+          <UserCard currentUser={user} user={profile} totalPosts={posts.meta.total} />
         </div>
         <div className="w-full">
           <FeedList
