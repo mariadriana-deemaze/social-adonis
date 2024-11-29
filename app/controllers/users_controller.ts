@@ -57,7 +57,14 @@ export default class UsersController {
     }
   }
 
-  async destroy() {
-    // TODO: Implement.
+  async destroy(ctx: HttpContext) {
+    const user = ctx.auth.user!
+    try {
+      await this.service.destroy(user)
+      return ctx.inertia.render('feed')
+    } catch (error) {
+      ctx.session.flash('errors', 'Error deleting user.')
+      return ctx.response.redirect().back()
+    }
   }
 }

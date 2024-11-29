@@ -60,6 +60,10 @@ export class UserService {
     await user.save()
   }
 
+  async destroy(user: User) {
+    return user.delete()
+  }
+
   async storeAttachments(ctx: HttpContext) {
     const currentUserId = ctx.auth.user?.id!
 
