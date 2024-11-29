@@ -22,7 +22,9 @@ export default class UserFollowService {
 
   async store(currentUserId: UUID, followerUserId: UUID): Promise<UserFollower> {
     if (currentUserId === followerUserId) throw Error('Duplicate.')
-    const relation = await UserFollower.create({
+    let relation = await this.show(currentUserId, followerUserId)
+    if (relation) return relation
+    relation = await UserFollower.create({
       userId: currentUserId,
       followerId: followerUserId,
     })
