@@ -1,6 +1,5 @@
-import { Head } from '@inertiajs/react'
+import { Head, usePage } from '@inertiajs/react'
 import socialAdonisLogo from '../../../public/assets/images/thumbnail.png'
-import { env } from 'node:process'
 
 interface HeadOGProps {
   title: string
@@ -10,7 +9,9 @@ interface HeadOGProps {
 }
 
 export default function HeadOG({ title, description, image, url }: HeadOGProps) {
-  const domain = env['PRODUCTION_URL'] || 'https://social-adonis.fly.dev'
+  const props = usePage().props
+
+  const domain = props.domain
 
   return (
     <Head title={title}>
