@@ -54,4 +54,63 @@ test.group('Acessing user profile feed', (group) => {
     const locator = page.getByText('Total posts').first()
     await page.assertText(locator, `Total posts ${otherUser.posts.length}`)
   })
+
+  test('Fails to detect follow action on a user profile feed while being un-authenticated', async ({
+    visit,
+  }) => {
+    await UserFactory.create()
+    const otherUser = await UserFactory.create()
+    const page = await visit(
+      route('users.show', {
+        params: {
+          id: otherUser.id,
+        },
+      }).path
+    )
+    const followButton = page.locator('button.follow-action')
+    await page.assertNotExists(followButton)
+  })
+
+  test('Fails to detect follow action on own user profile feed while authenticated', async ({
+    visit,
+    browserContext,
+  }) => {
+    const user = await UserFactory.create()
+    await browserContext.loginAs(user)
+    const page = await visit(
+      route('users.show', {
+        params: {
+          id: user.id,
+        },
+      }).path
+    )
+    const followButton = page.locator('button.follow-action')
+    await page.assertNotExists(followButton)
+  })
+
+  test('Successfully follows and unfollows another user profile feed while authenticated', async ({
+    visit,
+    browserContext,
+  }) => {
+    const user = await UserFactory.create()
+    const otherUser = await UserFactory.create()
+    await browserContext.loginAs(user)
+    const page = await visit(
+      route('users.show', {
+        params: {
+          id: otherUser.id,
+        },
+      }).path
+    )
+
+    const followButton = page.locator('button.follow-action').first()
+    const followersCount = page.locator('user-profile-card-total-followers').first()
+
+    await page.isEnabled('button.follow-action:nth-child(1)')
+    page.assertText(followButton, 'Follow')
+    page.assertText(followersCount, '1')
+    await followButton.click()
+    page.assertText(followButton, 'Unfollow')
+    page.assertText(followersCount, '0')
+  })
 })
