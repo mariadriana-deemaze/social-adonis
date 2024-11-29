@@ -7,6 +7,7 @@ import { DbRememberMeTokensProvider } from '@adonisjs/auth/session'
 import Session from '#models/session'
 import Post from '#models/post'
 import Notifiable from '@osenco/adonisjs-notifications/mixins/notifiable'
+import UserFollower from '#models/user_follower'
 import { randomUUID, type UUID } from 'node:crypto'
 import type { HasMany } from '@adonisjs/lucid/types/relations'
 import type { NotificationChannelName } from '@osenco/adonisjs-notifications/types'
@@ -61,6 +62,9 @@ export default class User extends compose(BaseModel, AuthFinder, Notifiable('use
 
   @hasMany(() => Post)
   declare posts: HasMany<typeof Post>
+
+  @hasMany(() => UserFollower)
+  declare followers: HasMany<typeof UserFollower>
 
   static rememberMeTokens = DbRememberMeTokensProvider.forModel(User)
 
