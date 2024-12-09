@@ -31,7 +31,7 @@ export default function NavBar({ user }: { user: UserResponse | null }) {
   ]
 
   return (
-    <div className="fixed top-0 bg-black w-full z-10">
+    <div className="fixed top-0 z-10 w-full bg-black">
       <div className="border-b">
         <div className="flex h-16 items-center px-4">
           <nav className={cn('flex items-center space-x-4 lg:space-x-6')}>
@@ -41,7 +41,7 @@ export default function NavBar({ user }: { user: UserResponse | null }) {
                 key={`link-${index}`}
                 href={link}
                 except={['user']}
-                className="text-white text-sm font-medium transition-colors hover:text-primary"
+                className="text-sm font-medium text-white transition-colors hover:text-primary"
               >
                 {title}
               </Link>
@@ -61,7 +61,7 @@ export default function NavBar({ user }: { user: UserResponse | null }) {
                       <p className="text-sm font-medium leading-none">
                         {user.name} {user.surname}
                       </p>
-                      <p className="text-xs truncate leading-none text-muted-foreground">
+                      <p className="truncate text-xs leading-none text-muted-foreground">
                         {user.email}
                       </p>
                     </div>

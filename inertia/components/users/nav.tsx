@@ -30,7 +30,7 @@ export default function UserNavBar({ user }: { user: UserResponse | null }) {
   ]
 
   return (
-    <div className="fixed top-0 bg-white w-full z-10">
+    <div className="fixed top-0 z-10 w-full bg-white">
       <div className="border-b">
         <div className="flex h-16 items-center px-4">
           <nav className={cn('flex items-center space-x-4 lg:space-x-6')}>
@@ -60,7 +60,7 @@ export default function UserNavBar({ user }: { user: UserResponse | null }) {
                       <DropdownMenuLabel className="font-normal">
                         <div className="flex flex-col space-y-1">
                           <p className="text-sm font-medium leading-none">{user.fullname}</p>
-                          <p className="text-xs truncate leading-none text-muted-foreground">
+                          <p className="truncate text-xs leading-none text-muted-foreground">
                             {user.email}
                           </p>
                         </div>
@@ -68,11 +68,11 @@ export default function UserNavBar({ user }: { user: UserResponse | null }) {
                       <DropdownMenuSeparator />
                       <DropdownMenuGroup>
                         <DropdownMenuItem
-                          className="flex content-center relative cursor-pointer"
+                          className="relative flex cursor-pointer content-center"
                           asChild
                         >
                           <Link
-                            className="flex flex-row items-center relative w-full"
+                            className="relative flex w-full flex-row items-center"
                             href={route('users.show', { params: { id: user?.id! } }).path}
                           >
                             Profile
@@ -82,11 +82,11 @@ export default function UserNavBar({ user }: { user: UserResponse | null }) {
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          className="flex content-center relative cursor-pointer"
+                          className="relative flex cursor-pointer content-center"
                           asChild
                         >
                           <Link
-                            className="flex flex-row items-center relative w-full"
+                            className="relative flex w-full flex-row items-center"
                             href={route('settings.show').path}
                           >
                             Settings
@@ -98,11 +98,11 @@ export default function UserNavBar({ user }: { user: UserResponse | null }) {
                       </DropdownMenuGroup>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
-                        className="flex content-center relative cursor-pointer"
+                        className="relative flex cursor-pointer content-center"
                         asChild
                       >
                         <Link
-                          className="flex flex-row items-center relative w-full"
+                          className="relative flex w-full flex-row items-center"
                           as="button"
                           href={route('auth.destroy').path}
                           method="delete"

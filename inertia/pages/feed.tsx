@@ -15,7 +15,7 @@ export default function Feed({ posts, user }: InferPageProps<FeedController, 'in
       />
       <FeedList url={route('feed.show').path} currentUser={user} posts={posts} />
       {user && (
-        <div className="z-10 fixed left-5 bottom-5">
+        <div className="fixed bottom-5 left-5 z-10">
           <CreatePost />
         </div>
       )}

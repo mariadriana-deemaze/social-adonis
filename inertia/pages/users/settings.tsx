@@ -125,26 +125,26 @@ export default function UserSettings({
         description="Your profile settings on Social Adonis."
         url={route('settings.show').path}
       />
-      <div className="relative flex flex-col pt-0 w-full items-center gap-4 pb-5">
-        <form className="flex flex-col items-center gap-4 w-full" onSubmit={handleSubmit}>
-          <div className="relative bg-slate-300 h-64 w-full rounded-2xl mb-20 shadow-inner">
-            <div className="w-full h-full rounded-2xl overflow-hidden">
+      <div className="relative flex w-full flex-col items-center gap-4 pb-5 pt-0">
+        <form className="flex w-full flex-col items-center gap-4" onSubmit={handleSubmit}>
+          <div className="relative mb-20 h-64 w-full rounded-2xl bg-slate-300 shadow-inner">
+            <div className="h-full w-full overflow-hidden rounded-2xl">
               {coverPreview && (
                 <img
                   src={coverPreview}
                   onLoad={() => setCoverLoadState('loaded')}
                   className={cn(
-                    'w-full h-full object-cover rounded-lg overflow',
+                    'overflow h-full w-full rounded-lg object-cover',
                     coverLoadState === 'loaded'
-                      ? 'block animate-in fade-in duration-1000'
+                      ? 'block duration-1000 animate-in fade-in'
                       : 'hidden'
                   )}
                 />
               )}
             </div>
 
-            <div className="absolute h-32 w-32 left-[calc(50%_-_62px)] -bottom-10">
-              <div className="relative w-full h-full">
+            <div className="absolute -bottom-10 left-[calc(50%_-_62px)] h-32 w-32">
+              <div className="relative h-full w-full">
                 <Avatar className="h-32 w-32 shadow-lg">
                   <AvatarImage
                     src={avatarPreview}
@@ -152,7 +152,7 @@ export default function UserSettings({
                     onLoad={() => setAvatarLoadState('loaded')}
                     className={cn(
                       avatarLoadState === 'loaded'
-                        ? 'block animate-in fade-in duration-1000'
+                        ? 'block duration-1000 animate-in fade-in'
                         : 'hidden'
                     )}
                   />
@@ -177,7 +177,7 @@ export default function UserSettings({
                 />
               </div>
             </div>
-            <div className="absolute right-2 bottom-2">
+            <div className="absolute bottom-2 right-2">
               <input
                 ref={uploadCover}
                 type="file"
@@ -203,7 +203,7 @@ export default function UserSettings({
               <CardDescription>Update your account profile details</CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-5">
-              <div className="grid lg:grid-cols-2 gap-4">
+              <div className="grid gap-4 lg:grid-cols-2">
                 <div className="grid gap-2">
                   <Label htmlFor="name">Name</Label>
                   <Input
@@ -258,15 +258,15 @@ export default function UserSettings({
           </Card>
         </form>
 
-        <Card className="flex flex-col lg:flex-row justify-between items-center bg-gray-100 w-full max-w-screen-md border-red-100">
-          <CardHeader className="text-center lg:text-left text-wrap">
+        <Card className="flex w-full max-w-screen-md flex-col items-center justify-between border-red-100 bg-gray-100 lg:flex-row">
+          <CardHeader className="text-wrap text-center lg:text-left">
             <CardTitle className="text-md">Danger zone</CardTitle>
             <CardDescription>Permanently delete account.</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col lg:pb-0">
             <Dialog open={deleteIntentModal} onOpenChange={setDeleteIntentModal}>
               <DialogTrigger asChild>
-                <Button variant="destructive" className="w-52 trigger-delete-account">
+                <Button variant="destructive" className="trigger-delete-account w-52">
                   Delete account
                 </Button>
               </DialogTrigger>
@@ -279,7 +279,7 @@ export default function UserSettings({
                   This is a non-reversible action. Everything related to your account, as well as
                   your connections and content will be lost forever - into the void.
                 </p>
-                <div className="flex flex-row w-full justify-center gap-4">
+                <div className="flex w-full flex-row justify-center gap-4">
                   <Button onClick={() => setDeleteIntentModal(false)} type="button">
                     Cancel
                   </Button>

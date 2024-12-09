@@ -90,15 +90,15 @@ function Update({
 
         <hr />
 
-        <div className="w-full pt-8 pb-4">
+        <div className="w-full pb-4 pt-8">
           <PostCard post={report.post} user={currentUser} actions={false} />
         </div>
 
         <form
           onSubmit={handleSubmit}
-          className={cn(processing ? 'opacity-20 pointer-events-none' : 'opacity-100')}
+          className={cn(processing ? 'pointer-events-none opacity-20' : 'opacity-100')}
         >
-          <div className="flex flex-col w-full gap-2 bg-gray-100 rounded-md p-4">
+          <div className="flex w-full flex-col gap-2 rounded-md bg-gray-100 p-4">
             <Label htmlFor="reason" className="text-left">
               Change status
             </Label>
@@ -123,7 +123,7 @@ function Update({
             </Select>
 
             {data.status === PostReportStatus.ACCEPTED && (
-              <div className="border border-red-200 bg-red-100 rounded-md mt-2 py-2 px-4">
+              <div className="mt-2 rounded-md border border-red-200 bg-red-100 px-4 py-2">
                 <p className="text-sm text-red-500">
                   This action will immediately hide the post from the others users feed.
                 </p>
@@ -131,7 +131,7 @@ function Update({
             )}
 
             {data.status === PostReportStatus.REJECTED && (
-              <div className="border border-green-200 bg-green-100 rounded-md mt-2 py-2 px-4">
+              <div className="mt-2 rounded-md border border-green-200 bg-green-100 px-4 py-2">
                 <p className="text-sm text-green-500">
                   This action will discard the complaint, and notify the reporting user of the
                   decision.
@@ -204,8 +204,8 @@ export default function Index({
         description="Take actionable steps to recent user reported posts."
       >
         <form onSubmit={handleSubmit}>
-          <div className="flex flex-col lg:flex-row gap-4">
-            <div className="flex flex-col gap-2 w-full lg:w-96">
+          <div className="flex flex-col gap-4 lg:flex-row">
+            <div className="flex w-full flex-col gap-2 lg:w-96">
               <Label htmlFor="reason" className="text-left">
                 Reason:
               </Label>
@@ -232,7 +232,7 @@ export default function Index({
                 }
               />
             </div>
-            <div className="flex flex-col gap-2 w-full lg:w-96">
+            <div className="flex w-full flex-col gap-2 lg:w-96">
               <Label htmlFor="status" className="text-left">
                 Status:
               </Label>
@@ -260,7 +260,7 @@ export default function Index({
               />
             </div>
 
-            <Button type="submit" size="sm" className="self-end justify-end h-10">
+            <Button type="submit" size="sm" className="h-10 justify-end self-end">
               <TextSearch />
             </Button>
           </div>
@@ -268,7 +268,7 @@ export default function Index({
       </AdminPageHeader>
 
       <div className="container pt-5">
-        <Card className="w-full top-2">
+        <Card className="top-2 w-full">
           <Table>
             <TableHeader>
               <TableRow>
@@ -296,7 +296,7 @@ export default function Index({
               ) : (
                 reports.data.map((report: PostReportResponse) => (
                   <TableRow key={report.id}>
-                    <TableCell className="font-medium truncate align-middle items-center justify-center">
+                    <TableCell className="items-center justify-center truncate align-middle font-medium">
                       {report.status === PostReportStatus.PENDING ? (
                         <Button
                           className="report-update-action-trigger"
@@ -319,10 +319,10 @@ export default function Index({
                         </Button>
                       )}
                     </TableCell>
-                    <TableCell className="font-medium truncate">
+                    <TableCell className="truncate font-medium">
                       {formatDistanceToNow(new Date(report.createdAt))} ago
                     </TableCell>
-                    <TableCell className="font-medium truncate">{report.user.username}</TableCell>
+                    <TableCell className="truncate font-medium">{report.user.username}</TableCell>
                     <TableCell className="font-medium">
                       <a
                         href={route('posts.show', { params: { id: report.post.id } }).path}
@@ -331,17 +331,17 @@ export default function Index({
                         <ExternalLink size={15} className="text-blue-400" />
                       </a>
                     </TableCell>
-                    <TableCell className="report-count font-medium truncate">
+                    <TableCell className="report-count truncate font-medium">
                       {report.post.reportCount}
                     </TableCell>
-                    <TableCell className="report-post-content font-medium truncate max-w-60">
+                    <TableCell className="report-post-content max-w-60 truncate font-medium">
                       {report.post.content}
                     </TableCell>
-                    <TableCell className="font-medium truncate">{report.reason}</TableCell>
-                    <TableCell className="report-status flex font-medium justify-end">
+                    <TableCell className="truncate font-medium">{report.reason}</TableCell>
+                    <TableCell className="report-status flex justify-end font-medium">
                       <span
                         className={cn(
-                          'font-medium text-xs text-white w-max rounded-sm px-2 py-1',
+                          'w-max rounded-sm px-2 py-1 text-xs font-medium text-white',
                           report.status === PostReportStatus.ACCEPTED && 'bg-green-500',
                           report.status === PostReportStatus.PENDING && 'bg-orange-500',
                           report.status === PostReportStatus.REJECTED && 'bg-red-500'

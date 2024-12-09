@@ -230,7 +230,7 @@ export default function HighlightedInput<T>({
     <div className="relative w-full">
       <div
         ref={highlighterRef}
-        className="absolute overflow-y-scroll w-full h-full py-[0.56rem] px-[0.81rem] whitespace-pre-wrap break-words text-transparent pointer-events-none z-0 bg-blend-color"
+        className="pointer-events-none absolute z-0 h-full w-full overflow-y-scroll whitespace-pre-wrap break-words px-[0.81rem] py-[0.56rem] text-transparent bg-blend-color"
       >
         <p
           className="text-sm"
@@ -248,7 +248,7 @@ export default function HighlightedInput<T>({
       />
       {state.open && state.list.length > 0 && (
         <div className="relative w-full">
-          <Card className="absolute top-[calc(100%_+_5px)] w-full flex flex-col gap-2 px-2 py-1 divide-y divide-dashed">
+          <Card className="absolute top-[calc(100%_+_5px)] flex w-full flex-col gap-2 divide-y divide-dashed px-2 py-1">
             <ul>
               {state.list.map((item: T, i: number) => (
                 <li key={`random_${i}`}>

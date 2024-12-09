@@ -25,10 +25,10 @@ function PreviewThumbnail({ file }: { file: File }) {
   useEffect(handlePreview, [file])
 
   return (
-    <div className="relative flex flex-col w-14 h-14 overflow-hidden rounded-md">
-      {isLoading && <Loader2 className="h-5 w-5 mr-2 animate-spin text-muted" />}
+    <div className="relative flex h-14 w-14 flex-col overflow-hidden rounded-md">
+      {isLoading && <Loader2 className="mr-2 h-5 w-5 animate-spin text-muted" />}
       <div
-        className={`absolute w-full h-full bg-black duration-1000 ${isLoading ? 'opacity-100' : 'opacity-0'}`}
+        className={`absolute h-full w-full bg-black duration-1000 ${isLoading ? 'opacity-100' : 'opacity-0'}`}
       />
       <img ref={thumbnailRef} alt={file.name} className={isLoading ? 'opacity-0' : 'opacity-100'} />
     </div>

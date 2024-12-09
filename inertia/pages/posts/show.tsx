@@ -18,10 +18,10 @@ export default function Show({ post, user }: InferPageProps<PostsController, 'sh
         description={post.content}
         url={route('posts.show', { params: { id: post.id } }).path}
       />
-      <div className="w-full flex flex-col items-start pb-4">
+      <div className="flex w-full flex-col items-start pb-4">
         <div className="my-6">
           <div
-            className="flex flex-row gap-2 items-center cursor-pointer hover:opacity-80 duration-200"
+            className="flex cursor-pointer flex-row items-center gap-2 duration-200 hover:opacity-80"
             onClick={() => router.visit(route('feed.show').path)}
           >
             <Button variant="ghost" size="sm-icon">
@@ -30,7 +30,7 @@ export default function Show({ post, user }: InferPageProps<PostsController, 'sh
             <p className="text-sm">Go back to feed</p>
           </div>
         </div>
-        <div className="w-full flex flex-col gap-4">
+        <div className="flex w-full flex-col gap-4">
           {post.status === PostStatus.REPORTED && (
             <InfoPanel
               type="error"

@@ -37,7 +37,7 @@ export default function ScrollTop() {
       ref={topRef}
       onClick={scrollTop}
       size="icon"
-      className="fixed right-4 bottom-4 z-10 duration-1000"
+      className="fixed bottom-4 right-4 z-10 duration-1000"
       type="button"
     >
       <ArrowUpFromDot size={15} />

@@ -34,10 +34,10 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     )
 
     return (
-      <div className={cn('flex flex-col relative', !!error && 'h-14')}>
+      <div className={cn('relative flex flex-col', !!error && 'h-14')}>
         {(LeftSlot || type === 'password') && (
-          <div className="absolute w-10 h-10 top-0 left-0 cursor-pointer" onClick={handleSlotClick}>
-            <div className="h-full flex flex-col items-center justify-center">
+          <div className="absolute left-0 top-0 h-10 w-10 cursor-pointer" onClick={handleSlotClick}>
+            <div className="flex h-full flex-col items-center justify-center">
               {!!LeftSlot && type === 'password' ? (
                 <PasswordSlot />
               ) : (
@@ -59,10 +59,10 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         />
         {RightSlot && (
           <div
-            className="absolute w-10 h-10 top-0 right-0 cursor-pointer"
+            className="absolute right-0 top-0 h-10 w-10 cursor-pointer"
             onClick={handleSlotClick}
           >
-            <div className="h-full flex flex-col items-center justify-center">
+            <div className="flex h-full flex-col items-center justify-center">
               {!!RightSlot && type === 'password' ? (
                 <PasswordSlot />
               ) : (
@@ -72,7 +72,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           </div>
         )}
         {error && (
-          <p className="w-full absolute -bottom-1 text-red-600 text-xs truncate">{error}</p>
+          <p className="absolute -bottom-1 w-full truncate text-xs text-red-600">{error}</p>
         )}
       </div>
     )
