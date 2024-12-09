@@ -15,7 +15,7 @@ export default class extends BaseSchema {
       }).defaultTo(UserTokenType.RESET_ACCESS).notNullable()
       table.string('token').notNullable()
       table.timestamp('created_at', { useTz: false }).notNullable()
-      table.timestamp('expires_at', { useTz: false }).notNullable().comment('After this point, it is no longer considered to be a valid requesition from the user.')
+      table.timestamp('expires_at', { useTz: false }).notNullable().comment('If consulted after this date, it is considered to be an expired record.')
     })
   }
 
