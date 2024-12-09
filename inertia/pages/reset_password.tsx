@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Link, useForm } from '@inertiajs/react'
+import { useForm } from '@inertiajs/react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -8,49 +8,39 @@ import { useToast } from '@/components/ui/use_toast'
 import AdonisLogo from '@/components/svg/logo'
 import { route } from '@izzyjs/route/client'
 import HeadOG from '@/components/generic/head_og'
-import { InferPageProps } from '@adonisjs/inertia/types'
-import AuthController from '#controllers/auth_controller'
 
-// @ts-ignore
-export default function SignIn({ notification }: InferPageProps<AuthController, 'show'>) {
+export default function ResetPassword() {
   const { toast } = useToast()
 
   const { data, setData, post, processing, errors } = useForm({
     email: '',
-    password: '',
   })
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    post(route('auth.show').path)
+    post(route('auth.reset').path)
   }
 
   useEffect(() => {
     if (Object.entries(errors).length) {
-      toast({ title: 'Error signing in.', description: errors.email })
+      toast({ title: 'Error resetting password.', description: errors.email })
     }
   }, [errors])
-
-  useEffect(() => {
-    if (Object.entries(notification).length) {
-      toast({ title: notification.message })
-    }
-  }, [notification])
 
   return (
     <>
       <HeadOG
-        title="Sign in"
-        description="Sign in to social adonis."
-        url={route('auth.show').path}
+        title="Reset password"
+        description="Restore access to your social adonis account."
+        url={route('auth.reset').path}
       />
       <div className="container gap-10">
         <AdonisLogo />
         <form className="flex flex-col items-center gap-4" onSubmit={handleSubmit}>
           <Card className="w-full lg:mx-auto lg:max-w-sm">
             <CardHeader>
-              <CardTitle className="text-xl">Sign in</CardTitle>
-              <CardDescription>Enter your account authentication credentials</CardDescription>
+              <CardTitle className="text-xl">Reset password</CardTitle>
+              <CardDescription>Restore your account authentication credentials</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid gap-4">
@@ -65,29 +55,10 @@ export default function SignIn({ notification }: InferPageProps<AuthController, 
                     required
                   />
                 </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="password">Password</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    value={data.password}
-                    onChange={(e) => setData('password', e.target.value)}
-                    RightSlot
-                  />
-                </div>
                 <Button type="submit" className="w-full" disabled={processing}>
-                  Login
+                  Recover
                 </Button>
               </div>
-              <div className="mt-4 text-center text-sm">
-                Don't yet have an account?{' '}
-                <Link href={route('auth.store').path} className="underline">
-                  Sign up
-                </Link>
-              </div>
-              <Link href={route('auth.reset').path} className="mt-4 text-center text-sm underline">
-                Forgotten password?
-              </Link>
             </CardContent>
           </Card>
         </form>

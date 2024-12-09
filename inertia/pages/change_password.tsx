@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Link, useForm } from '@inertiajs/react'
+import { router, useForm } from '@inertiajs/react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -11,60 +11,53 @@ import HeadOG from '@/components/generic/head_og'
 import { InferPageProps } from '@adonisjs/inertia/types'
 import AuthController from '#controllers/auth_controller'
 
-// @ts-ignore
-export default function SignIn({ notification }: InferPageProps<AuthController, 'show'>) {
+export default function ResetPassword({ queryParams }: InferPageProps<AuthController, 'update'>) {
   const { toast } = useToast()
 
   const { data, setData, post, processing, errors } = useForm({
-    email: '',
-    password: '',
+    password: 'user_password',
+    passwordConfirmation: 'user_password',
   })
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    post(route('auth.show').path)
+    post(
+      route('auth.update', {
+        qs: { token: queryParams.token },
+      }).path
+    )
   }
 
   useEffect(() => {
     if (Object.entries(errors).length) {
-      toast({ title: 'Error signing in.', description: errors.email })
+      toast({ title: 'Error resetting password.', description: errors.password })
     }
   }, [errors])
 
   useEffect(() => {
-    if (Object.entries(notification).length) {
-      toast({ title: notification.message })
+    if (queryParams.token) {
+      toast({ title: 'Error acessing route', description: 'Invalid request.' })
+      return router.visit(route('auth.show').path)
     }
-  }, [notification])
+  }, [])
 
   return (
     <>
       <HeadOG
-        title="Sign in"
-        description="Sign in to social adonis."
-        url={route('auth.show').path}
+        title="Change password"
+        description="Update the password of your social adonis account."
+        url={route('auth.update').path}
       />
       <div className="container gap-10">
         <AdonisLogo />
         <form className="flex flex-col items-center gap-4" onSubmit={handleSubmit}>
           <Card className="w-full lg:mx-auto lg:max-w-sm">
             <CardHeader>
-              <CardTitle className="text-xl">Sign in</CardTitle>
-              <CardDescription>Enter your account authentication credentials</CardDescription>
+              <CardTitle className="text-xl">Change password</CardTitle>
+              <CardDescription>Update your account authentication credentials</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid gap-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="m@example.com"
-                    value={data.email}
-                    onChange={(e) => setData('email', e.target.value)}
-                    required
-                  />
-                </div>
                 <div className="grid gap-2">
                   <Label htmlFor="password">Password</Label>
                   <Input
@@ -75,19 +68,20 @@ export default function SignIn({ notification }: InferPageProps<AuthController, 
                     RightSlot
                   />
                 </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="password">Confirm password</Label>
+                  <Input
+                    id="password-confirmation"
+                    type="password"
+                    value={data.passwordConfirmation}
+                    onChange={(e) => setData('passwordConfirmation', e.target.value)}
+                    RightSlot
+                  />
+                </div>
                 <Button type="submit" className="w-full" disabled={processing}>
-                  Login
+                  Recover
                 </Button>
               </div>
-              <div className="mt-4 text-center text-sm">
-                Don't yet have an account?{' '}
-                <Link href={route('auth.store').path} className="underline">
-                  Sign up
-                </Link>
-              </div>
-              <Link href={route('auth.reset').path} className="mt-4 text-center text-sm underline">
-                Forgotten password?
-              </Link>
             </CardContent>
           </Card>
         </form>
