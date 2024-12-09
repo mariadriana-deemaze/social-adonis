@@ -45,43 +45,21 @@ export default class AuthService {
     }
   }
 
-  async reset(user: User) {
+  async reset(user: User): Promise<void> {
     const expiresAt = DateTime.now().plus({ minutes: 10 })
-    const genToken = generateNewToken(expiresAt)
-
-    // NOTE: For some reason, on the second update, the date on the expires_at field would be incorrect - would be as the update_at.
-    /*  const token = await UserToken.updateOrCreate({
-       type: UserTokenType.RESET_ACCESS,
-       userId: user.id,
-     },
-       {
-         type: UserTokenType.RESET_ACCESS,
-         userId: user.id,
-         token: '123', // Generate here
-         expiresAt: DateTime.now().plus({ minutes: 10 })
-       }) */
-
-    // Doing more explicitly and..
-    const record = await UserToken.findBy({
-      type: UserTokenType.RESET_ACCESS,
-      userId: user.id,
-    })
-
-    if (record) {
-      Object.assign(record, {
-        token: genToken,
-        expiresAt,
-      })
-      record.enableForceUpdate() // ..forcing the update, seem to do the trick. Dunno why yet.
-      await record.save()
-    } else {
-      UserToken.create({
+    const token = generateNewToken(expiresAt)
+    await UserToken.updateOrCreate(
+      {
         type: UserTokenType.RESET_ACCESS,
         userId: user.id,
-        token: genToken,
+      },
+      {
+        type: UserTokenType.RESET_ACCESS,
+        userId: user.id,
+        token,
         expiresAt,
-      })
-    }
+      }
+    )
   }
 
   async update(
@@ -92,7 +70,7 @@ export default class AuthService {
       password: string
       passwordConfirmation: string
     }
-  ) {
+  ): Promise<void> {
     const record = await UserToken.findBy('token', token)
 
     if (!record) {

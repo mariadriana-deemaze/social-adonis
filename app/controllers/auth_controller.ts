@@ -17,7 +17,7 @@ export default class AuthController {
     return await this.authService.show(ctx)
   }
 
-  async update({ request, session, response }: HttpContext) {
+  async update({ request, session, response }: HttpContext): Promise<void> {
     const token: string | null = request.qs().token
     const payload = request.body()
 
@@ -37,7 +37,7 @@ export default class AuthController {
     }
   }
 
-  async reset({ request, response, session }: HttpContext) {
+  async reset({ request, response, session }: HttpContext): Promise<void> {
     const { email } = request.only(['email'])
 
     const user = await User.findBy('email', email)
