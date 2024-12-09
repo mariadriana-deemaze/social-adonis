@@ -20,6 +20,18 @@ export const createAuthValidator = vine.compile(
   })
 )
 
+/**
+ * Validates the account creation action payload
+ */
+export const updateAuthValidator = vine.compile(
+  vine.object({
+    password: vine.string().minLength(8).maxLength(32).confirmed({
+      confirmationField: 'passwordConfirmation',
+    }),
+    passwordConfirmation: vine.string().minLength(8).maxLength(32),
+  })
+)
+
 createAuthValidator.messagesProvider = new SimpleMessagesProvider({
   required: 'The {{ field }} field is required',
   string: 'The value of {{ field }} field must be a string',
