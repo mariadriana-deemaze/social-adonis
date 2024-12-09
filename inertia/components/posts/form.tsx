@@ -13,6 +13,7 @@ import { UserResponse } from '#interfaces/user'
 import HighlightedInput from '@/components/generic/highlighted_input'
 import { UserAvatar } from '@/components/generic/user_avatar'
 import { REGEX, replaceLast } from '#utils/index'
+import axios from 'axios'
 
 const MAX_FILES = 3
 
@@ -52,7 +53,7 @@ export default function Form({
   const method = post ? 'patch' : 'post'
 
   async function handleFetch(searchTerm: string) {
-    const request = await fetch(
+    const request = await axios.get(
       route('users.index', {
         qs: {
           search: searchTerm,
@@ -60,9 +61,8 @@ export default function Form({
       }).path
     )
 
-    if (request.ok) {
-      const json = await request.json()
-      return json.data
+    if (request.status === 200) {
+      return request.data.data
     }
 
     return []

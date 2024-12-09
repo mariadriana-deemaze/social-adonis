@@ -17,6 +17,7 @@ import { BadgeInfo, BellDot, CheckCheck, Clock, Loader2 } from 'lucide-react'
 import { NotificationType } from '#enums/notification'
 import { PostReactionType } from '#enums/post'
 import { formatDistanceToNow } from 'date-fns'
+import axios from 'axios'
 
 export default function NotificationsDropdown() {
   const [notificationsLoadState, setNotificationsLoadState] = useState<
@@ -31,9 +32,9 @@ export default function NotificationsDropdown() {
   ]
 
   async function getUserNotifications() {
-    const request = await fetch(route('notifications.index').path, { method: 'GET' })
-    if (request.ok) {
-      const data: NotificationResponse[] = await request.json()
+    const request = await axios.get(route('notifications.index').path)
+    if (request.status === 200) {
+      const data: NotificationResponse[] = request.data
       if (data.length !== notifications.length) {
         setNotifications(data)
         setNotificationsLoadState('loaded')
@@ -44,8 +45,8 @@ export default function NotificationsDropdown() {
   }
 
   async function markAllAsRead() {
-    const request = await fetch(route('notifications.update').path, { method: 'POST' })
-    if (request.ok) {
+    const request = await axios.post(route('notifications.update').path)
+    if (request.status === 200) {
       setNotifications([])
       setMarkedAsRead(true)
     }
