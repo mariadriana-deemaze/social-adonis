@@ -77,7 +77,7 @@ function UserCard({
           </div>
         </div>
 
-        <div className="flex flex-col w-full pt-2 pb-0 lg:p-3 justify-center">
+        <div className="flex flex-col w-full gap-3 pt-2 pb-0 lg:p-3 justify-center">
           {!!currentUser && currentUser.id !== user.id && (
             <Button
               className="follow-action"
@@ -92,28 +92,24 @@ function UserCard({
           )}
 
           {/* // TODO: Refactor UI */}
-          <div className="flex w-full p-1 justify-center">
-            <div className="flex flex-row gap-2 items-center">
+          <div className="flex flex-col gap-1">
+            <div className="flex flex-row gap-2 items-center justify-center">
               <UserCheck className="w-4 text-gray-400" />
               <p className="user-profile-card-total-followers text-xs lg:text-sm">
                 Followers
                 <span className="text-muted-foreground"> {user.followersCount}</span>
               </p>
             </div>
-          </div>
 
-          <div className="flex w-full p-1 justify-center">
-            <div className="flex flex-row gap-2 items-center">
+            <div className="flex flex-row gap-2 items-center justify-center">
               <FilePen className="w-4 text-gray-400" />
               <p className="user-profile-card-total-posts text-xs lg:text-sm">
                 Total posts
                 <span className="text-muted-foreground"> {totalPosts}</span>
               </p>
             </div>
-          </div>
 
-          <div className="flex w-full p-1 justify-center">
-            <div className="flex flex-row gap-2 items-center">
+            <div className="flex flex-row gap-2 items-center justify-center">
               <CalendarHeart className="w-4 text-gray-400" />
               <p className="text-xs lg:text-sm">
                 Joined on
@@ -174,7 +170,7 @@ export default function Show({ user, posts, profile }: InferPageProps<FeedContro
           }).path
         }
       />
-      <div className="relative min-h-[280px] lg:min-h-max w-full mb-16 lg:mb-0">
+      <div className="relative min-h-[340px] lg:min-h-max w-full mb-16 lg:mb-0">
         <div className="relative bg-slate-300 border border-gray-200 h-52 w-full rounded-2xl mb-4 shadow-inner">
           <div className="w-full h-full rounded-2xl overflow-hidden">
             <img
@@ -186,7 +182,7 @@ export default function Show({ user, posts, profile }: InferPageProps<FeedContro
               src={profile.attachments.cover?.link}
             />
           </div>
-          <div className="absolute block lg:hidden -bottom-28 w-full">
+          <div className="absolute block lg:hidden -bottom-44 w-full">
             <UserCard
               currentUser={user}
               user={userData}
