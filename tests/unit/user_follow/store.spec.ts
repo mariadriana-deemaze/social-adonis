@@ -14,10 +14,9 @@ test.group('UserFollow/store', (group) => {
     users = await UserFactory.createMany(2)
   })
 
-  test('Should throw error', async () => {
-    await service.store(users[0].id, users[0].id)
-    // assert.rejects(relation, '')
-  }).skip()
+  test('Should throw error', async ({ assert }) => {
+    assert.rejects(async () => await service.store(users[0].id, users[0].id))
+  })
 
   test('Should return existing relation', async ({ assert }) => {
     await UserFollower.create({

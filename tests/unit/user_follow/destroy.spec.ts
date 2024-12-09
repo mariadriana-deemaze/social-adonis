@@ -20,17 +20,17 @@ test.group('UserFollow/destroy', (group) => {
     assert.isNull(relation)
   })
 
-  test('Should return null', async ({ assert }) => {
-    const relation = await service.destroy(users[0].id, users[1].id)
-    assert.isNull(relation)
-  })
-
-  test('Should return nothing/void', async ({ assert }) => {
+  test('Should return undefined', async ({ assert }) => {
     await UserFollower.create({
       userId: users[0].id,
       followerId: users[1].id,
     })
     const relation = await service.destroy(users[0].id, users[1].id)
-    assert.isEmpty(relation)
-  }).skip()
+    assert.isUndefined(relation)
+  })
+
+  test('Should return null', async ({ assert }) => {
+    const relation = await service.destroy(users[0].id, users[1].id)
+    assert.isNull(relation)
+  })
 })
