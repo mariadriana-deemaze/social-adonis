@@ -21,6 +21,7 @@ export default class UserNotificationService {
     fullname: 'Moderation team',
     email: 'info@social-adonis.com',
     verified: true,
+    followersCount: 0,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     role: AccountRole.ADMIN,

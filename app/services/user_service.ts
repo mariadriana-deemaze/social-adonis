@@ -43,6 +43,7 @@ export class UserService {
   async findOne(id: UUID): Promise<UserResponse | null> {
     const user = await User.find(id)
     if (!user) return null
+    await user.loadCount('followers')
     const resource = await this.serialize(user)
     return resource
   }
@@ -160,6 +161,7 @@ export class UserService {
       fullname: data.fullName,
       username: data.username,
       email: data.email,
+      followersCount: user.$extras['followers_count'] || 0,
       attachments,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,

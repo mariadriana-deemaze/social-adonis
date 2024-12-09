@@ -7,7 +7,7 @@ import { test } from '@japa/runner'
 const getExpectedMatches = (users: User[], searchRegExp: RegExp) =>
   users.filter((user) => searchRegExp.test(user.username) || searchRegExp.test(user.name || ''))
 
-test.group('User service search', (group) => {
+test.group('User/search', (group) => {
   let users: User[] = []
   let service: UserService = new UserService()
 

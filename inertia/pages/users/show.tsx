@@ -1,18 +1,61 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import FeedController from '#controllers/feed_controller'
 import HeadOG from '@/components/generic/head_og'
 import FeedList from '@/components/posts/feed_list'
 import { Card, CardContent } from '@/components/ui/card'
 import { InferPageProps } from '@adonisjs/inertia/types'
 import { lightFormat } from 'date-fns'
-import { BadgeCheck, CalendarHeart, FilePen } from 'lucide-react'
+import { BadgeCheck, CalendarHeart, FilePen, UserCheck } from 'lucide-react'
 import { CreatePost } from '@/components/posts/create'
 import { UserResponse } from '#interfaces/user'
 import { route } from '@izzyjs/route/client'
 import { UserAvatar } from '@/components/generic/user_avatar'
 import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
 
-function UserCard({ user, totalPosts }: { user: UserResponse; totalPosts: number }) {
+function UserCard({
+  currentUser,
+  user,
+  totalPosts,
+  follow,
+  setProfileData,
+  setFollow,
+}: {
+  currentUser: UserResponse | null
+  user: UserResponse
+  totalPosts: number
+  follow: 'following' | 'not-following' | null
+  setProfileData: React.Dispatch<React.SetStateAction<UserResponse>>
+  setFollow: React.Dispatch<React.SetStateAction<'following' | 'not-following' | null>>
+}) {
+  async function followUser() {
+    const url = route('users_follows.store', {
+      params: {
+        userId: user.id,
+      },
+    }).path
+
+    if (follow === 'following') {
+      fetch(url, {
+        method: 'delete',
+      }).then(() => {
+        setFollow('not-following')
+        setProfileData((prevState) => {
+          return { ...prevState, followersCount: +prevState.followersCount - 1 }
+        })
+      })
+    } else {
+      fetch(url, {
+        method: 'post',
+      }).then(() => {
+        setFollow('following')
+        setProfileData((prevState) => {
+          return { ...prevState, followersCount: +prevState.followersCount + 1 }
+        })
+      })
+    }
+  }
+
   return (
     <Card className="user-profile-card sticky top-20 flex flex-row w-full align-middle rounded-b-sm rounded-t-none lg:rounded-sm">
       <CardContent className="relative w-full flex flex-col text-center p-3 lg:p-1 pt-2 divide-y divide-dashed">
@@ -34,19 +77,39 @@ function UserCard({ user, totalPosts }: { user: UserResponse; totalPosts: number
           </div>
         </div>
 
-        <div className="flex flex-col w-full pt-2 pb-0 lg:p-3 justify-center">
-          <div className="flex w-full p-1 justify-center">
-            <div className="flex flex-row gap-2 items-center">
+        <div className="flex flex-col w-full gap-3 pt-2 pb-0 lg:p-3 justify-center">
+          {!!currentUser && currentUser.id !== user.id && (
+            <Button
+              className="follow-action"
+              size="sm"
+              type="button"
+              onClick={followUser}
+              disabled={follow === null}
+            >
+              {follow === 'following' && 'Unfollow'}
+              {(follow === 'not-following' || follow === null) && 'Follow'}
+            </Button>
+          )}
+
+          {/* // TODO: Refactor UI */}
+          <div className="flex flex-col gap-1">
+            <div className="flex flex-row gap-2 items-center justify-center">
+              <UserCheck className="w-4 text-gray-400" />
+              <p className="user-profile-card-total-followers text-xs lg:text-sm">
+                Followers
+                <span className="text-muted-foreground"> {user.followersCount}</span>
+              </p>
+            </div>
+
+            <div className="flex flex-row gap-2 items-center justify-center">
               <FilePen className="w-4 text-gray-400" />
               <p className="user-profile-card-total-posts text-xs lg:text-sm">
                 Total posts
                 <span className="text-muted-foreground"> {totalPosts}</span>
               </p>
             </div>
-          </div>
 
-          <div className="flex w-full p-1 justify-center">
-            <div className="flex flex-row gap-2 items-center">
+            <div className="flex flex-row gap-2 items-center justify-center">
               <CalendarHeart className="w-4 text-gray-400" />
               <p className="text-xs lg:text-sm">
                 Joined on
@@ -64,8 +127,35 @@ function UserCard({ user, totalPosts }: { user: UserResponse; totalPosts: number
 }
 
 export default function Show({ user, posts, profile }: InferPageProps<FeedController, 'show'>) {
-  const [coverLoadState, setCoverLoadState] = useState<'loading' | 'loaded'>('loading')
   if (!posts || !profile) return <>Loading..</>
+  const [userData, setUserData] = useState<UserResponse>(profile)
+  const [follow, setFollow] = useState<'following' | 'not-following' | null>(null)
+  const [coverLoadState, setCoverLoadState] = useState<'loading' | 'loaded'>('loading')
+
+  async function followStatus() {
+    if (!profile) return
+    const request = await fetch(
+      route('users_follows.show', {
+        params: {
+          userId: profile.id,
+        },
+      }).path
+    )
+
+    if (request.ok) {
+      const json: { following: boolean } = await request.json()
+      if (json.following) {
+        setFollow('following')
+      } else {
+        setFollow('not-following')
+      }
+    }
+  }
+
+  useEffect(() => {
+    followStatus()
+  }, [])
+
   return (
     <>
       <HeadOG
@@ -80,7 +170,7 @@ export default function Show({ user, posts, profile }: InferPageProps<FeedContro
           }).path
         }
       />
-      <div className="relative min-h-[280px] lg:min-h-max w-full mb-16 lg:mb-0">
+      <div className="relative min-h-[340px] lg:min-h-max w-full mb-16 lg:mb-0">
         <div className="relative bg-slate-300 border border-gray-200 h-52 w-full rounded-2xl mb-4 shadow-inner">
           <div className="w-full h-full rounded-2xl overflow-hidden">
             <img
@@ -92,14 +182,28 @@ export default function Show({ user, posts, profile }: InferPageProps<FeedContro
               src={profile.attachments.cover?.link}
             />
           </div>
-          <div className="absolute block lg:hidden -bottom-28 w-full">
-            <UserCard user={profile} totalPosts={posts.meta.total} />
+          <div className="absolute block lg:hidden -bottom-44 w-full">
+            <UserCard
+              currentUser={user}
+              user={userData}
+              totalPosts={posts.meta.total}
+              setProfileData={setUserData}
+              follow={follow}
+              setFollow={setFollow}
+            />
           </div>
         </div>
       </div>
       <div className="relative flex flex-col lg:flex-row gap-2 w-full">
         <div className="hidden lg:block h-full w-full max-w-full lg:max-w-64">
-          <UserCard user={profile} totalPosts={posts.meta.total} />
+          <UserCard
+            currentUser={user}
+            user={userData}
+            totalPosts={posts.meta.total}
+            setProfileData={setUserData}
+            follow={follow}
+            setFollow={setFollow}
+          />
         </div>
         <div className="w-full">
           <FeedList

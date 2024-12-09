@@ -10,15 +10,16 @@
 import router from '@adonisjs/core/services/router'
 import { middleware } from '#start/kernel'
 const AuthController = () => import('#controllers/auth_controller')
-const FeedController = () => import('#controllers/feed_controller')
-const PostsController = () => import('#controllers/posts_controller')
 const UsersController = () => import('#controllers/users_controller')
-const PostReactionsController = () => import('#controllers/post_reactions_controller')
-const PostReportsController = () => import('#controllers/post_reports_controller')
+const UserFollowsController = () => import('#controllers/user_follows_controller')
 const UserNotificationsController = () => import('#controllers/user_notifications_controller')
+const PostsController = () => import('#controllers/posts_controller')
+const PostReactionsController = () => import('#controllers/post_reactions_controller')
+const PostPinsController = () => import('#controllers/post_pins_controller')
+const PostReportsController = () => import('#controllers/post_reports_controller')
+const FeedController = () => import('#controllers/feed_controller')
 const AdminAuthController = () => import('#controllers/admin_auth_controller')
 const AdminPostReportsController = () => import('#controllers/admin_post_reports_controller')
-const PostPinsController = () => import('#controllers/post_pins_controller')
 
 /**
  *
@@ -73,6 +74,12 @@ router
         router.get('/', [UsersController, 'index']).as('users.index')
         router.patch('/', [UsersController, 'update']).as('users.update')
         router.delete('/', [UsersController, 'destroy']).as('users.destroy')
+
+        router.get('follow/:userId', [UserFollowsController, 'show']).as('users_follows.show')
+        router.post('follow/:userId', [UserFollowsController, 'store']).as('users_follows.store')
+        router
+          .delete('follow/:userId', [UserFollowsController, 'destroy'])
+          .as('users_follows.destroy')
       })
       .prefix('users')
 
