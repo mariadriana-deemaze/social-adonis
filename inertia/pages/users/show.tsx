@@ -97,7 +97,7 @@ function UserCard({
               <UserCheck className="w-4 text-gray-400" />
               <p className="user-profile-card-total-followers text-xs lg:text-sm">
                 Followers
-                <span className="text-muted-foreground">{user.followersCount}</span>
+                <span className="text-muted-foreground"> {user.followersCount}</span>
               </p>
             </div>
           </div>
@@ -137,11 +137,11 @@ export default function Show({ user, posts, profile }: InferPageProps<FeedContro
   const [coverLoadState, setCoverLoadState] = useState<'loading' | 'loaded'>('loading')
 
   async function followStatus() {
-    if (!user) return
+    if (!profile) return
     const request = await fetch(
       route('users_follows.show', {
         params: {
-          userId: user.id,
+          userId: profile.id,
         },
       }).path
     )
