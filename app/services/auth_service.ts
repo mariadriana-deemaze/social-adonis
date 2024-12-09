@@ -9,6 +9,7 @@ import { DateTime } from 'luxon'
 import { isAfter } from 'date-fns'
 import db from '@adonisjs/lucid/services/db'
 import type { HttpContext } from '@adonisjs/core/http'
+import emitter from '@adonisjs/core/services/emitter'
 
 export default class AuthService {
   async create(ctx: HttpContext) {
@@ -60,6 +61,7 @@ export default class AuthService {
         expiresAt,
       }
     )
+    emitter.emit('auth:reset', { user, token })
   }
 
   async update(

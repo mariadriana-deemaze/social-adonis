@@ -3,6 +3,7 @@ import { UserTokenType } from '#enums/user'
 import User from '#models/user'
 import UserToken, { generateNewToken } from '#models/user_token'
 import AuthService from '#services/auth_service'
+import emitter from '@adonisjs/core/services/emitter'
 import testUtils from '@adonisjs/core/services/test_utils'
 import { test } from '@japa/runner'
 import { isAfter } from 'date-fns'
@@ -17,7 +18,12 @@ test.group('Auth/reset', (group) => {
     user = await UserFactory.create()
   })
 
-  test('Successfully creates a reset access token of existing user', async ({ assert }) => {
+  test('Successfully creates a reset access token of existing user', async ({
+    assert,
+    cleanup,
+  }) => {
+    const events = emitter.fake()
+
     await service.reset(user)
     const record = await UserToken.findBy({
       type: UserTokenType.RESET_ACCESS,
@@ -27,9 +33,14 @@ test.group('Auth/reset', (group) => {
       type: UserTokenType.RESET_ACCESS,
       userId: user.id,
     })
+    events.assertEmitted('auth:reset')
+    cleanup(() => {
+      emitter.restore()
+    })
   })
 
-  test('Successfully updates existing reset access token', async ({ assert }) => {
+  test('Successfully updates existing reset access token', async ({ assert, cleanup }) => {
+    const events = emitter.fake()
     const initialExpDate = DateTime.now().plus({ minutes: 10 })
     const token = generateNewToken(initialExpDate)
     await UserToken.create({
@@ -48,5 +59,9 @@ test.group('Auth/reset', (group) => {
       userId: user.id,
     })
     assert.isTrue(isAfter(record.expiresAt.toJSDate(), initialExpDate.toJSDate()))
+    events.assertEmitted('auth:reset')
+    cleanup(() => {
+      emitter.restore()
+    })
   })
 })
