@@ -12,6 +12,7 @@ import { route } from '@izzyjs/route/client'
 import { UserAvatar } from '@/components/generic/user_avatar'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
+import axios from 'axios'
 
 function UserCard({
   currentUser,
@@ -36,18 +37,14 @@ function UserCard({
     }).path
 
     if (follow === 'following') {
-      fetch(url, {
-        method: 'delete',
-      }).then(() => {
+      axios.delete(url).then(() => {
         setFollow('not-following')
         setProfileData((prevState) => {
           return { ...prevState, followersCount: +prevState.followersCount - 1 }
         })
       })
     } else {
-      fetch(url, {
-        method: 'post',
-      }).then(() => {
+      axios.post(url).then(() => {
         setFollow('following')
         setProfileData((prevState) => {
           return { ...prevState, followersCount: +prevState.followersCount + 1 }
@@ -134,7 +131,7 @@ export default function Show({ user, posts, profile }: InferPageProps<FeedContro
 
   async function followStatus() {
     if (!profile) return
-    const request = await fetch(
+    const request = await axios.get(
       route('users_follows.show', {
         params: {
           userId: profile.id,
@@ -142,8 +139,8 @@ export default function Show({ user, posts, profile }: InferPageProps<FeedContro
       }).path
     )
 
-    if (request.ok) {
-      const json: { following: boolean } = await request.json()
+    if (request.status === 200) {
+      const json: { following: boolean } = await request.data
       if (json.following) {
         setFollow('following')
       } else {

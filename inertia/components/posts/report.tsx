@@ -23,6 +23,7 @@ import {
 import { PostReportReason } from '#enums/post'
 import { Send } from 'lucide-react'
 import { route } from '@izzyjs/route/client'
+import axios from 'axios'
 
 export function ReportPost({ post, trigger }: { post: PostResponse; trigger: ReactNode }) {
   const [open, setOpen] = useState(false)
@@ -44,16 +45,9 @@ export function ReportPost({ post, trigger }: { post: PostResponse; trigger: Rea
   const { toast } = useToast()
 
   async function getUserPostReport() {
-    fetch(route('posts_reports.show', { params: { id: post.id } }).path, {
-      method: 'get',
-      headers: {
-        'content-type': 'application/json',
-      },
-    })
-      .then((response) => {
-        return response.json()
-      })
-      .then((json) => {
+    axios
+      .get(route('posts_reports.show', { params: { id: post.id } }).path)
+      .then(({ data: json }) => {
         if (json) {
           setHasReported({
             id: json.id,
@@ -76,12 +70,9 @@ export function ReportPost({ post, trigger }: { post: PostResponse; trigger: Rea
 
     e.preventDefault()
     setIsSubmitting(true)
-    fetch(url, {
+    axios(url, {
       method,
-      headers: {
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify(data),
+      data,
     })
       .then(() => {
         setSubmitted(true)

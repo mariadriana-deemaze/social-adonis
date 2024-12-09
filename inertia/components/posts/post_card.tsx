@@ -34,6 +34,7 @@ import { UserResponse } from '#interfaces/user'
 import { route } from '@izzyjs/route/client'
 import { useToast } from '@/components/ui/use_toast'
 import { cn } from '@/lib/utils'
+import axios from 'axios'
 
 type PostActions = 'update' | 'delete' | 'report' | 'pin'
 
@@ -246,17 +247,14 @@ function PostReaction({
 
     const isDelete = react === reaction.type
 
-    const request = await fetch(
+    const request = await axios(
       route('posts_reactions.store', { params: { id: post?.id! } }).path,
       {
         method: isDelete ? 'delete' : 'post',
-        headers: {
-          'content-type': 'application/json',
-        },
         ...(!isDelete && {
-          body: JSON.stringify({
+          data: {
             reaction: react,
-          }),
+          },
         }),
       }
     )
@@ -358,7 +356,7 @@ function PostActions({
   const { toast } = useToast()
 
   async function updatePin() {
-    const request = await fetch(
+    const request = await axios(
       route('posts_pins.update', {
         params: {
           id: post.id,
@@ -366,19 +364,16 @@ function PostActions({
       }).path,
       {
         method: 'post',
-        headers: {
-          'content-type': 'application/json',
-        },
       }
     )
 
-    if (request.ok) {
-      const { pinned } = await request.json()
+    if (request.status === 200) {
+      const { pinned } = await request.data
       setPostState((prevState) => {
         return { ...prevState, pinned }
       })
     } else {
-      const { message } = await request.json()
+      const { message } = await request.data
       toast({ title: 'Unable to pin post', description: message })
     }
   }
