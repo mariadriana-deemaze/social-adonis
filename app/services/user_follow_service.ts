@@ -14,8 +14,8 @@ export default class UserFollowService {
 
   async show(currentUserId: UUID, followerUserId: UUID): Promise<UserFollower | null> {
     const [relation] = await UserFollower.query()
-      .where('user_id', followerUserId)
-      .andWhere('follower_id', currentUserId)
+      .where('user_id', currentUserId)
+      .andWhere('follower_id', followerUserId)
       .limit(1)
     return relation
   }

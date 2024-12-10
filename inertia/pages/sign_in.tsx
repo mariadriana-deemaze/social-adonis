@@ -8,8 +8,12 @@ import { useToast } from '@/components/ui/use_toast'
 import AdonisLogo from '@/components/svg/logo'
 import { route } from '@izzyjs/route/client'
 import HeadOG from '@/components/generic/head_og'
+import { InferPageProps, SharedProps } from '@adonisjs/inertia/types'
+import AuthController from '#controllers/auth_controller'
 
-export default function SignIn() {
+export default function SignIn({
+  notification,
+}: InferPageProps<AuthController, 'show'> & SharedProps) {
   const { toast } = useToast()
 
   const { data, setData, post, processing, errors } = useForm({
@@ -27,6 +31,12 @@ export default function SignIn() {
       toast({ title: 'Error signing in.', description: errors.email })
     }
   }, [errors])
+
+  useEffect(() => {
+    if (Object.entries(notification).length) {
+      toast({ title: notification.message })
+    }
+  }, [notification])
 
   return (
     <>
@@ -70,11 +80,21 @@ export default function SignIn() {
                   Login
                 </Button>
               </div>
-              <div className="mt-4 text-center text-sm">
-                Don't yet have an account?{' '}
-                <Link href={route('auth.store').path} className="underline">
-                  Sign up
-                </Link>
+              <div className="mt-4 text-center text-sm leading-7">
+                <p>
+                  Don't yet have an account?{' '}
+                  <Link href={route('auth.store').path} className="underline">
+                    Sign up
+                  </Link>
+                </p>
+                <p>
+                  <Link
+                    href={route('auth.reset').path}
+                    className="mt-4 text-center text-sm underline"
+                  >
+                    Forgotten password?
+                  </Link>
+                </p>
               </div>
             </CardContent>
           </Card>

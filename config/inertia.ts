@@ -25,6 +25,7 @@ const inertiaConfig = defineConfig({
     },
     queryParams: (ctx) => ctx.request.qs(),
     errors: (ctx) => ctx.session?.flashMessages.get('errors'),
+    notification: (ctx) => ctx.session?.flashMessages.get('notification') ?? {},
     domain: () => env.get('PRODUCTION_URL'),
   },
 
