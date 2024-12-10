@@ -1,6 +1,5 @@
 import Divider from '@/components/generic/divider'
 import { Button } from '@/components/ui/button'
-import { Link } from '@inertiajs/react'
 import { route } from '@izzyjs/route/client'
 import { Chrome, Github } from 'lucide-react'
 
@@ -34,7 +33,7 @@ function SocialButtons({ disabled = false }: SocialButtonsProps) {
             variant="outline"
             disabled={disabled}
           >
-            <Link
+            <a
               className="flex flex-row items-center gap-2"
               href={
                 route('auth.redirect', {
@@ -46,7 +45,7 @@ function SocialButtons({ disabled = false }: SocialButtonsProps) {
             >
               <Icon size={16} />
               {provider}
-            </Link>
+            </a>
           </Button>
         )
       })}

@@ -5,10 +5,9 @@ const allyConfig = defineConfig({
   google: services.google({
     clientId: env.get('GOOGLE_CLIENT_ID'),
     clientSecret: env.get('GOOGLE_CLIENT_SECRET'),
-    callbackUrl: '',
+    callbackUrl: 'http://localhost:3000/auth/google/callback/',
     prompt: 'select_account',
-    accessType: 'offline',
-    hostedDomain: 'adonisjs.com',
+    hostedDomain: 'http://localhost:3000',
     display: 'page',
     scopes: ['userinfo.email'],
   }),
