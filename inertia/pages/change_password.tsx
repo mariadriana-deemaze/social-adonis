@@ -15,8 +15,8 @@ export default function ResetPassword({ queryParams }: InferPageProps<AuthContro
   const { toast } = useToast()
 
   const { data, setData, post, processing, errors } = useForm({
-    password: 'user_password',
-    passwordConfirmation: 'user_password',
+    password: '',
+    passwordConfirmation: '',
   })
 
   function handleSubmit(e: React.FormEvent) {
@@ -69,7 +69,7 @@ export default function ResetPassword({ queryParams }: InferPageProps<AuthContro
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="password">Confirm password</Label>
+                  <Label htmlFor="password-confirmation">Confirm password</Label>
                   <Input
                     id="password-confirmation"
                     type="password"
@@ -78,7 +78,14 @@ export default function ResetPassword({ queryParams }: InferPageProps<AuthContro
                     RightSlot
                   />
                 </div>
-                <Button type="submit" className="w-full" disabled={processing}>
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={
+                    processing ||
+                    (data.password.length === 0 && data.passwordConfirmation.length === 0)
+                  }
+                >
                   Recover
                 </Button>
               </div>

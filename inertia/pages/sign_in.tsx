@@ -79,15 +79,22 @@ export default function SignIn({ notification }: InferPageProps<AuthController, 
                   Login
                 </Button>
               </div>
-              <div className="mt-4 text-center text-sm">
-                Don't yet have an account?{' '}
-                <Link href={route('auth.store').path} className="underline">
-                  Sign up
-                </Link>
+              <div className="mt-4 text-center text-sm leading-7">
+                <p>
+                  Don't yet have an account?{' '}
+                  <Link href={route('auth.store').path} className="underline">
+                    Sign up
+                  </Link>
+                </p>
+                <p>
+                  <Link
+                    href={route('auth.reset').path}
+                    className="mt-4 text-center text-sm underline"
+                  >
+                    Forgotten password?
+                  </Link>
+                </p>
               </div>
-              <Link href={route('auth.reset').path} className="mt-4 text-center text-sm underline">
-                Forgotten password?
-              </Link>
             </CardContent>
           </Card>
         </form>

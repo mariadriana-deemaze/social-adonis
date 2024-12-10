@@ -25,15 +25,17 @@ export default class AuthController {
       if (!token) throw Error('Invalid request')
       const data = await updateAuthValidator.validate(payload)
       await this.authService.update(token, data)
+      return response.redirect().toRoute('auth.show')
     } catch (error) {
       if (error instanceof errors.E_VALIDATION_ERROR) {
         const reducedErrors = errorsReducer(error.messages)
-        return response.badRequest(reducedErrors)
+        session.flash('errors', reducedErrors)
+      } else {
+        session.flash('errors', {
+          password: 'Error updating',
+        })
       }
-      session.flash('errors', {
-        password: error.message,
-      })
-      return response.redirect().back()
+      return response.redirect().withQs({ token }).toRoute('auth.update')
     }
   }
 

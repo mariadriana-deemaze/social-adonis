@@ -1,4 +1,5 @@
 import { createAuthValidator } from '#validators/auth'
+import hash from '@adonisjs/core/services/hash'
 import User from '#models/user'
 import Session from '#models/session'
 import { errors } from '@vinejs/vine'
@@ -87,11 +88,17 @@ export default class AuthService {
     const trx = await db.transaction()
 
     try {
-      await trx.query().from('user').where('id', record.userId).update({ password })
+      const encriptedPassword = await hash.make(password)
+      await trx
+        .query()
+        .from('users')
+        .where('id', record.userId)
+        .update({ password: encriptedPassword })
       await trx.query().from('user_tokens').where('id', record.id).delete()
       await trx.commit()
     } catch (error) {
       await trx.rollback()
+      throw Error(error)
     }
   }
 
