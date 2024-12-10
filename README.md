@@ -23,10 +23,20 @@ $ yarn dev
 ```
 
 ### Implemented main features
-
-- Basic authentication;
-- User feed;
-- User posting CRUD;
+- Front office:
+  - Authentication:
+    - Session based;
+    - OAuth with Google and Github;
+  - Global feed;
+  - User actions: 
+    - Content creation;
+    - Content reporting;
+    - Mentions;
+    - Follows;
+    - Account deletion;
+  - User platform notifications;
+- Admin area:
+  - User reports and action;
 
 ### Future roadmap
 
