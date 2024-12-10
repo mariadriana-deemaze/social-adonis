@@ -15,7 +15,7 @@ export default class UserFollowsController {
   async show(ctx: HttpContext) {
     const currentUserId = ctx.auth.user?.id!
     const followerId = ctx.params.userId
-    const relation = await this.service.show(currentUserId, followerId)
+    const relation = await this.service.show(followerId, currentUserId)
     return ctx.response.ok({ following: !!relation })
   }
 

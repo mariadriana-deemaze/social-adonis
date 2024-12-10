@@ -14,17 +14,23 @@ test.group('UserFollow/show', (group) => {
     users = await UserFactory.createMany(2)
   })
 
-  test('Should return null', async ({ assert }) => {
-    const relation = await service.show(users[0].id, users[1].id)
+  test('Should return undefined', async ({ assert }) => {
+    const [user, follower] = users
+    const perform = service.show(user.id, follower.id)
+    const relation = await perform
+    assert.doesNotThrow(async () => await perform)
     assert.isUndefined(relation)
   })
 
   test('Should return existing relation', async ({ assert }) => {
+    const [user, follower] = users
     await UserFollower.create({
-      userId: users[0].id,
-      followerId: users[1].id,
+      userId: user.id,
+      followerId: follower.id,
     })
-    const relation = await service.show(users[0].id, users[1].id)
+    const perform = service.show(user.id, follower.id)
+    const relation = await perform
+    assert.doesNotThrow(async () => await perform)
     assert.isDefined(relation)
   })
 })

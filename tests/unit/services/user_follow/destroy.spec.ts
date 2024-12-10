@@ -15,22 +15,30 @@ test.group('UserFollow/destroy', (group) => {
     users = await UserFactory.createMany(2)
   })
 
-  test('Should return null', async ({ assert }) => {
-    const relation = await service.destroy(users[0].id, randomUUID())
-    assert.isNull(relation)
-  })
-
-  test('Should return undefined', async ({ assert }) => {
+  test('Successfully returns undefined after perform', async ({ assert }) => {
     await UserFollower.create({
       userId: users[0].id,
       followerId: users[1].id,
     })
-    const relation = await service.destroy(users[0].id, users[1].id)
+    const perform = service.destroy(users[0].id, users[1].id)
+    const relation = await perform
+    assert.doesNotReject(async () => await perform)
     assert.isUndefined(relation)
   })
 
-  test('Should return null', async ({ assert }) => {
-    const relation = await service.destroy(users[0].id, users[1].id)
+  test('Should return null if attempted to destroy non-existant relation', async ({ assert }) => {
+    const perform = service.destroy(users[0].id, users[1].id)
+    const relation = await perform
+    assert.doesNotReject(async () => await perform)
+    assert.isNull(relation)
+  })
+
+  test('Should return null if attempted to destroy non-existant relation with non-existant user', async ({
+    assert,
+  }) => {
+    const perform = service.destroy(users[0].id, randomUUID())
+    const relation = await perform
+    assert.doesNotReject(async () => await perform)
     assert.isNull(relation)
   })
 })
