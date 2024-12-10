@@ -12,9 +12,9 @@ export default class UserFollowService {
     return result.count
   }
 
-  async show(currentUserId: UUID, followerUserId: UUID): Promise<UserFollower | null> {
+  async show(targetId: UUID, followerUserId: UUID): Promise<UserFollower | null> {
     const [relation] = await UserFollower.query()
-      .where('user_id', currentUserId)
+      .where('user_id', targetId)
       .andWhere('follower_id', followerUserId)
       .limit(1)
     return relation
@@ -31,8 +31,8 @@ export default class UserFollowService {
     return relation
   }
 
-  async destroy(currentUserId: UUID, followerUserId: UUID) {
-    const relation = await this.show(currentUserId, followerUserId)
+  async destroy(targetId: UUID, followerUserId: UUID) {
+    const relation = await this.show(targetId, followerUserId)
     if (!relation) return null
     await relation.delete()
   }

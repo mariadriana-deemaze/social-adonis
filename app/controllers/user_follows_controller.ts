@@ -35,8 +35,8 @@ export default class UserFollowsController {
     const currentUserId = ctx.auth.user?.id!
     const followerId = ctx.params.userId
     try {
-      await this.service.destroy(currentUserId, followerId)
-      return ctx.response.status(200)
+      await this.service.destroy(followerId, currentUserId)
+      return ctx.response.noContent()
     } catch (error) {
       logger.error(error)
       return ctx.session.flash('errors', { message: 'Error occurred.' })
