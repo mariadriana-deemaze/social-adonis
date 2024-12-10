@@ -3,6 +3,6 @@ import AuthResetNotification from '#notifications/auth_reset_notification'
 
 export default class TriggerAuthResetNotification {
   async handle({ user, token }: { user: User; token: string }) {
-    user.notify(new AuthResetNotification(user, token))
+    user.notify(new AuthResetNotification(token))
   }
 }
