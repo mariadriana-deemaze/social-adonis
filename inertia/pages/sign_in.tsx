@@ -8,11 +8,12 @@ import { useToast } from '@/components/ui/use_toast'
 import AdonisLogo from '@/components/svg/logo'
 import { route } from '@izzyjs/route/client'
 import HeadOG from '@/components/generic/head_og'
-import { InferPageProps } from '@adonisjs/inertia/types'
+import { InferPageProps, SharedProps } from '@adonisjs/inertia/types'
 import AuthController from '#controllers/auth_controller'
 
-// @ts-ignore
-export default function SignIn({ notification }: InferPageProps<AuthController, 'show'>) {
+export default function SignIn({
+  notification,
+}: InferPageProps<AuthController, 'show'> & SharedProps) {
   const { toast } = useToast()
 
   const { data, setData, post, processing, errors } = useForm({
