@@ -43,6 +43,20 @@ export function sanitizePostContent(content: string): string {
   return content.replace(/[&<>]/g, (m) => map[m])
 }
 
+/**
+ * Generates a random password. Mainly userd for the OAuth account generation.
+ */
+export function randomPasswordGenerator(): string {
+  var chars = '0123456789abcdefghijklmnopqrstuvwxyz!@#$%^&*()ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+  var passwordLength = 12
+  var password = ''
+  for (var i = 0; i <= passwordLength; i++) {
+    var randomNumber = Math.floor(Math.random() * chars.length)
+    password += chars.substring(randomNumber, randomNumber + 1)
+  }
+  return password
+}
+
 export const REGEX = {
   ALPHA_STRING: /^[A-z]+$/,
   ALPHANUMERIC_STRING: /^[A-z0-9]+$/,
