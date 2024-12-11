@@ -12,10 +12,12 @@ const SOCIALS = [
   {
     provider: 'Google',
     Icon: Chrome,
+    enabled: false,
   },
   {
     provider: 'GitHub',
     Icon: Github,
+    enabled: true,
   },
 ] as const
 
@@ -24,7 +26,7 @@ function SocialButtons({ disabled = false }: SocialButtonsProps) {
   return (
     <>
       <Divider text="with socials" color="gray-500" />
-      {SOCIALS.map(({ provider, Icon }) => {
+      {SOCIALS.map(({ provider, Icon, enabled }) => {
         const providerLC = provider.toLowerCase()
         return (
           <Button
@@ -32,17 +34,19 @@ function SocialButtons({ disabled = false }: SocialButtonsProps) {
             type="button"
             className="w-full"
             variant="outline"
-            disabled={processing === provider || disabled}
+            disabled={!enabled || processing === provider || disabled}
             loading={processing === provider}
           >
             <a
               className="flex flex-row items-center gap-2"
               href={
-                route('auth.redirect', {
-                  params: {
-                    provider: providerLC,
-                  },
-                }).path
+                enabled
+                  ? route('auth.redirect', {
+                      params: {
+                        provider: providerLC,
+                      },
+                    }).path
+                  : '#'
               }
               onClick={() => setProcessing(provider)}
             >
