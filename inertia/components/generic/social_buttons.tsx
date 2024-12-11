@@ -2,6 +2,7 @@ import Divider from '@/components/generic/divider'
 import { Button } from '@/components/ui/button'
 import { route } from '@izzyjs/route/client'
 import { Chrome, Github } from 'lucide-react'
+import { useState } from 'react'
 
 interface SocialButtonsProps {
   disabled?: boolean
@@ -16,13 +17,13 @@ const SOCIALS = [
     provider: 'GitHub',
     Icon: Github,
   },
-]
+] as const
 
 function SocialButtons({ disabled = false }: SocialButtonsProps) {
+  const [processing, setProcessing] = useState<'Google' | 'GitHub' | null>(null)
   return (
     <>
       <Divider text="with socials" color="gray-500" />
-
       {SOCIALS.map(({ provider, Icon }) => {
         const providerLC = provider.toLowerCase()
         return (
@@ -31,7 +32,8 @@ function SocialButtons({ disabled = false }: SocialButtonsProps) {
             type="button"
             className="w-full"
             variant="outline"
-            disabled={disabled}
+            disabled={processing === provider || disabled}
+            loading={processing === provider}
           >
             <a
               className="flex flex-row items-center gap-2"
@@ -42,6 +44,7 @@ function SocialButtons({ disabled = false }: SocialButtonsProps) {
                   },
                 }).path
               }
+              onClick={() => setProcessing(provider)}
             >
               <Icon size={16} />
               {provider}
