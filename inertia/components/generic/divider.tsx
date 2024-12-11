@@ -1,8 +1,9 @@
 import { cn } from '@/lib/utils'
+import { TWColor } from '@/types/utils'
 
 interface DividerProps {
   text: string
-  color?: string // TW-color - check if there's a way to autosuggest
+  color?: TWColor
 }
 
 function Divider({ text, color = 'gray-500' }: DividerProps) {
