@@ -10,7 +10,8 @@ const allyConfig = defineConfig({
         ? 'http://localhost:3000/'
         : env.get('PRODUCTION_URL')) + 'auth/google/callback/',
     prompt: 'select_account',
-    hostedDomain: 'http://localhost:3000',
+    hostedDomain:
+      env.get('NODE_ENV') === 'development' ? 'http://localhost:3000/' : env.get('PRODUCTION_URL'),
     display: 'page',
     scopes: ['userinfo.email'],
   }),
