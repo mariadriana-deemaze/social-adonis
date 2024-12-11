@@ -13,7 +13,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     <>
       <link rel="icon" type="image/svg+xml" href={favicon} />
       <UserNavBar user={user} />
-      <div className="container flex justify-start pt-20">{children}</div>
+      <div className="container mt-20 flex justify-start">{children}</div>
       <Toaster />
     </>
   )

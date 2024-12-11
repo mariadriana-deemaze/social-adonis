@@ -108,10 +108,7 @@ export default class AuthService {
     return response.redirect().toPath('/')
   }
 
-  private async authenticate(
-    { auth, session, request, response }: HttpContext,
-    user: User
-  ): Promise<void> {
+  async authenticate({ auth, session, request, response }: HttpContext, user: User): Promise<void> {
     await auth.use('web').login(user)
 
     await Session.create({

@@ -9,7 +9,9 @@
 
 import router from '@adonisjs/core/services/router'
 import { middleware } from '#start/kernel'
+
 const AuthController = () => import('#controllers/auth_controller')
+const OAuthController = () => import('#controllers/o_auth_controller')
 const UsersController = () => import('#controllers/users_controller')
 const UserFollowsController = () => import('#controllers/user_follows_controller')
 const UserNotificationsController = () => import('#controllers/user_notifications_controller')
@@ -53,6 +55,14 @@ router
     router.on('reset-password').renderInertia('reset_password')
     router.post('change-password', [AuthController, 'update']).as('auth.update')
     router.on('change-password').renderInertia('change_password')
+    router
+      .get('/:provider/redirect', [OAuthController, 'redirect'])
+      .where('provider', /github|google/)
+      .as('auth.redirect')
+    router
+      .get('/:provider/callback', [OAuthController, 'callback'])
+      .where('provider', /github|google/)
+      .as('auth.callback')
   })
   .prefix('auth')
   .use(middleware.guest())

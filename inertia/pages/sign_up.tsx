@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label'
 import { useToast } from '@/components/ui/use_toast'
 import AdonisLogo from '@/components/svg/logo'
 import { route } from '@izzyjs/route/client'
+import SocialButtons from '@/components/generic/social_buttons'
 
 export default function SignUp() {
   const { toast } = useToast()
@@ -94,6 +95,8 @@ export default function SignUp() {
                 <Button type="submit" className="w-full" disabled={processing}>
                   Create an account
                 </Button>
+
+                <SocialButtons disabled={processing} />
               </div>
               <div className="mt-4 text-center text-sm">
                 Already have an account?{' '}

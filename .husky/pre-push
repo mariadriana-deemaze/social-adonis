@@ -1,22 +1,7 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
+echo '🏗️👷 Styling, formatting and typechecking your project before committing'
 
-echo '🏗️👷 Styling, testing and building your project before committing'
-
-yarn format ||
+yarn clean ||
 (
-    echo '😤🏀👋😤 Prettier Check Failed. Run yarn format, add changes and try to commit again.';
-    false;
-)
-
-yarn lint ||
-(
-    echo '😤🏀👋😤 ESLint Check Failed. Make the required changes listed above and try to commit again.'
-    false; 
-)
-
-yarn typecheck ||
-(
-    echo '😤🏀👋😤 TS Check Failed. Make the required changes listed above and try to commit again.'
+    echo '😤🏀👋😤 Pre-checks Failed. Make the required changes listed above and try to commit again.'
     false; 
 )

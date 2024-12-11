@@ -8,6 +8,8 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
   error?: string
 }
 
+const iconSize = 16
+
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ LeftSlot, RightSlot, className, type, error, ...props }, ref) => {
     const [controlledType, setControlledType] = React.useState(() => type)
@@ -28,8 +30,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
     const PasswordSlot = () => (
       <>
-        {type === 'password' && controlledType === 'password' && <EyeOff />}
-        {type === 'password' && controlledType === 'text' && <Eye />}
+        {type === 'password' && controlledType === 'password' && <EyeOff size={iconSize} />}
+        {type === 'password' && controlledType === 'text' && <Eye size={iconSize} />}
       </>
     )
 

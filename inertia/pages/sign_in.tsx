@@ -10,6 +10,7 @@ import { route } from '@izzyjs/route/client'
 import HeadOG from '@/components/generic/head_og'
 import { InferPageProps, SharedProps } from '@adonisjs/inertia/types'
 import AuthController from '#controllers/auth_controller'
+import SocialButtons from '@/components/generic/social_buttons'
 
 export default function SignIn({
   notification,
@@ -76,9 +77,12 @@ export default function SignIn({
                     RightSlot
                   />
                 </div>
+
                 <Button type="submit" className="w-full" disabled={processing}>
                   Login
                 </Button>
+
+                <SocialButtons disabled={processing} />
               </div>
               <div className="mt-4 text-center text-sm leading-7">
                 <p>

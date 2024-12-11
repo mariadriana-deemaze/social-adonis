@@ -50,6 +50,7 @@ export default defineConfig({
     () => import('@izzyjs/route/izzy_provider'),
     () => import('@osenco/adonisjs-notifications/notification_provider'),
     () => import('@adonisjs/mail/mail_provider'),
+    () => import('@adonisjs/ally/ally_provider'),
   ],
 
   /*

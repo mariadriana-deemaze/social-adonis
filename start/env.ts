@@ -66,4 +66,14 @@ export default await Env.create(new URL('../', import.meta.url), {
   LOCAL_SMTP_HOST: Env.schema.string(),
   LOCAL_SMTP_PORT: Env.schema.string(),
   FROM_MAIL: Env.schema.string(),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for configuring ally package
+  |----------------------------------------------------------
+  */
+  GOOGLE_CLIENT_ID: Env.schema.string(),
+  GOOGLE_CLIENT_SECRET: Env.schema.string(),
+  GITHUB_CLIENT_ID: Env.schema.string(),
+  GITHUB_CLIENT_SECRET: Env.schema.string(),
 })
