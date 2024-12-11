@@ -12,6 +12,7 @@
     "test-coverage": "c8 node ace test --check-coverage",
     "lint": "eslint .",
     "format": "prettier --write .",
+    "clean": "yarn format && yarn lint && yarn typecheck",
     "typecheck": "tsc --noEmit",
     "prepare": "husky"
   },
