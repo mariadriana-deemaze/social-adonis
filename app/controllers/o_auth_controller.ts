@@ -11,21 +11,15 @@ import hash from '@adonisjs/core/services/hash'
 export default class OAuthController {
   constructor(private readonly authService: AuthService) {}
 
-  async redirect({ ally, params, response }: HttpContext): Promise<void> {
-    const driver: GithubDriver | GoogleDriver = ally.use(params.provider)
-    if (!(driver instanceof GithubDriver) && !(driver instanceof GoogleDriver)) {
-      return response.notFound()
-    }
+  async redirect(ctx: HttpContext): Promise<void> {
+    const driver = this.getDriver(ctx)
+    if (!driver) return ctx.response.notFound()
     return driver.redirect()
   }
 
   async callback(ctx: HttpContext): Promise<void> {
-    const { ally, params, response } = ctx
-
-    const driver: GithubDriver | GoogleDriver = ally.use(params.provider)
-    if (!(driver instanceof GithubDriver) && !(driver instanceof GoogleDriver)) {
-      return response.notFound()
-    }
+    const driver = this.getDriver(ctx)
+    if (!driver) return ctx.response.notFound()
 
     const details = await driver.user()
 
@@ -42,5 +36,13 @@ export default class OAuthController {
     )
 
     await this.authService.authenticate(ctx, user)
+  }
+
+  private getDriver({ ally, params }: HttpContext): GithubDriver | GoogleDriver | null {
+    const driver: GithubDriver | GoogleDriver = ally.use(params.provider)
+    if (!(driver instanceof GithubDriver) && !(driver instanceof GoogleDriver)) {
+      return null
+    }
+    return driver
   }
 }
