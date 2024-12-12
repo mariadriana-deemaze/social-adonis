@@ -27,7 +27,7 @@ export default class TestingCommand extends BaseCommand {
 
     const command = await this.prompt.ask('Enter lucid query (e.g., User.all())')
 
-    const isForbiddenCommand = new RegExp(/delete|update/).test(command)
+    const isForbiddenCommand = new RegExp(/.delete|.update/).test(command)
 
     if (isForbiddenCommand) {
       logger.log('error', 'Forbidden command.')

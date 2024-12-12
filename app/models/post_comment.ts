@@ -27,7 +27,13 @@ export default class PostComment extends BaseModel {
   @column()
   declare replyId: UUID | null
 
-  @column()
+  @column({
+    serialize(value, _attribute, model) {
+      console.log('model ->', model)
+      // @ts-ignore
+      return model.deletedAt ? 'Comment deleted.' : value
+    },
+  })
   declare content: string
 
   @column.dateTime({ autoCreate: true })
@@ -37,5 +43,5 @@ export default class PostComment extends BaseModel {
   declare updatedAt: DateTime
 
   @column.dateTime()
-  declare deletedAt: DateTime
+  declare deletedAt: DateTime | null
 }
