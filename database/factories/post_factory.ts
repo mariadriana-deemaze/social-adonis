@@ -3,6 +3,7 @@ import Post from '#models/post'
 import { PostReactionFactory } from '#database/factories/post_reaction_factory'
 import User from '#models/user'
 import { PostReportFactory } from '#database/factories/post_report_factory'
+import { PostCommentFactory } from '#database/factories/post_comment_factory'
 
 const links = [
   'http://www.google.com',
@@ -26,4 +27,5 @@ export const PostFactory = factory
   .relation('user', () => User)
   .relation('reactions', () => PostReactionFactory)
   .relation('reports', () => PostReportFactory)
+  .relation('comments', () => PostCommentFactory)
   .build()

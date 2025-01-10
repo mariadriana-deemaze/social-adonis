@@ -1,5 +1,6 @@
 import { PostCommentFactory } from '#database/factories/post_comment_factory'
 import { PostFactory } from '#database/factories/post_factory'
+import { UserFactory } from '#database/factories/user_factory'
 import PostComment from '#models/post_comment'
 import User from '#models/user'
 import { PostCommentService } from '#services/post_comment_service'
@@ -16,15 +17,16 @@ test.group('PostComment/index', (group) => {
 
   group.each.setup(async () => {
     await testUtils.db().truncate()
-    postComments = await PostCommentFactory.createMany(20)
+    postComments = await PostCommentFactory.makeStubbedMany(20)
+    //postComments = await PostCommentFactory.apply('posted').with('user').with('post').createMany(20)
+    //postComments = await UserFactory.with('posts', 20, (post) => post.with('comments'))
   })
 
   test('Successfully returns a list of post comments from the provided params', async ({
     assert,
   }) => {
     const perPage = 5
-    const post = await PostFactory.create()
-    console.log('post ->', post)
+    const post = (await UserFactory.with('posts').create()).posts[0]
     const query = await service.index(post.id, { currentPage: 1, limit: perPage })
     assert.properties(query, ['data', 'meta'])
     assert.containsSubset(query, {
@@ -33,6 +35,7 @@ test.group('PostComment/index', (group) => {
         perPage: perPage,
       },
     })
+    console.log('query ->', query)
     assert.equal(query.data.length, perPage)
   })
 

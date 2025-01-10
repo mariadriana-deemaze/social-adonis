@@ -5,6 +5,7 @@ import { PostCommentResponse } from '#interfaces/post_comment'
 import type { UUID } from 'node:crypto'
 import { createPostCommentValidator } from '#validators/post_comment'
 import { PaginatedResponse } from '#interfaces/pagination'
+import { DateTime } from 'luxon'
 
 export class PostCommentService {
   constructor(private readonly userService: UserService) {}
@@ -56,10 +57,17 @@ export class PostCommentService {
     return this.serialize(comment)
   }
 
-  async destroy(postCommentId: UUID): Promise<void | null> {
+  async destroy(postCommentId: UUID, replyId: UUID): Promise<void | null> {
     const comment = await this.show(postCommentId)
+    const isReply = await this.show(replyId)
     if (!comment) return null
-    await comment.delete()
+
+    if (isReply) {
+      comment.deletedAt = DateTime.now()
+      await comment.save()
+    } else {
+      await comment.delete()
+    }
   }
 
   private async serialize(postComment: PostComment): Promise<PostCommentResponse> {
