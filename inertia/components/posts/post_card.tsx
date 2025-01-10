@@ -1,5 +1,13 @@
-import { Dispatch, ReactElement, SetStateAction, useMemo, useState } from 'react'
-import { Link } from '@inertiajs/react'
+import {
+  Dispatch,
+  FormEvent,
+  Fragment,
+  ReactElement,
+  SetStateAction,
+  useMemo,
+  useState,
+} from 'react'
+import { Link, useForm } from '@inertiajs/react'
 import {
   ArrowLeft,
   ArrowRight,
@@ -12,6 +20,7 @@ import {
   Flag,
   Pin,
   BadgeCheck,
+  Send,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -35,6 +44,9 @@ import { route } from '@izzyjs/route/client'
 import { useToast } from '@/components/ui/use_toast'
 import { cn } from '@/lib/utils'
 import axios from 'axios'
+import { faker } from '@faker-js/faker'
+import { UUID } from 'node:crypto'
+import { Textarea } from '@/components/ui/textarea'
 
 type PostActions = 'update' | 'delete' | 'report' | 'pin'
 
@@ -461,6 +473,138 @@ function PostActions({
   )
 }
 
+const DUMMY_COMMENTS = [
+  {
+    id: '1',
+    user: {
+      name: faker.person.firstName(),
+      surname: faker.person.lastName(),
+      fullname: faker.person.fullName(),
+      username: faker.internet.userName(),
+      email: faker.internet.email(),
+      verified: false,
+      attachments: {
+        avatar: '#',
+      },
+    },
+    content: faker.lorem.paragraphs(),
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    deletedAt: new Date(),
+    replies: [
+      {
+        id: '2',
+        user: {
+          name: faker.person.firstName(),
+          surname: faker.person.lastName(),
+          fullname: faker.person.fullName(),
+          username: faker.internet.userName(),
+          email: faker.internet.email(),
+          verified: true,
+          attachments: {
+            avatar: '#',
+          },
+        },
+        content: faker.lorem.paragraphs(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: new Date(),
+      },
+    ],
+  },
+  {
+    id: '3',
+    user: {
+      name: faker.person.firstName(),
+      surname: faker.person.lastName(),
+      fullname: faker.person.fullName(),
+      username: faker.internet.userName(),
+      email: faker.internet.email(),
+      verified: true,
+      attachments: {
+        avatar: '#',
+      },
+    },
+    content: faker.lorem.paragraphs(),
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    deletedAt: new Date(),
+  },
+]
+
+function CreatePostComent({ postId, replyToId }: { postId: UUID; replyToId?: UUID }) {
+  const { data, setData, processing } = useForm({
+    content: '',
+  })
+
+  const commentPost = (e: FormEvent) => {
+    e.preventDefault()
+    console.log('post id ->', postId, replyToId, data.content)
+  }
+
+  return (
+    <form className="relative" onSubmit={commentPost}>
+      <Textarea
+        value={data.content}
+        onChange={(e) => setData('content', e.target.value)}
+        placeholder="Write a comment here..."
+        className="text-xs"
+        disabled={processing}
+      />
+      <button type="submit" disabled={processing}>
+        <Send
+          size={20}
+          className="absolute right-3 top-3 cursor-pointer text-muted-foreground hover:brightness-200"
+        />
+      </button>
+    </form>
+  )
+}
+
+function PostComment(comment: {
+  id: string
+  user: {
+    name: string
+    surname: string
+    fullname: string
+    username: string
+    email: string
+    verified: boolean
+    attachments: {
+      avatar: string
+    }
+  }
+  content: string
+  createdAt: Date
+  updatedAt: Date
+  deletedAt: Date
+}) {
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-row gap-3">
+        <UserAvatar user={comment.user as unknown as UserResponse} className="h-8 w-8" />
+        <div className="flex flex-col gap-1">
+          <div className="flex flex-row items-center gap-2">
+            <p className="max-w-40 truncate text-ellipsis text-xs text-gray-600 md:max-w-screen-lg">
+              @{comment.user.username}
+            </p>
+            {comment.user.verified && (
+              <BadgeCheck size={14} className="fill-blue-500 stroke-white" />
+            )}
+          </div>
+          <span className="flex items-center gap-1 text-xs text-gray-400">
+            <Clock size={10} />
+            {formatDistanceToNow(new Date(comment.createdAt))} ago
+          </span>
+        </div>
+      </div>
+      <div className="flex flex-row gap-3">
+        <p className="text-xs text-gray-600/80">{comment.content}</p>
+      </div>
+    </div>
+  )
+}
+
 export default function PostCard({
   post,
   user,
@@ -513,7 +657,7 @@ export default function PostCard({
           </div>
         )}
 
-        {/* // TODO: Review on how to best manage this, be wise. Explore habilities viewing send from the BE. */}
+        {/* // TODO: Review on how to best manage this, BE wise. Explore habilities viewing send from the BE. */}
         {actions && (
           <PostActions
             post={postState}
@@ -551,8 +695,42 @@ export default function PostCard({
         {post.link && <LinkPreview preview={post.link} />}
       </div>
 
-      <div className="border-t border-t-gray-200 py-4 opacity-70">
+      <div className="flex flex-row gap-2 border-t border-t-gray-200 py-4 opacity-70">
+        <button className={`cursor-pointer rounded-full border border-slate-400 bg-slate-50 px-2`}>
+          <p className="user-post-react-status text-xs text-slate-500">{DUMMY_COMMENTS.length}</p>
+        </button>
         <PostReaction actions={actions} post={post} currentUser={user} />
+      </div>
+
+      <div className="mb-4 flex flex-col gap-2 rounded-md border border-gray-50 bg-gray-100/30 p-2">
+        <div className="flex flex-col gap-6 rounded-md">
+          <CreatePostComent postId={post.id} />
+        </div>
+
+        <div className="flex flex-col gap-6 rounded-md">
+          {DUMMY_COMMENTS.map((comment) => {
+            return (
+              <div key={`root_${comment.id}`} className="relative flex flex-col gap-4">
+                <PostComment {...comment} />
+                {!!comment.replies && (
+                  <div className="relative ml-6 mt-4">
+                    <div className="absolute left-0 top-2">
+                      <div className="relative">
+                        <div className="absolute -left-6 -top-6 h-5 w-4 border-l-2 border-dashed border-gray-300" />
+                        <div className="absolute -left-6 -top-2 h-4 w-4 rounded-bl-lg border-2 border-gray-300 border-r-transparent border-t-transparent" />
+                      </div>
+                    </div>
+                    {comment.replies.map((reply) => (
+                      <Fragment key={`reply_${reply.id}`}>
+                        <PostComment {...reply} />
+                      </Fragment>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </div>
       </div>
     </article>
   )
