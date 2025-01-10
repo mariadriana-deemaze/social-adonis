@@ -11,6 +11,7 @@ import {
 } from '@adonisjs/lucid/orm'
 import User from '#models/user'
 import { extractFirstLink, REGEX, sanitizePostContent } from '#utils/index'
+import PostComment from '#models/post_comment'
 import PostReaction from '#models/post_reaction'
 import PostReport from '#models/post_report'
 import { PostStatus } from '#enums/post'
@@ -39,6 +40,9 @@ export default class Post extends BaseModel {
 
   @hasMany(() => PostReaction)
   declare reactions: HasMany<typeof PostReaction>
+
+  @hasMany(() => PostComment)
+  declare comments: HasMany<typeof PostComment>
 
   @hasMany(() => PostReport)
   declare reports: HasMany<typeof PostReport>

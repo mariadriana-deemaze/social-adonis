@@ -12,7 +12,7 @@ export default class extends BaseSchema {
       table.string('content')
       table.timestamp('created_at', { useTz: false }).notNullable()
       table.timestamp('updated_at', { useTz: false }).notNullable()
-      table.timestamp('deleted_at', { useTz: false }).notNullable()
+      table.timestamp('deleted_at', { useTz: false })
     })
   }
 
