@@ -22,8 +22,6 @@ import {
   BadgeCheck,
   Send,
   Reply,
-  Cross,
-  CrossIcon,
   X,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -495,10 +493,29 @@ const DUMMY_COMMENTS = [
     content: faker.lorem.paragraphs(),
     createdAt: new Date(),
     updatedAt: new Date(),
-    deletedAt: new Date(),
+    deletedAt: null,
     replies: [
       {
         id: '2',
+        postId: 'post_1',
+        user: {
+          name: faker.person.firstName(),
+          surname: faker.person.lastName(),
+          fullname: faker.person.fullName(),
+          username: faker.internet.userName(),
+          email: faker.internet.email(),
+          verified: true,
+          attachments: {
+            avatar: '#',
+          },
+        },
+        content: faker.lorem.paragraphs(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        id: '4',
         postId: 'post_1',
         user: {
           name: faker.person.firstName(),
@@ -535,7 +552,7 @@ const DUMMY_COMMENTS = [
     content: faker.lorem.paragraphs(),
     createdAt: new Date(),
     updatedAt: new Date(),
-    deletedAt: new Date(),
+    deletedAt: null,
   },
 ]
 
@@ -585,7 +602,7 @@ function PostComment(comment: {
   content: string
   createdAt: Date
   updatedAt: Date
-  deletedAt: Date
+  deletedAt: Date | null
 }) {
   const [isReplying, setIsReplying] = useState(false)
 
@@ -608,26 +625,36 @@ function PostComment(comment: {
           </span>
         </div>
       </div>
-      <div className="flex flex-row gap-3">
-        <p className="text-xs text-gray-600/80">{comment.content}</p>
-      </div>
-      <div className="flex flex-row gap-3">
-        <Button variant="ghost" size="sm" onClick={() => setIsReplying(!isReplying)}>
-          {isReplying ? (
-            <div className="flex flex-row gap-2">
-              <X size={14} className="text-red-600" />
-              <span className="text-xs text-red-600">Cancel</span>
-            </div>
-          ) : (
-            <div className="flex flex-row gap-2">
-              <Reply size={14} className="text-blue-600" />
-              <span className="text-xs text-blue-600">Reply</span>
-            </div>
+
+      {comment.deletedAt ? (
+        <div className="flex flex-row items-center gap-4 rounded-md bg-muted p-4">
+          <Trash2 size={12} className="text-gray-600/80" />
+          <p className="text-xs text-gray-600/80">Commented deleted by author.</p>
+        </div>
+      ) : (
+        <>
+          <div className="flex flex-row gap-3">
+            <p className="text-xs text-gray-600/80">{comment.content}</p>
+          </div>
+          <div className="flex flex-row gap-3">
+            <Button variant="ghost" size="sm" onClick={() => setIsReplying(!isReplying)}>
+              {isReplying ? (
+                <div className="flex flex-row gap-2">
+                  <X size={14} className="text-red-600" />
+                  <span className="text-xs text-red-600">Cancel</span>
+                </div>
+              ) : (
+                <div className="flex flex-row gap-2">
+                  <Reply size={14} className="text-blue-400" />
+                  <span className="text-xs text-blue-400">Reply</span>
+                </div>
+              )}
+            </Button>
+          </div>
+          {isReplying && (
+            <CreatePostComent postId={comment.postId as UUID} replyToId={comment.id as UUID} />
           )}
-        </Button>
-      </div>
-      {isReplying && (
-        <CreatePostComent postId={comment.postId as UUID} replyToId={comment.id as UUID} />
+        </>
       )}
     </div>
   )
@@ -741,7 +768,7 @@ export default function PostCard({
               <div key={`root_${comment.id}`} className="relative flex flex-col gap-4">
                 <PostComment {...comment} />
                 {!!comment.replies && (
-                  <div className="relative ml-6 mt-4">
+                  <div className="relative ml-6 mt-2 flex flex-col gap-4">
                     <div className="absolute left-0 top-2">
                       <div className="relative">
                         <div className="absolute -left-6 -top-6 h-5 w-4 border-l-2 border-dashed border-gray-300" />
