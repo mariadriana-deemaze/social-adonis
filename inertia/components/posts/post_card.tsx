@@ -21,6 +21,10 @@ import {
   Pin,
   BadgeCheck,
   Send,
+  Reply,
+  Cross,
+  CrossIcon,
+  X,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -476,6 +480,7 @@ function PostActions({
 const DUMMY_COMMENTS = [
   {
     id: '1',
+    postId: 'post_1',
     user: {
       name: faker.person.firstName(),
       surname: faker.person.lastName(),
@@ -494,6 +499,7 @@ const DUMMY_COMMENTS = [
     replies: [
       {
         id: '2',
+        postId: 'post_1',
         user: {
           name: faker.person.firstName(),
           surname: faker.person.lastName(),
@@ -514,6 +520,7 @@ const DUMMY_COMMENTS = [
   },
   {
     id: '3',
+    postId: 'post_1',
     user: {
       name: faker.person.firstName(),
       surname: faker.person.lastName(),
@@ -563,6 +570,7 @@ function CreatePostComent({ postId, replyToId }: { postId: UUID; replyToId?: UUI
 
 function PostComment(comment: {
   id: string
+  postId: string
   user: {
     name: string
     surname: string
@@ -579,6 +587,8 @@ function PostComment(comment: {
   updatedAt: Date
   deletedAt: Date
 }) {
+  const [isReplying, setIsReplying] = useState(false)
+
   return (
     <div className="flex flex-col gap-2">
       <div className="flex flex-row gap-3">
@@ -601,6 +611,24 @@ function PostComment(comment: {
       <div className="flex flex-row gap-3">
         <p className="text-xs text-gray-600/80">{comment.content}</p>
       </div>
+      <div className="flex flex-row gap-3">
+        <Button variant="ghost" size="sm" onClick={() => setIsReplying(!isReplying)}>
+          {isReplying ? (
+            <div className="flex flex-row gap-2">
+              <X size={14} className="text-red-600" />
+              <span className="text-xs text-red-600">Cancel</span>
+            </div>
+          ) : (
+            <div className="flex flex-row gap-2">
+              <Reply size={14} className="text-blue-600" />
+              <span className="text-xs text-blue-600">Reply</span>
+            </div>
+          )}
+        </Button>
+      </div>
+      {isReplying && (
+        <CreatePostComent postId={comment.postId as UUID} replyToId={comment.id as UUID} />
+      )}
     </div>
   )
 }
