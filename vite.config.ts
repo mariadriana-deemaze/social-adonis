@@ -31,9 +31,10 @@ export default defineConfig({
     },
   },
   server: {
-    hmr: {
-      protocol: 'ws',
-      host: '0.0.0.0',
+    host: true,
+    port: 3000,
+    watch: {
+      usePolling: true, // Use polling to detect file changes in Docker volumes
     },
   },
 })

@@ -60,6 +60,8 @@ services:
     networks:
       - social-adonis-network
     command: yarn dev
+    depends_on:
+      - pg15
 
 volumes:
   pg15_volume:
