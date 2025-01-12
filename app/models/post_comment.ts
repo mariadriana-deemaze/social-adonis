@@ -29,9 +29,7 @@ export default class PostComment extends BaseModel {
 
   @column({
     serialize(value, _attribute, model) {
-      console.log('model ->', model)
-      // @ts-ignore
-      return model.deletedAt ? 'Comment deleted.' : value
+      return model.$original['deletedAt'] ? 'Comment deleted.' : value
     },
   })
   declare content: string

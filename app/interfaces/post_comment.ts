@@ -4,6 +4,7 @@ import type { UUID } from 'node:crypto'
 
 export interface PostCommentResponse extends BaseEntity {
   id: UUID
+  postId: UUID
   replyId: UUID | null
   user: UserResponse
   content: string

@@ -12,14 +12,14 @@ export class PostCommentService {
 
   async index(
     postId: UUID,
-    { currentPage = 1 }: { currentPage: number; limit: number }
+    { currentPage = 1, limit = 10 }: { currentPage: number; limit: number }
   ): Promise<PaginatedResponse<PostCommentResponse>> {
     const query = await PostComment.query()
       .select()
       .where('post_id', postId)
       .preload('user')
-      .orderBy('create_at', 'desc')
-      .paginate(currentPage, 10)
+      .orderBy('created_at', 'desc')
+      .paginate(currentPage, limit)
 
     const data: PostCommentResponse[] = []
     for (const postComment of query) {
@@ -32,7 +32,9 @@ export class PostCommentService {
   }
 
   async show(postCommentId: UUID) {
-    return await PostComment.find(postCommentId)
+    const resource = await PostComment.find(postCommentId)
+    if (!resource) return null
+    return this.serialize(resource)
   }
 
   async create(postId: UUID, userId: UUID, payload: { content: string; replyTo?: string }) {
@@ -50,7 +52,7 @@ export class PostCommentService {
   }
 
   async update(postCommentId: UUID, content: string): Promise<PostCommentResponse | null> {
-    const comment = await this.show(postCommentId)
+    const comment = await PostComment.find(postCommentId)
     if (!comment) return null
     comment.content = content
     await comment.save()
@@ -58,8 +60,8 @@ export class PostCommentService {
   }
 
   async destroy(postCommentId: UUID, replyId: UUID): Promise<void | null> {
-    const comment = await this.show(postCommentId)
-    const isReply = await this.show(replyId)
+    const comment = await PostComment.find(postCommentId)
+    const isReply = await PostComment.find(replyId)
     if (!comment) return null
 
     if (isReply) {
@@ -71,11 +73,13 @@ export class PostCommentService {
   }
 
   private async serialize(postComment: PostComment): Promise<PostCommentResponse> {
+    await postComment.load('user')
     const data = postComment.toJSON() as ModelObject
     const user = await this.userService.serialize(postComment.user)
 
     const resource: PostCommentResponse = {
       id: data.id,
+      postId: data.postId,
       replyId: data.replyId || null,
       user,
       content: data.content,
