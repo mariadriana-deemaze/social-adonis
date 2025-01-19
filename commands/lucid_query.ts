@@ -9,7 +9,7 @@ export default class TestingCommand extends BaseCommand {
   static commandName = 'lucid:query'
 
   /**
-   * Command Name is displayed in the "help" output
+   * Command Description is displayed in the "help" output
    */
   static description = 'Consult the database data via direct queries with lucid'
 
