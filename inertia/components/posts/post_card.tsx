@@ -23,6 +23,7 @@ import {
   Send,
   Reply,
   X,
+  MessageSquareMore,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -46,9 +47,12 @@ import { route } from '@izzyjs/route/client'
 import { useToast } from '@/components/ui/use_toast'
 import { cn } from '@/lib/utils'
 import axios from 'axios'
-import { faker } from '@faker-js/faker'
+// import { faker } from '@faker-js/faker'
 import { UUID } from 'node:crypto'
 import { Textarea } from '@/components/ui/textarea'
+import { PostCommentResponse } from '#interfaces/post_comment'
+import { PaginatedResponse } from '#interfaces/pagination'
+// import { routes } from '@izzyjs/route/routes'
 
 type PostActions = 'update' | 'delete' | 'report' | 'pin'
 
@@ -118,6 +122,26 @@ function LinkPreview({ preview }: { preview: NonNullable<PostResponse['link']> }
           </a>
         </div>
         <p className="line-clamp-5 truncate text-wrap text-sm">{preview.metadata.description}</p>
+      </div>
+    </div>
+  )
+}
+
+function PostHeader({ user, createdAt }: { user: UserResponse; createdAt: string }) {
+  return (
+    <div className="flex flex-row gap-3">
+      <UserAvatar user={user} className="h-8 w-8" />
+      <div className="flex flex-col gap-1">
+        <div className="flex flex-row items-center gap-2">
+          <p className="max-w-40 truncate text-ellipsis text-xs font-semibold text-gray-600 md:max-w-screen-lg">
+            {user.fullname ?? `@${user.username}`}
+          </p>
+          {user.verified && <BadgeCheck size={14} className="fill-blue-500 stroke-white" />}
+        </div>
+        <span className="flex flex-row items-center gap-2 text-xs text-gray-400">
+          <Clock size={10} />
+          {formatDistanceToNow(new Date(createdAt))} ago
+        </span>
       </div>
     </div>
   )
@@ -475,87 +499,6 @@ function PostActions({
   )
 }
 
-const DUMMY_COMMENTS = [
-  {
-    id: '1',
-    postId: 'post_1',
-    user: {
-      name: faker.person.firstName(),
-      surname: faker.person.lastName(),
-      fullname: faker.person.fullName(),
-      username: faker.internet.userName(),
-      email: faker.internet.email(),
-      verified: false,
-      attachments: {
-        avatar: '#',
-      },
-    },
-    content: faker.lorem.paragraphs(),
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    deletedAt: null,
-    replies: [
-      {
-        id: '2',
-        postId: 'post_1',
-        user: {
-          name: faker.person.firstName(),
-          surname: faker.person.lastName(),
-          fullname: faker.person.fullName(),
-          username: faker.internet.userName(),
-          email: faker.internet.email(),
-          verified: true,
-          attachments: {
-            avatar: '#',
-          },
-        },
-        content: faker.lorem.paragraphs(),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        deletedAt: null,
-      },
-      {
-        id: '4',
-        postId: 'post_1',
-        user: {
-          name: faker.person.firstName(),
-          surname: faker.person.lastName(),
-          fullname: faker.person.fullName(),
-          username: faker.internet.userName(),
-          email: faker.internet.email(),
-          verified: true,
-          attachments: {
-            avatar: '#',
-          },
-        },
-        content: faker.lorem.paragraphs(),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        deletedAt: new Date(),
-      },
-    ],
-  },
-  {
-    id: '3',
-    postId: 'post_1',
-    user: {
-      name: faker.person.firstName(),
-      surname: faker.person.lastName(),
-      fullname: faker.person.fullName(),
-      username: faker.internet.userName(),
-      email: faker.internet.email(),
-      verified: true,
-      attachments: {
-        avatar: '#',
-      },
-    },
-    content: faker.lorem.paragraphs(),
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    deletedAt: null,
-  },
-]
-
 function CreatePostComent({ postId, replyToId }: { postId: UUID; replyToId?: UUID }) {
   const { data, setData, processing } = useForm({
     content: '',
@@ -564,6 +507,10 @@ function CreatePostComent({ postId, replyToId }: { postId: UUID; replyToId?: UUI
   const commentPost = (e: FormEvent) => {
     e.preventDefault()
     console.log('post id ->', postId, replyToId, data.content)
+
+    // TODO: hook here.
+    // axios.post('/')
+    // router.post(route('posts_comments.store'))
   }
 
   return (
@@ -575,56 +522,19 @@ function CreatePostComent({ postId, replyToId }: { postId: UUID; replyToId?: UUI
         className="text-xs"
         disabled={processing}
       />
-      <button type="submit" disabled={processing}>
-        <Send
-          size={20}
-          className="absolute right-3 top-3 cursor-pointer text-muted-foreground hover:brightness-200"
-        />
+      <button className="absolute right-3 top-3" type="submit" disabled={processing}>
+        <Send size={20} className="cursor-pointer text-muted-foreground hover:brightness-200" />
       </button>
     </form>
   )
 }
 
-function PostComment(comment: {
-  id: string
-  postId: string
-  user: {
-    name: string
-    surname: string
-    fullname: string
-    username: string
-    email: string
-    verified: boolean
-    attachments: {
-      avatar: string
-    }
-  }
-  content: string
-  createdAt: Date
-  updatedAt: Date
-  deletedAt: Date | null
-}) {
+function PostComment(comment: PostCommentResponse) {
   const [isReplying, setIsReplying] = useState(false)
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex flex-row gap-3">
-        <UserAvatar user={comment.user as unknown as UserResponse} className="h-8 w-8" />
-        <div className="flex flex-col gap-1">
-          <div className="flex flex-row items-center gap-2">
-            <p className="max-w-40 truncate text-ellipsis text-xs text-gray-600 md:max-w-screen-lg">
-              @{comment.user.username}
-            </p>
-            {comment.user.verified && (
-              <BadgeCheck size={14} className="fill-blue-500 stroke-white" />
-            )}
-          </div>
-          <span className="flex items-center gap-1 text-xs text-gray-400">
-            <Clock size={10} />
-            {formatDistanceToNow(new Date(comment.createdAt))} ago
-          </span>
-        </div>
-      </div>
+      <PostHeader user={comment.user} createdAt={comment.createdAt} />
 
       {comment.deletedAt ? (
         <div className="flex flex-row items-center gap-4 rounded-md bg-muted p-4">
@@ -634,7 +544,7 @@ function PostComment(comment: {
       ) : (
         <>
           <div className="flex flex-row gap-3">
-            <p className="text-xs text-gray-600/80">{comment.content}</p>
+            <p className="text-sm text-gray-600/80">{comment.content}</p>
           </div>
           <div className="flex flex-row gap-3">
             <Button variant="ghost" size="sm" onClick={() => setIsReplying(!isReplying)}>
@@ -660,6 +570,52 @@ function PostComment(comment: {
   )
 }
 
+function PostComments({
+  post,
+  loadMoreComments,
+}: {
+  post: PostResponse
+  loadMoreComments: () => Promise<void>
+}) {
+  return post.comments.data.length > 0 ? (
+    <>
+      <ul className="flex flex-col gap-4">
+        {post.comments.data.map((comment) => {
+          return (
+            <li key={`root_${comment.id}`} className="relative flex flex-col gap-4">
+              <PostComment {...comment} />
+              {comment.replies.length > 0 && (
+                <div className="relative ml-6 mt-2 flex flex-col gap-4">
+                  <div className="absolute left-0 top-2">
+                    <div className="relative">
+                      <div className="absolute -left-6 -top-6 h-5 w-4 border-l-2 border-dashed border-gray-300" />
+                      <div className="absolute -left-6 -top-2 h-4 w-4 rounded-bl-lg border-2 border-gray-300 border-r-transparent border-t-transparent" />
+                    </div>
+                  </div>
+                  {comment.replies.map((reply) => (
+                    <Fragment key={`reply_${reply.id}`}>
+                      <PostComment {...reply} />
+                    </Fragment>
+                  ))}
+                </div>
+              )}
+            </li>
+          )
+        })}
+      </ul>
+      {post.comments.meta.total > 2 && post.comments.data.length < post.comments.meta.total && (
+        <Button variant="secondary" onClick={loadMoreComments}>
+          Load more
+        </Button>
+      )}
+    </>
+  ) : (
+    <div className="w-full text-center">
+      <p className="text-xs text-slate-500">No comments yet.</p>
+    </div>
+  )
+}
+
 export default function PostCard({
   post,
   user,
@@ -673,6 +629,35 @@ export default function PostCard({
 }) {
   const [postState, setPostState] = useState<PostResponse>(post)
 
+  console.log('post state ->', postState)
+
+  async function loadMoreComments() {
+    const request = await axios.get<PaginatedResponse<PostCommentResponse>>(
+      route('posts_comments.index', {
+        params: {
+          postId: post.id,
+        },
+      }).path
+    )
+
+    if (request.status === 200) {
+      const commentsIds = new Set()
+      const updatedComments = [...postState.comments.data, ...request.data.data].filter(
+        ({ id }) => !commentsIds.has(id) && commentsIds.add(id)
+      )
+
+      setPostState({
+        ...postState,
+        comments: {
+          ...postState.comments,
+          data: updatedComments,
+        },
+      })
+    } else {
+    }
+    //console.log('request.data', request.data)
+  }
+
   return (
     <article className="flex w-full flex-col rounded-sm border bg-white px-6 pt-6">
       <div className="relative flex flex-row justify-between border-b border-b-gray-200 pb-3">
@@ -685,23 +670,7 @@ export default function PostCard({
             }).path
           }
         >
-          <div className="flex flex-row gap-3">
-            <UserAvatar user={post.user} className="h-8 w-8" />
-            <div className="flex flex-col gap-1">
-              <div className="flex flex-row items-center gap-2">
-                <p className="max-w-40 truncate text-ellipsis text-xs text-gray-600 md:max-w-screen-lg">
-                  @{post.user.username}
-                </p>
-                {post.user.verified && (
-                  <BadgeCheck size={14} className="fill-blue-500 stroke-white" />
-                )}
-              </div>
-              <span className="flex items-center gap-1 text-xs text-gray-400">
-                <Clock size={10} />
-                {formatDistanceToNow(new Date(post.createdAt))} ago
-              </span>
-            </div>
-          </div>
+          <PostHeader user={post.user} createdAt={post.createdAt} />
         </Link>
 
         {postState.pinned && (
@@ -750,41 +719,23 @@ export default function PostCard({
         {post.link && <LinkPreview preview={post.link} />}
       </div>
 
-      <div className="flex flex-row gap-2 border-t border-t-gray-200 py-4 opacity-70">
-        <button className={`cursor-pointer rounded-full border border-slate-400 bg-slate-50 px-2`}>
-          <p className="user-post-react-status text-xs text-slate-500">{DUMMY_COMMENTS.length}</p>
+      <div className="flex flex-row gap-2 border-t border-t-gray-200 px-2 py-4 opacity-70">
+        <button className="flex cursor-pointer flex-row items-center justify-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2">
+          <MessageSquareMore size={14} />
+          <p className="user-post-react-status text-xs text-slate-500">
+            {post.comments.meta.total}
+          </p>
         </button>
         <PostReaction actions={actions} post={post} currentUser={user} />
       </div>
 
-      <div className="mb-4 flex flex-col gap-2 rounded-md border border-gray-50 bg-gray-100/30 p-2">
+      <div className="mb-4 flex flex-col gap-8 rounded-md border border-gray-50 bg-gray-100/30 p-2">
         <div className="flex flex-col gap-6 rounded-md">
           <CreatePostComent postId={post.id} />
         </div>
 
         <div className="flex flex-col gap-6 rounded-md">
-          {DUMMY_COMMENTS.map((comment) => {
-            return (
-              <div key={`root_${comment.id}`} className="relative flex flex-col gap-4">
-                <PostComment {...comment} />
-                {!!comment.replies && (
-                  <div className="relative ml-6 mt-2 flex flex-col gap-4">
-                    <div className="absolute left-0 top-2">
-                      <div className="relative">
-                        <div className="absolute -left-6 -top-6 h-5 w-4 border-l-2 border-dashed border-gray-300" />
-                        <div className="absolute -left-6 -top-2 h-4 w-4 rounded-bl-lg border-2 border-gray-300 border-r-transparent border-t-transparent" />
-                      </div>
-                    </div>
-                    {comment.replies.map((reply) => (
-                      <Fragment key={`reply_${reply.id}`}>
-                        <PostComment {...reply} />
-                      </Fragment>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )
-          })}
+          <PostComments post={postState} loadMoreComments={loadMoreComments} />
         </div>
       </div>
     </article>
