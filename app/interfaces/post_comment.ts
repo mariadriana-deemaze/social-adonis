@@ -9,4 +9,5 @@ export interface PostCommentResponse extends BaseEntity {
   user: UserResponse
   content: string
   deletedAt: string | null
+  replies: PostCommentResponse[]
 }

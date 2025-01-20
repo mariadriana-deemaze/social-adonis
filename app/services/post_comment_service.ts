@@ -59,7 +59,7 @@ export class PostCommentService {
     return this.serialize(comment)
   }
 
-  async destroy(postCommentId: UUID, replyId: UUID): Promise<void | null> {
+  async destroy(postCommentId: UUID, replyId?: UUID): Promise<void | null> {
     const comment = await PostComment.find(postCommentId)
     const isReply = await PostComment.find(replyId)
     if (!comment) return null
@@ -72,7 +72,7 @@ export class PostCommentService {
     }
   }
 
-  private async serialize(postComment: PostComment): Promise<PostCommentResponse> {
+  async serialize(postComment: PostComment): Promise<PostCommentResponse> {
     await postComment.load('user')
     const data = postComment.toJSON() as ModelObject
     const user = await this.userService.serialize(postComment.user)
@@ -86,6 +86,7 @@ export class PostCommentService {
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
       deletedAt: data.deletedAt,
+      replies: [],
     }
     return resource
   }

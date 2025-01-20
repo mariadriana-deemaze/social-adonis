@@ -24,6 +24,8 @@ export default class FeedController {
       .withScopes((scope) => scope.visible())
       .preload('user')
       .preload('reactions')
+      .preload('comments', (comments) => comments.limit(2).orderBy('created_at', 'desc'))
+      .withCount('comments')
       .paginate(page, 10)
 
     const data: PostResponse[] = []

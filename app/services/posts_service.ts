@@ -13,16 +13,21 @@ import { UserResponse } from '#interfaces/user'
 import User from '#models/user'
 import type { HttpContext } from '@adonisjs/core/http'
 import type { UUID } from 'node:crypto'
+import { PostCommentService } from '#services/post_comment_service'
+import { PostCommentResponse } from '#interfaces/post_comment'
+import PostComment from '#models/post_comment'
 
 export default class PostsService {
   private readonly userService: UserService
   private readonly linkService: LinkParserService
   private readonly attachmentService: AttachmentService
+  private readonly postCommentsService: PostCommentService
 
   constructor() {
     this.userService = new UserService()
     this.linkService = new LinkParserService()
     this.attachmentService = new AttachmentService()
+    this.postCommentsService = new PostCommentService(this.userService)
   }
 
   /**
@@ -57,13 +62,19 @@ export default class PostsService {
    * Finds a post and it's author, by record id.
    */
   async findOne(id: UUID, visibleOnly?: boolean): Promise<Post | null> {
-    const query = Post.query().where('id', id).preload('user').preload('reactions')
+    const query = Post.query()
+      .where('id', id)
+      .preload('user')
+      .preload('reactions')
+      .preload('comments', (comments) => comments.limit(2).orderBy('created_at', 'desc'))
+      .withCount('comments')
 
     if (visibleOnly) {
       query.withScopes((scope) => scope.visible())
     }
 
     const result = await query
+    console.log('result ->', result)
     return result ? result[0] : null
   }
 
@@ -82,6 +93,8 @@ export default class PostsService {
       .orderBy('updated_at', 'desc')
       .preload('user')
       .preload('reactions')
+      .preload('comments', (comments) => comments.limit(2).orderBy('created_at', 'desc'))
+      .withCount('comments')
       .paginate(page, limit)
 
     const { meta } = result.toJSON()
@@ -157,11 +170,21 @@ export default class PostsService {
    * Handles the process on serializing the post data, and aggregating it's many associations.
    */
   async serialize(currentUserId: UUID, post: Post): Promise<PostResponse> {
-    const data = post.toJSON() as ModelObject & { reactions: PostReaction[] }
+    console.log('!! post ->', post)
+    const data = post.toJSON() as ModelObject & {
+      reactions: PostReaction[]
+      comments: PostComment[]
+    }
     const user = await this.userService.serialize(post.user)
     const attachments = await this.attachmentService.findMany(AttachmentModel.POST, post.id)
     const link = await this.linkService.show(post.link)
     const mentions = await this.processMentions(post)
+    const comments: PostCommentResponse[] = []
+
+    for (const comment of post.$preloaded['comments'] as PostComment[]) {
+      const seralized = await this.postCommentsService.serialize(comment)
+      comments.push(seralized)
+    }
 
     let accumulator: Record<PostReactionType, number> = {
       [PostReactionType.LIKE]: 0,
@@ -194,6 +217,12 @@ export default class PostsService {
             ?.type || null,
         reactionsCounts,
         total: Object.values(reactionsCounts).reduce((prev, next) => prev + next, 0),
+      },
+      comments: {
+        data: comments,
+        meta: {
+          total: Number(post.$extras['comments_count'] || 0),
+        } as PaginatedResponse<PostCommentResponse>['meta'],
       },
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,

@@ -18,6 +18,7 @@ const UserNotificationsController = () => import('#controllers/user_notification
 const PostsController = () => import('#controllers/posts_controller')
 const PostReactionsController = () => import('#controllers/post_reactions_controller')
 const PostPinsController = () => import('#controllers/post_pins_controller')
+const PostCommentsController = () => import('#controllers/post_comments_controller')
 const PostReportsController = () => import('#controllers/post_reports_controller')
 const FeedController = () => import('#controllers/feed_controller')
 const AdminAuthController = () => import('#controllers/admin_auth_controller')
@@ -105,6 +106,18 @@ router
         router.get(':id', [PostsController, 'show']).as('posts.show')
         router.patch(':id', [PostsController, 'update']).as('posts.update')
         router.delete(':id', [PostsController, 'destroy']).as('posts.destroy')
+
+        router
+          .get('/:postId/comments', [PostCommentsController, 'index'])
+          .as('posts_comments.index')
+        router.get('/comments/:id', [PostCommentsController, 'show']).as('posts_comments.show')
+        router.post('/comments', [PostCommentsController, 'store']).as('posts_comments.store')
+        router
+          .patch('/commments/:id', [PostCommentsController, 'update'])
+          .as('posts_comments.update')
+        router
+          .delete('/comments/:id', [PostCommentsController, 'destroy'])
+          .as('posts_comments.destroy')
 
         router.post(':id/pin', [PostPinsController, 'update']).as('posts_pins.update')
 

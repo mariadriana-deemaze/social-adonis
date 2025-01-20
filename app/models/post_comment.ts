@@ -21,11 +21,11 @@ export default class PostComment extends BaseModel {
   @column()
   declare userId: UUID
 
-  @belongsTo(() => PostComment)
-  declare reply: BelongsTo<typeof PostComment>
-
   @column()
   declare replyId: UUID | null
+
+  @belongsTo(() => PostComment)
+  declare replyTo: BelongsTo<typeof PostComment>
 
   @column({
     serialize(value, _attribute, model) {
