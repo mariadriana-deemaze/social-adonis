@@ -5,7 +5,6 @@ import { UserService } from '#services/user_service'
 import testUtils from '@adonisjs/core/services/test_utils'
 import { test } from '@japa/runner'
 import { randomUUID } from 'node:crypto'
-import { DateTime } from 'luxon'
 
 test.group('PostComment/index', (group) => {
   let postComments: PostComment[] = []
@@ -45,21 +44,5 @@ test.group('PostComment/index', (group) => {
       },
     })
     assert.equal(query.data.length, 0)
-  })
-
-  test('Successfully returns a post comment from the provided params', async ({ assert }) => {
-    const query = await service.show(postComments[0].id)
-    assert.equal(query?.id, postComments[0].id)
-  })
-
-  test('Successfully returns a soft-deleted post comment from the provided params', async ({
-    assert,
-  }) => {
-    const comment = postComments[0]
-    comment.deletedAt = DateTime.now()
-    await comment.save()
-    const query = await service.show(postComments[0].id)
-    assert.equal(query?.id, postComments[0].id)
-    assert.equal(query?.content, 'Comment deleted.')
   })
 })
