@@ -15,13 +15,13 @@ export default class PostCommentPolicy extends BasePolicy {
    * Only the commenting user, and the Admin, can update the `PostComment`.
    */
   update(user: User, postComment: PostComment): AuthorizerResponse {
-    return user.id !== postComment.userId
+    return user.id === postComment.userId
   }
 
   /**
    * Only the commenting user, and the Admin, can destroy the `PostComment`.
    */
   destroy(user: User, postComment: PostComment): AuthorizerResponse {
-    return user.id !== postComment.userId || user.isAdmin
+    return user.id === postComment.userId || user.isAdmin
   }
 }

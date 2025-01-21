@@ -11,11 +11,11 @@ import { ModelObject } from '@adonisjs/lucid/types/model'
 import { UserService } from '#services/user_service'
 import { UserResponse } from '#interfaces/user'
 import User from '#models/user'
-import type { HttpContext } from '@adonisjs/core/http'
-import type { UUID } from 'node:crypto'
 import { PostCommentService } from '#services/post_comment_service'
 import { PostCommentResponse } from '#interfaces/post_comment'
 import PostComment from '#models/post_comment'
+import type { HttpContext } from '@adonisjs/core/http'
+import type { UUID } from 'node:crypto'
 
 export default class PostsService {
   private readonly userService: UserService
@@ -66,7 +66,12 @@ export default class PostsService {
       .where('id', id)
       .preload('user')
       .preload('reactions')
-      .preload('comments', (comments) => comments.limit(2).orderBy('created_at', 'desc'))
+      .preload('comments', (comments) =>
+        comments
+          .withScopes((scope) => scope.rootComment())
+          .limit(2)
+          .orderBy('created_at', 'desc')
+      )
       .withCount('comments')
 
     if (visibleOnly) {
@@ -74,7 +79,7 @@ export default class PostsService {
     }
 
     const result = await query
-    console.log('result ->', result)
+    await this.postCommentsService.countReplies(result[0].comments)
     return result ? result[0] : null
   }
 
@@ -93,7 +98,12 @@ export default class PostsService {
       .orderBy('updated_at', 'desc')
       .preload('user')
       .preload('reactions')
-      .preload('comments', (comments) => comments.limit(2).orderBy('created_at', 'desc'))
+      .preload('comments', (comments) =>
+        comments
+          .withScopes((scope) => scope.rootComment())
+          .limit(2)
+          .orderBy('created_at', 'desc')
+      )
       .withCount('comments')
       .paginate(page, limit)
 
@@ -101,6 +111,7 @@ export default class PostsService {
 
     const data: PostResponse[] = []
     for (const post of result) {
+      await this.postCommentsService.countReplies(post.comments)
       const resource = await this.serialize(currentUserId, post)
       data.push(resource)
     }
@@ -170,11 +181,11 @@ export default class PostsService {
    * Handles the process on serializing the post data, and aggregating it's many associations.
    */
   async serialize(currentUserId: UUID, post: Post): Promise<PostResponse> {
-    console.log('!! post ->', post)
     const data = post.toJSON() as ModelObject & {
       reactions: PostReaction[]
       comments: PostComment[]
     }
+
     const user = await this.userService.serialize(post.user)
     const attachments = await this.attachmentService.findMany(AttachmentModel.POST, post.id)
     const link = await this.linkService.show(post.link)

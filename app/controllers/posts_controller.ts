@@ -20,7 +20,6 @@ export default class PostsController {
       }>
   > {
     const currentUserId = ctx.auth.user?.id!
-    console.log('ctx ->', ctx.params)
     const post = await this.service.findOne(ctx.params.id)
     if (!post || (post?.status === PostStatus.REPORTED && post.userId !== currentUserId)) {
       return ctx.inertia.render('errors/not_found', {

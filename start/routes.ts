@@ -35,9 +35,20 @@ router
     router.get('/feed', [FeedController, 'index']).as('feed.show')
     router
       .group(() => {
+        router.get('/', [UsersController, 'index']).as('users.index')
         router.get(':id', [FeedController, 'show']).as('users.show')
+        router.get('follow/:userId', [UserFollowsController, 'show']).as('users_follows.show')
       })
       .prefix('users')
+
+    router
+      .group(() => {
+        router.get(':postId/comments', [PostCommentsController, 'index']).as('posts_comments.index')
+        router
+          .get(':postId/comments/:id', [PostCommentsController, 'show'])
+          .as('posts_comments.show')
+      })
+      .prefix('posts')
   })
   .use(middleware.guest())
 
@@ -86,11 +97,8 @@ router
 
     router
       .group(() => {
-        router.get('/', [UsersController, 'index']).as('users.index')
         router.patch('/', [UsersController, 'update']).as('users.update')
         router.delete('/', [UsersController, 'destroy']).as('users.destroy')
-
-        router.get('follow/:userId', [UserFollowsController, 'show']).as('users_follows.show')
         router.post('follow/:userId', [UserFollowsController, 'store']).as('users_follows.store')
         router
           .delete('follow/:userId', [UserFollowsController, 'destroy'])
@@ -108,15 +116,13 @@ router
         router.delete(':id', [PostsController, 'destroy']).as('posts.destroy')
 
         router
-          .get('/:postId/comments', [PostCommentsController, 'index'])
-          .as('posts_comments.index')
-        router.get('/comments/:id', [PostCommentsController, 'show']).as('posts_comments.show')
-        router.post('/comments', [PostCommentsController, 'store']).as('posts_comments.store')
+          .post(':postId/comments', [PostCommentsController, 'store'])
+          .as('posts_comments.store')
         router
-          .patch('/commments/:id', [PostCommentsController, 'update'])
+          .patch(':postId/commments/:id', [PostCommentsController, 'update'])
           .as('posts_comments.update')
         router
-          .delete('/comments/:id', [PostCommentsController, 'destroy'])
+          .delete(':postId/comments/:id', [PostCommentsController, 'destroy'])
           .as('posts_comments.destroy')
 
         router.post(':id/pin', [PostPinsController, 'update']).as('posts_pins.update')

@@ -1,12 +1,4 @@
-import {
-  Dispatch,
-  FormEvent,
-  Fragment,
-  ReactElement,
-  SetStateAction,
-  useMemo,
-  useState,
-} from 'react'
+import { Dispatch, FormEvent, ReactElement, SetStateAction, useMemo, useState } from 'react'
 import { Link, useForm } from '@inertiajs/react'
 import {
   ArrowLeft,
@@ -47,14 +39,18 @@ import { route } from '@izzyjs/route/client'
 import { useToast } from '@/components/ui/use_toast'
 import { cn } from '@/lib/utils'
 import axios from 'axios'
-// import { faker } from '@faker-js/faker'
 import { UUID } from 'node:crypto'
 import { Textarea } from '@/components/ui/textarea'
 import { PostCommentResponse } from '#interfaces/post_comment'
 import { PaginatedResponse } from '#interfaces/pagination'
-// import { routes } from '@izzyjs/route/routes'
+import {
+  MAX_POST_COMMENT_CONTENT_SIZE,
+  MIN_POST_COMMENT_CONTENT_SIZE,
+} from '#validators/post_comment'
+import { DeletePostComment } from '@/components/post_comments/delete'
 
 type PostActions = 'update' | 'delete' | 'report' | 'pin'
+type PostCommentActions = 'delete' /* 'update' | 'report' | 'pin' */
 
 // NOTE: Would it be better to move this logic to the BE?
 function PostContentParser({
@@ -80,11 +76,13 @@ function PostContentParser({
       Object.entries(mentions).forEach(([username, info]) => {
         html = html.replace(
           '@' + username,
-          `<a class="text-cyan-600" href=${route('users.show', {
-            params: {
-              id: info.id,
-            },
-          })}>@${username}</a>`
+          `<a class="text-cyan-600" href=${
+            route('users.show', {
+              params: {
+                id: info.id,
+              },
+            }).path
+          }>@${username}</a>`
         )
       })
     }
@@ -499,18 +497,52 @@ function PostActions({
   )
 }
 
-function CreatePostComent({ postId, replyToId }: { postId: UUID; replyToId?: UUID }) {
+function CreatePostComment({
+  postId,
+  replyToId,
+  onSuccess,
+}: {
+  postId: UUID
+  onSuccess: (comment: PostCommentResponse) => void
+  replyToId?: UUID
+}) {
+  const { toast } = useToast()
+
   const { data, setData, processing } = useForm({
     content: '',
   })
 
-  const commentPost = (e: FormEvent) => {
-    e.preventDefault()
-    console.log('post id ->', postId, replyToId, data.content)
+  const invalidPostCommentContent = useMemo(
+    () =>
+      data.content.length < MIN_POST_COMMENT_CONTENT_SIZE ||
+      data.content.length > MAX_POST_COMMENT_CONTENT_SIZE,
+    [data.content.length]
+  )
 
-    // TODO: hook here.
-    // axios.post('/')
-    // router.post(route('posts_comments.store'))
+  const commentPost = async (e: FormEvent) => {
+    e.preventDefault()
+
+    const request = await axios.post<PostCommentResponse>(
+      route('posts_comments.store', {
+        params: {
+          postId: postId,
+        },
+      }).path,
+      {
+        content: data.content,
+        replyId: replyToId || null,
+      }
+    )
+
+    if (request.status === 201) {
+      onSuccess(request.data)
+      setData({ content: '' })
+    } else {
+      toast({
+        title: 'Error',
+        description: 'Error commenting',
+      })
+    }
   }
 
   return (
@@ -519,63 +551,203 @@ function CreatePostComent({ postId, replyToId }: { postId: UUID; replyToId?: UUI
         value={data.content}
         onChange={(e) => setData('content', e.target.value)}
         placeholder="Write a comment here..."
-        className="text-xs"
+        className="text-sm"
         disabled={processing}
       />
-      <button className="absolute right-3 top-3" type="submit" disabled={processing}>
+      <span className={cn('text-xs', invalidPostCommentContent ? 'text-red-700' : 'text-gray-500')}>
+        {data.content.length}/{MAX_POST_COMMENT_CONTENT_SIZE}
+      </span>
+      <button
+        className="absolute right-3 top-3 disabled:cursor-not-allowed disabled:opacity-35"
+        type="submit"
+        disabled={invalidPostCommentContent || processing}
+      >
         <Send size={20} className="cursor-pointer text-muted-foreground hover:brightness-200" />
       </button>
     </form>
   )
 }
 
-function PostComment(comment: PostCommentResponse) {
+function PostCommentActions({
+  comment,
+  //setPostState,
+  abilities,
+}: {
+  comment: PostCommentResponse
+  //setPostState: Dispatch<SetStateAction<PostCommentResponse>>
+  abilities: Partial<Array<PostCommentActions>>
+}) {
+  const actions: Record<PostCommentActions, () => ReactElement> = {
+    // report: () => (),
+    delete: () => (
+      <DeletePostComment
+        comment={comment}
+        trigger={
+          <div className="flex w-full flex-row items-center gap-3 hover:cursor-pointer">
+            <Button type="button" className="delete-post-trigger" variant="ghost" size="sm-icon">
+              <Trash2 size={15} />
+            </Button>
+            <p className="text-xs font-normal text-current">Delete</p>
+          </div>
+        }
+        onSuccess={(deletedComment) => console.log('deleted ->', deletedComment)}
+      />
+    ),
+  }
+
+  const renderActions =
+    Object.entries(actions)
+      .map(([action]) => abilities.includes(action as PostCommentActions))
+      .filter((permission) => permission === false).length === 0
+
+  if (renderActions) {
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button className="trigger-user-post-actions" variant="outline" size="sm-icon">
+            <EllipsisVerticalIcon className="h-4 w-4 text-gray-500" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-auto" align="end" forceMount>
+          {Object.entries(actions).map(([action, Element], index) => {
+            if (abilities.includes(action as PostCommentActions)) {
+              return (
+                <DropdownMenuItem
+                  key={`${comment.id}_${action}_${index}`}
+                  className="flex flex-row gap-4 p-0 text-gray-600"
+                  onSelect={(e) => e.preventDefault()}
+                  asChild
+                >
+                  <Element />
+                </DropdownMenuItem>
+              )
+            }
+          })}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    )
+  } else {
+    return <></>
+  }
+}
+
+function PostComment({
+  currentUser,
+  comment,
+  loadNestedComments,
+  appendComment,
+  //deleteComment
+}: {
+  currentUser: UserResponse | null
+  comment: PostCommentResponse
+  loadNestedComments: (commentId: UUID) => Promise<void>
+  appendComment: (comment: PostCommentResponse) => void
+  //deleteComment: (comment: PostCommentResponse) => void
+}) {
+  const [showReplies, setShowReplies] = useState(false)
   const [isReplying, setIsReplying] = useState(false)
 
-  return (
-    <div className="flex flex-col gap-2">
-      <PostHeader user={comment.user} createdAt={comment.createdAt} />
+  function onSuccess(newComment: PostCommentResponse) {
+    appendComment(newComment)
+    setIsReplying(false)
+  }
 
-      {comment.deletedAt ? (
-        <div className="flex flex-row items-center gap-4 rounded-md bg-muted p-4">
-          <Trash2 size={12} className="text-gray-600/80" />
-          <p className="text-xs text-gray-600/80">Commented deleted by author.</p>
+  return (
+    <>
+      <div className="flex flex-col gap-2">
+        <div className="relative flex w-full flex-row items-center justify-around gap-4">
+          <div className="flex flex-grow">
+            <PostHeader user={comment.user} createdAt={comment.createdAt} />
+          </div>
+          <PostCommentActions
+            comment={comment}
+            //setPostState={setPostState}
+            abilities={
+              comment.user.id === currentUser?.id && comment.deletedAt === null ? ['delete'] : []
+            }
+          />
         </div>
-      ) : (
-        <>
-          <div className="flex flex-row gap-3">
-            <p className="text-sm text-gray-600/80">{comment.content}</p>
+
+        {comment.deletedAt ? (
+          <div className="flex flex-row items-center gap-4 rounded-md bg-muted p-4">
+            <Trash2 size={12} className="text-gray-600/80" />
+            <p className="text-xs text-gray-600/80">Commented deleted by author.</p>
           </div>
-          <div className="flex flex-row gap-3">
-            <Button variant="ghost" size="sm" onClick={() => setIsReplying(!isReplying)}>
-              {isReplying ? (
-                <div className="flex flex-row gap-2">
-                  <X size={14} className="text-red-600" />
-                  <span className="text-xs text-red-600">Cancel</span>
-                </div>
-              ) : (
-                <div className="flex flex-row gap-2">
-                  <Reply size={14} className="text-blue-400" />
-                  <span className="text-xs text-blue-400">Reply</span>
-                </div>
-              )}
-            </Button>
-          </div>
-          {isReplying && (
-            <CreatePostComent postId={comment.postId as UUID} replyToId={comment.id as UUID} />
-          )}
-        </>
+        ) : (
+          <>
+            <div className="flex flex-row gap-3">
+              <p className="text-sm text-gray-600/80">{comment.content}</p>
+            </div>
+            <div className="flex flex-row gap-3">
+              <Button variant="ghost" size="sm" onClick={() => setIsReplying(!isReplying)}>
+                {isReplying ? (
+                  <div className="flex flex-row gap-2">
+                    <X size={14} className="text-red-600" />
+                    <span className="text-xs text-red-600">Cancel</span>
+                  </div>
+                ) : (
+                  <div className="flex flex-row gap-2">
+                    <Reply size={14} className="text-blue-400" />
+                    <span className="text-xs text-blue-400">Reply</span>
+                  </div>
+                )}
+              </Button>
+            </div>
+            {isReplying && (
+              <CreatePostComment
+                postId={comment.postId}
+                replyToId={comment.id}
+                onSuccess={onSuccess}
+              />
+            )}
+          </>
+        )}
+      </div>
+
+      {comment.repliesCount > 0 && (
+        <span
+          className="cursor-pointer text-xs font-semibold text-blue-400 underline hover:opacity-70"
+          onClick={() => {
+            if (comment.replies.length === 0) loadNestedComments(comment.id)
+            setShowReplies(!showReplies)
+          }}
+        >
+          {showReplies ? `Hide replies` : `Show other ${comment.repliesCount} replies`}
+        </span>
       )}
-    </div>
+
+      {comment?.replies && comment.replies.length > 0 && showReplies && (
+        <div className="relative ml-6 mt-2 flex flex-col gap-4">
+          <div className="absolute -left-6 -top-2 h-full w-4">
+            <div className="relative flex h-[calc(100%_-_10px)] flex-grow rounded-bl-lg border-b-[2px] border-l-[2px] border-muted-foreground/40"></div>
+          </div>
+          {comment.replies.map((reply) => (
+            <PostComment
+              key={`reply_${reply.parentId}_${reply.id}`}
+              currentUser={currentUser}
+              comment={reply}
+              loadNestedComments={loadNestedComments}
+              appendComment={appendComment}
+            />
+          ))}
+        </div>
+      )}
+    </>
   )
 }
 
 function PostComments({
+  currentUser,
   post,
+  appendComment,
   loadMoreComments,
+  loadNestedComments,
 }: {
+  currentUser: UserResponse | null
   post: PostResponse
+  appendComment: (comment: PostCommentResponse) => void
   loadMoreComments: () => Promise<void>
+  loadNestedComments: (commentId: UUID) => Promise<void>
 }) {
   return post.comments.data.length > 0 ? (
     <>
@@ -583,22 +755,12 @@ function PostComments({
         {post.comments.data.map((comment) => {
           return (
             <li key={`root_${comment.id}`} className="relative flex flex-col gap-4">
-              <PostComment {...comment} />
-              {comment.replies.length > 0 && (
-                <div className="relative ml-6 mt-2 flex flex-col gap-4">
-                  <div className="absolute left-0 top-2">
-                    <div className="relative">
-                      <div className="absolute -left-6 -top-6 h-5 w-4 border-l-2 border-dashed border-gray-300" />
-                      <div className="absolute -left-6 -top-2 h-4 w-4 rounded-bl-lg border-2 border-gray-300 border-r-transparent border-t-transparent" />
-                    </div>
-                  </div>
-                  {comment.replies.map((reply) => (
-                    <Fragment key={`reply_${reply.id}`}>
-                      <PostComment {...reply} />
-                    </Fragment>
-                  ))}
-                </div>
-              )}
+              <PostComment
+                currentUser={currentUser}
+                comment={comment}
+                loadNestedComments={loadNestedComments}
+                appendComment={appendComment}
+              />
             </li>
           )
         })}
@@ -627,9 +789,9 @@ export default function PostCard({
   actions?: boolean
   redirect?: boolean
 }) {
-  const [postState, setPostState] = useState<PostResponse>(post)
+  const { toast } = useToast()
 
-  console.log('post state ->', postState)
+  const [postState, setPostState] = useState<PostResponse>(post)
 
   async function loadMoreComments() {
     const request = await axios.get<PaginatedResponse<PostCommentResponse>>(
@@ -654,8 +816,84 @@ export default function PostCard({
         },
       })
     } else {
+      toast({
+        title: 'Error loading comments',
+        description: request.statusText,
+      })
     }
-    //console.log('request.data', request.data)
+  }
+
+  async function loadNestedComments(commentId: UUID) {
+    const request = await axios.get<PostCommentResponse & { replies: PostCommentResponse[] }>(
+      route('posts_comments.show', {
+        params: {
+          postId: post.id,
+          id: commentId,
+        },
+      }).path
+    )
+
+    if (request.status === 200) {
+      let updatedComments = postState.comments.data
+      const parentCommentIndex = postState.comments.data.findIndex(
+        (comment) => comment.id === commentId
+      )
+
+      if (updatedComments[parentCommentIndex]) {
+        updatedComments[parentCommentIndex] = {
+          ...updatedComments[parentCommentIndex],
+          replies: request.data.replies,
+        }
+      }
+
+      setPostState({
+        ...postState,
+        comments: {
+          ...postState.comments,
+          data: updatedComments,
+        },
+      })
+    } else {
+      toast({
+        title: 'Error loading comments',
+        description: request.statusText,
+      })
+    }
+  }
+
+  function appendComment(comment: PostCommentResponse) {
+    const updatedMeta = { ...postState.comments.meta, total: postState.comments.meta.total + 1 }
+
+    if (comment.parentId) {
+      let updatedComments = postState.comments.data
+      const parentCommentIndex = postState.comments.data.findIndex((c) => c.id === comment.id)
+
+      if (updatedComments[parentCommentIndex]) {
+        updatedComments[parentCommentIndex] = {
+          ...updatedComments[parentCommentIndex],
+          repliesCount: updatedComments[parentCommentIndex].repliesCount + 1,
+          replies: [comment, ...updatedComments[parentCommentIndex].replies],
+        }
+      }
+
+      setPostState({
+        ...postState,
+        comments: {
+          ...postState.comments,
+          meta: updatedMeta,
+          data: updatedComments,
+        },
+      })
+    } else {
+      setPostState({
+        ...postState,
+        comments: {
+          ...postState.comments,
+          meta: updatedMeta,
+          data: [comment, ...postState.comments.data],
+        },
+      })
+    }
   }
 
   return (
@@ -723,7 +961,8 @@ export default function PostCard({
         <button className="flex cursor-pointer flex-row items-center justify-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2">
           <MessageSquareMore size={14} />
           <p className="user-post-react-status text-xs text-slate-500">
-            {post.comments.meta.total}
+            {/* {post.comments.meta.total} */}
+            {postState.comments.meta.total}
           </p>
         </button>
         <PostReaction actions={actions} post={post} currentUser={user} />
@@ -731,11 +970,17 @@ export default function PostCard({
 
       <div className="mb-4 flex flex-col gap-8 rounded-md border border-gray-50 bg-gray-100/30 p-2">
         <div className="flex flex-col gap-6 rounded-md">
-          <CreatePostComent postId={post.id} />
+          <CreatePostComment postId={post.id} onSuccess={appendComment} />
         </div>
 
         <div className="flex flex-col gap-6 rounded-md">
-          <PostComments post={postState} loadMoreComments={loadMoreComments} />
+          <PostComments
+            currentUser={user}
+            post={postState}
+            appendComment={appendComment}
+            loadMoreComments={loadMoreComments}
+            loadNestedComments={loadNestedComments}
+          />
         </div>
       </div>
     </article>

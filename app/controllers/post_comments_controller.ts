@@ -5,8 +5,8 @@ import { UserService } from '#services/user_service'
 import { errorsReducer } from '#utils/index'
 import { createPostCommentValidator, updatePostCommentValidator } from '#validators/post_comment'
 import { inject } from '@adonisjs/core'
-import type { HttpContext } from '@adonisjs/core/http'
 import { errors } from '@vinejs/vine'
+import type { HttpContext } from '@adonisjs/core/http'
 
 @inject()
 export default class PostCommentsController {
@@ -21,13 +21,13 @@ export default class PostCommentsController {
 
   async show(ctx: HttpContext) {
     const postCommentId = ctx.params.id
-    const postComment = await PostComment.findOrFail(postCommentId)
+    const postComment = await this.service.show(postCommentId)
     return ctx.response.ok(postComment)
   }
 
   async store(ctx: HttpContext) {
     const user = ctx.auth.user!
-    const postId = ctx.params.id
+    const postId = ctx.params.postId
     const post = await Post.findOrFail(postId)
     const body = ctx.request.body()
 
@@ -36,7 +36,8 @@ export default class PostCommentsController {
         throw new Error('Not the author')
       }
       const payload = await createPostCommentValidator.validate(body)
-      await this.service.create(post.id, user.id, payload)
+      const resource = await this.service.create(post.id, user.id, payload)
+      return ctx.response.created(resource)
     } catch (error) {
       if (error instanceof errors.E_VALIDATION_ERROR) {
         const reducedErrors = errorsReducer(error.messages)
@@ -56,7 +57,8 @@ export default class PostCommentsController {
         throw new Error('Not the author')
       }
       const payload = await updatePostCommentValidator.validate(body)
-      await this.service.update(postComment.id, payload.content)
+      const resource = await this.service.update(postComment.id, payload.content)
+      return ctx.response.ok(resource)
     } catch (error) {
       if (error instanceof errors.E_VALIDATION_ERROR) {
         const reducedErrors = errorsReducer(error.messages)
@@ -71,10 +73,11 @@ export default class PostCommentsController {
     const postComment = await PostComment.findOrFail(postCommentId)
 
     try {
-      if (await ctx.bouncer.with('PostCommentPolicy').denies('update', postComment)) {
+      if (await ctx.bouncer.with('PostCommentPolicy').denies('destroy', postComment)) {
         throw new Error('Not the author')
       }
-      await this.service.destroy(postCommentId)
+      const resource = await this.service.destroy(postCommentId)
+      return ctx.response.ok(resource)
     } catch (error) {
       return ctx.response.badRequest()
     }

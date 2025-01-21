@@ -20,9 +20,7 @@ import type { UUID } from 'node:crypto'
 import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 
 export default class Post extends BaseModel {
-  static visible = scope((query) => {
-    query.where('status', PostStatus.PUBLISHED)
-  })
+  static visible = scope((query) => query.where('status', PostStatus.PUBLISHED))
 
   @column({ isPrimary: true })
   declare id: UUID

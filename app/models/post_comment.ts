@@ -1,11 +1,13 @@
 import { DateTime } from 'luxon'
-import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
+import { BaseModel, belongsTo, column, scope } from '@adonisjs/lucid/orm'
 import User from '#models/user'
 import Post from '#models/post'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import type { UUID } from 'node:crypto'
 
 export default class PostComment extends BaseModel {
+  static rootComment = scope((query) => query.whereNull('reply_id'))
+
   @column({ isPrimary: true })
   declare id: UUID
 
