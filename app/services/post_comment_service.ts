@@ -121,6 +121,7 @@ export class PostCommentService {
       replies: [],
       repliesCount: postComment.$extras['repliesCount'],
     }
+
     return resource
   }
 }
