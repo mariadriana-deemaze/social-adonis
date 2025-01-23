@@ -537,10 +537,10 @@ export default function PostCard({
       </div>
 
       <div className="flex flex-row gap-2 border-t border-t-gray-200 px-2 py-4 opacity-70">
-        <button className="flex cursor-pointer flex-row items-center justify-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2">
+        <button className="flex cursor-pointer flex-row items-center justify-center gap-1 rounded-full border border-slate-400 bg-slate-50 px-2">
           <MessageSquareMore size={14} />
           <p className="user-post-react-status text-xs text-slate-500">
-            {postState.comments.meta.total}
+            {postState.comments.totalCount}
           </p>
         </button>
         <PostReaction actions={actions} post={post} currentUser={user} />

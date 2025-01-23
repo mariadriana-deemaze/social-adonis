@@ -34,7 +34,7 @@ export interface PostResponse extends BaseEntity {
     reactionsCounts: Record<PostReactionType, number>
     total: number
   }
-  comments: PaginatedResponse<PostCommentResponse>
+  comments: { totalCount: number } & PaginatedResponse<PostCommentResponse>
 }
 
 export interface PostReportResponse extends BaseEntity {

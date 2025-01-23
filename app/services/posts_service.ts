@@ -72,7 +72,10 @@ export default class PostsService {
           .limit(2)
           .orderBy('created_at', 'desc')
       )
-      .withCount('comments')
+      .withCount('comments', (q) =>
+        q.withScopes((scope) => scope.rootComment()).as('total_root_comments')
+      )
+      .withCount('comments', (q) => q.as('total_comments'))
 
     if (visibleOnly) {
       query.withScopes((scope) => scope.visible())
@@ -104,7 +107,10 @@ export default class PostsService {
           .limit(2)
           .orderBy('created_at', 'desc')
       )
-      .withCount('comments')
+      .withCount('comments', (q) =>
+        q.withScopes((scope) => scope.rootComment()).as('total_root_comments')
+      )
+      .withCount('comments', (q) => q.as('total_comments'))
       .paginate(page, limit)
 
     const { meta } = result.toJSON()
@@ -191,6 +197,8 @@ export default class PostsService {
     const mentions = await this.processMentions(post)
     const comments: PostCommentResponse[] = []
 
+    console.log("post.$preloaded['comments'] ->", post.$preloaded['comments'])
+
     for (const comment of post.$preloaded['comments'] as PostComment[]) {
       const seralized = await this.postCommentsService.serialize(comment)
       comments.push(seralized)
@@ -230,8 +238,9 @@ export default class PostsService {
       },
       comments: {
         data: comments,
+        totalCount: Number(post.$extras['total_comments'] || 0),
         meta: {
-          total: Number(post.$extras['comments_count'] || 0),
+          total: Number(post.$extras['total_root_comments'] || 0),
         } as PaginatedResponse<PostCommentResponse>['meta'],
       },
       createdAt: data.createdAt,

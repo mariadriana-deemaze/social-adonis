@@ -1,6 +1,6 @@
-import { Dispatch, SetStateAction } from 'react'
+import { Dispatch, SetStateAction, useState } from 'react'
 import axios from 'axios'
-import { PaginatedResponse } from '#interfaces/pagination'
+import { MetaResponse, PaginatedResponse } from '#interfaces/pagination'
 import { PostResponse } from '#interfaces/post'
 import { PostCommentResponse } from '#interfaces/post_comment'
 import { UserResponse } from '#interfaces/user'
@@ -9,7 +9,6 @@ import { PostComment } from '@/components/post_comments/post_comment'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use_toast'
 import { route } from '@izzyjs/route/client'
-import type { UUID } from 'node:crypto'
 
 export function PostComments({
   currentUser,
@@ -20,6 +19,8 @@ export function PostComments({
   postState: PostResponse
   setPostState: Dispatch<SetStateAction<PostResponse>>
 }) {
+  const [meta, setMeta] = useState<MetaResponse>(postState.comments.meta)
+
   const { toast } = useToast()
 
   async function loadMoreComments() {
@@ -28,7 +29,7 @@ export function PostComments({
         params: {
           postId: postState.id,
         },
-      }).path
+      }).path + meta.nextPageUrl
     )
 
     if (request.status === 200) {
@@ -44,6 +45,8 @@ export function PostComments({
           data: updatedComments,
         },
       })
+
+      setMeta({ ...request.data.meta })
     } else {
       toast({
         title: 'Error loading comments',
@@ -52,83 +55,21 @@ export function PostComments({
     }
   }
 
-  async function loadNestedComments(commentId: UUID) {
-    const request = await axios.get<PostCommentResponse & { replies: PostCommentResponse[] }>(
-      route('posts_comments.show', {
-        params: {
-          postId: postState.id,
-          id: commentId,
-        },
-      }).path
-    )
-
-    if (request.status === 200) {
-      let updatedComments = postState.comments.data
-      const parentCommentIndex = postState.comments.data.findIndex(
-        (comment) => comment.id === commentId
-      )
-
-      if (updatedComments[parentCommentIndex]) {
-        updatedComments[parentCommentIndex] = {
-          ...updatedComments[parentCommentIndex],
-          replies: request.data.replies,
-        }
-      }
-
-      setPostState({
-        ...postState,
-        comments: {
-          ...postState.comments,
-          data: updatedComments,
-        },
-      })
-    } else {
-      toast({
-        title: 'Error loading comments',
-        description: request.statusText,
-      })
-    }
-  }
-
-  function appendComment(comment: PostCommentResponse) {
-    const updatedMeta = { ...postState.comments.meta, total: postState.comments.meta.total + 1 }
-
-    if (comment.parentId) {
-      let updatedComments = postState.comments.data
-      const parentCommentIndex = postState.comments.data.findIndex((c) => c.id === comment.id)
-
-      if (updatedComments[parentCommentIndex]) {
-        updatedComments[parentCommentIndex] = {
-          ...updatedComments[parentCommentIndex],
-          repliesCount: updatedComments[parentCommentIndex].repliesCount + 1,
-          replies: [comment, ...updatedComments[parentCommentIndex].replies],
-        }
-      }
-
-      setPostState({
-        ...postState,
-        comments: {
-          ...postState.comments,
-          meta: updatedMeta,
-          data: updatedComments,
-        },
-      })
-    } else {
-      setPostState({
-        ...postState,
-        comments: {
-          ...postState.comments,
-          meta: updatedMeta,
-          data: [comment, ...postState.comments.data],
-        },
-      })
-    }
+  const appendRootComment = (comment: PostCommentResponse) => {
+    setPostState({
+      ...postState,
+      comments: {
+        ...postState.comments,
+        meta: { ...postState.comments.meta, total: postState.comments.meta.total + 1 },
+        data: [comment, ...postState.comments.data],
+      },
+    })
   }
 
   return (
     <div className="mb-4 flex flex-col gap-8 rounded-md border border-gray-50 bg-gray-100/30 p-2">
       <div className="flex flex-col gap-6 rounded-md">
-        <CreatePostComment postId={postState.id} onSuccess={appendComment} />
+        <CreatePostComment postId={postState.id} onSuccess={appendRootComment} />
       </div>
 
       <div className="flex flex-col gap-6 rounded-md">
@@ -138,20 +79,16 @@ export function PostComments({
               {postState.comments.data.map((comment) => {
                 return (
                   <li key={`root_${comment.id}`} className="relative flex flex-col gap-4">
-                    <PostComment
-                      currentUser={currentUser}
-                      comment={comment}
-                      loadNestedComments={loadNestedComments}
-                      appendComment={appendComment}
-                    />
+                    <PostComment currentUser={currentUser} comment={comment} />
                   </li>
                 )
               })}
             </ul>
-            {postState.comments.meta.total > 2 &&
-              postState.comments.data.length < postState.comments.meta.total && (
+
+            {postState.comments.totalCount > 2 &&
+              postState.comments.data.length < postState.comments.totalCount && (
                 <Button variant="secondary" onClick={loadMoreComments}>
-                  Load {postState.comments.meta.total - 2} more comments
+                  Load {postState.comments.totalCount - 2} more comments
                 </Button>
               )}
           </>
