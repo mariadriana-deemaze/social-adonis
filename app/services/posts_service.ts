@@ -185,7 +185,6 @@ export default class PostsService {
       reactions: PostReaction[]
       comments: PostComment[]
     }
-
     const user = await this.userService.serialize(post.user)
     const attachments = await this.attachmentService.findMany(AttachmentModel.POST, post.id)
     const link = await this.linkService.show(post.link)

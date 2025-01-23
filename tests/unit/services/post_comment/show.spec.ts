@@ -16,14 +16,12 @@ test.group('PostComment/show', (group) => {
     postComments = await PostCommentFactory.apply('posted').createMany(20)
   })
 
-  test('Successfully returns a post comment nested replies from the provided params', async ({
-    assert,
-  }) => {
+  test('Successfully returns a post comment from the provided params', async ({ assert }) => {
     const query = await service.show(postComments[0].id)
     assert.equal(query?.id, postComments[0].id)
   })
 
-  test('Successfully fails to return a post comment nested replies from the provided params', async ({
+  test('Successfully fails to return a post comment from the provided params', async ({
     assert,
   }) => {
     const query = await service.show(randomUUID())

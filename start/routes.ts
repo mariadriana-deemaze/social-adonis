@@ -37,7 +37,6 @@ router
       .group(() => {
         router.get('/', [UsersController, 'index']).as('users.index')
         router.get(':id', [FeedController, 'show']).as('users.show')
-        router.get('follow/:userId', [UserFollowsController, 'show']).as('users_follows.show')
       })
       .prefix('users')
 
@@ -99,6 +98,8 @@ router
       .group(() => {
         router.patch('/', [UsersController, 'update']).as('users.update')
         router.delete('/', [UsersController, 'destroy']).as('users.destroy')
+
+        router.get('follow/:userId', [UserFollowsController, 'show']).as('users_follows.show')
         router.post('follow/:userId', [UserFollowsController, 'store']).as('users_follows.store')
         router
           .delete('follow/:userId', [UserFollowsController, 'destroy'])

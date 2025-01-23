@@ -8,7 +8,7 @@ export default class extends BaseSchema {
       table.uuid('id').primary().defaultTo(this.db.rawQuery('uuid_generate_v4()').knexQuery)
       table.uuid('post_id').references('posts.id').notNullable()
       table.uuid('user_id').references('users.id').notNullable()
-      table.uuid('reply_id').references(this.tableName + '.id').nullable()
+      table.uuid('parent_id').references(this.tableName + '.id').nullable()
       table.string('content')
       table.timestamp('created_at', { useTz: false }).notNullable()
       table.timestamp('updated_at', { useTz: false }).notNullable()

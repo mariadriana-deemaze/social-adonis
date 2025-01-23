@@ -530,7 +530,7 @@ function CreatePostComment({
       }).path,
       {
         content: data.content,
-        replyId: replyToId || null,
+        parentId: replyToId || null,
       }
     )
 

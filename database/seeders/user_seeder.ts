@@ -80,7 +80,7 @@ export default class extends BaseSeeder {
     const nestedReplies = await PostCommentFactory.merge({
       postId,
       userId,
-      replyId: parentPostComment.id,
+      parentId: parentPostComment.id,
     }).createMany(amount)
     const deletedComment = nestedReplies[this.maxInRange(nestedReplies.length)]
     deletedComment.deletedAt = DateTime.now()

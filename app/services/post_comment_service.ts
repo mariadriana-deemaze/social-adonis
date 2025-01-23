@@ -40,7 +40,7 @@ export class PostCommentService {
     const postComment = await PostComment.find(postCommentId)
     if (!postComment) return null
     const resource = await this.serialize(postComment)
-    const replies = await PostComment.findManyBy('reply_id', postCommentId)
+    const replies = await PostComment.findManyBy('parent_id', postCommentId)
     await this.countReplies(replies)
 
     const serializedReplies: PostCommentResponse[] = []
@@ -58,13 +58,13 @@ export class PostCommentService {
   async create(postId: UUID, userId: UUID, payload: { content: string; replyTo?: string }) {
     const data = (await createPostCommentValidator.validate(payload)) as {
       content: string
-      replyId: UUID | null // FIX-ME: Vine seemingly does not apply the UUID type when piped with the UUID validator case. Need to investigate around this.
+      parentId: UUID | null // FIX-ME: Vine seemingly does not apply the UUID type when piped with the UUID validator case. Need to investigate around this.
     }
     const resource = await PostComment.create({
       content: data.content,
       userId,
       postId,
-      replyId: data.replyId,
+      parentId: data.parentId,
     })
     return this.serialize(resource)
   }
@@ -83,7 +83,7 @@ export class PostCommentService {
 
     const hasReplies = await PostComment.query()
       .select()
-      .where('reply_id', postCommentId)
+      .where('parent_id', postCommentId)
       .limit(1)
       .then((result) => !!result)
 
@@ -99,7 +99,7 @@ export class PostCommentService {
 
   async countReplies(comments: PostComment[]) {
     for (const comment of comments) {
-      const repliesCount = await PostComment.query().where('reply_id', comment.id).count('id')
+      const repliesCount = await PostComment.query().where('parent_id', comment.id).count('id')
       comment.$extras['repliesCount'] = Number(repliesCount[0].$extras.count || 0)
     }
   }
@@ -117,7 +117,7 @@ export class PostCommentService {
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
       deletedAt: data.deletedAt,
-      parentId: data.replyId || null,
+      parentId: data.parentId || null,
       replies: [],
       repliesCount: postComment.$extras['repliesCount'],
     }

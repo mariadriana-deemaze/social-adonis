@@ -6,7 +6,7 @@ import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import type { UUID } from 'node:crypto'
 
 export default class PostComment extends BaseModel {
-  static rootComment = scope((query) => query.whereNull('reply_id'))
+  static rootComment = scope((query) => query.whereNull('parent_id'))
 
   @column({ isPrimary: true })
   declare id: UUID
@@ -24,7 +24,7 @@ export default class PostComment extends BaseModel {
   declare userId: UUID
 
   @column()
-  declare replyId: UUID | null
+  declare parentId: UUID | null
 
   @belongsTo(() => PostComment)
   declare replyTo: BelongsTo<typeof PostComment>

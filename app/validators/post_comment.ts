@@ -12,7 +12,7 @@ export const createPostCommentValidator = vine.compile(
       .string()
       .minLength(MIN_POST_COMMENT_CONTENT_SIZE)
       .maxLength(MAX_POST_COMMENT_CONTENT_SIZE),
-    replyId: vine.string().uuid().nullable(),
+    parentId: vine.string().uuid().nullable(),
   })
 )
 
