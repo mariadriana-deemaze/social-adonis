@@ -12,7 +12,7 @@ export class PostCommentService {
 
   async index(
     postId: UUID,
-    { currentPage = 1, limit = 10 }: { currentPage: number; limit: number }
+    { currentPage = 1, limit = 2 }: { currentPage: number; limit?: number }
   ): Promise<PaginatedResponse<PostCommentResponse>> {
     const query = await PostComment.query()
       .select()
@@ -61,7 +61,7 @@ export class PostCommentService {
   async create(postId: UUID, userId: UUID, payload: { content: string; parentId?: string }) {
     const data = (await createPostCommentValidator.validate({
       content: payload.content,
-      parentId: null,
+      parentId: payload.parentId || null,
     })) as {
       content: string
       parentId: UUID | null // FIX-ME: Vine seemingly does not apply the UUID type when piped with the UUID validator case. Need to investigate around this.
@@ -95,16 +95,16 @@ export class PostCommentService {
       .select()
       .where('parent_id', postCommentId)
       .limit(1)
-      .then((result) => !!result)
+      .then((result) => result.length > 0)
 
     if (hasReplies) {
       comment.deletedAt = DateTime.now()
       await comment.save()
+      return this.serialize(comment)
     } else {
       await comment.delete()
+      return null
     }
-
-    return this.serialize(comment)
   }
 
   async countReplies(comments: PostComment[]) {

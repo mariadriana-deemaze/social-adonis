@@ -120,7 +120,7 @@ router
           .post(':postId/comments', [PostCommentsController, 'store'])
           .as('posts_comments.store')
         router
-          .patch(':postId/commments/:id', [PostCommentsController, 'update'])
+          .patch(':postId/comments/:id', [PostCommentsController, 'update'])
           .as('posts_comments.update')
         router
           .delete(':postId/comments/:id', [PostCommentsController, 'destroy'])

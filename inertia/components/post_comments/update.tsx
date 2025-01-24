@@ -13,21 +13,23 @@ import { useForm } from '@inertiajs/react'
 import { route } from '@izzyjs/route/client'
 import type { UUID } from 'node:crypto'
 
-export function CreatePostComment({
+export function UpdatePostComment({
+  content = '',
   postId,
-  replyToId,
+  commentId,
   onSuccess,
 }: {
+  content: string
   postId: UUID
+  commentId: UUID
   onSuccess: (comment: PostCommentResponse) => void
-  replyToId?: UUID
 }) {
   const [focused, setFocused] = useState(false)
 
   const { toast } = useToast()
 
   const { data, setData, processing, reset } = useForm({
-    content: '',
+    content,
   })
 
   const invalidPostCommentContent = useMemo(
@@ -41,14 +43,14 @@ export function CreatePostComment({
     e.preventDefault()
 
     const request = await axios.post<PostCommentResponse>(
-      route('posts_comments.store', {
+      route('posts_comments.update', {
         params: {
-          postId: postId,
+          postId,
+          id: commentId,
         },
       }).path,
       {
         content: data.content,
-        parentId: replyToId || null,
       }
     )
 

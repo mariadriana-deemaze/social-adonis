@@ -9,6 +9,7 @@ import { PostComment } from '@/components/post_comments/post_comment'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use_toast'
 import { route } from '@izzyjs/route/client'
+import { pluralize } from '#utils/pluralize'
 
 export function PostComments({
   currentUser,
@@ -60,17 +61,32 @@ export function PostComments({
       ...postState,
       comments: {
         ...postState.comments,
+        totalCount: postState.comments.totalCount + 1,
         meta: { ...postState.comments.meta, total: postState.comments.meta.total + 1 },
         data: [comment, ...postState.comments.data],
       },
     })
   }
 
+  const removeRootComment = (comment: PostCommentResponse) => {
+    setPostState({
+      ...postState,
+      comments: {
+        ...postState.comments,
+        totalCount: postState.comments.totalCount - 1,
+        meta: { ...postState.comments.meta, total: postState.comments.meta.total - 1 },
+        data: [...postState.comments.data].filter((c) => c.id !== comment.id),
+      },
+    })
+  }
+
   return (
     <div className="mb-4 flex flex-col gap-8 rounded-md border border-gray-50 bg-gray-100/30 p-2">
-      <div className="flex flex-col gap-6 rounded-md">
-        <CreatePostComment postId={postState.id} onSuccess={appendRootComment} />
-      </div>
+      {currentUser && (
+        <div className="flex flex-col gap-6 rounded-md">
+          <CreatePostComment postId={postState.id} onSuccess={appendRootComment} />
+        </div>
+      )}
 
       <div className="flex flex-col gap-6 rounded-md">
         {postState.comments.data.length > 0 ? (
@@ -79,16 +95,22 @@ export function PostComments({
               {postState.comments.data.map((comment) => {
                 return (
                   <li key={`root_${comment.id}`} className="relative flex flex-col gap-4">
-                    <PostComment currentUser={currentUser} comment={comment} />
+                    <PostComment
+                      currentUser={currentUser}
+                      comment={comment}
+                      removeRootComment={() => removeRootComment(comment)}
+                    />
                   </li>
                 )
               })}
             </ul>
 
             {postState.comments.totalCount > 2 &&
-              postState.comments.data.length < postState.comments.totalCount && (
+              postState.comments.data.length < postState.comments.totalCount &&
+              meta.nextPageUrl !== null && (
                 <Button variant="secondary" onClick={loadMoreComments}>
-                  Load {postState.comments.totalCount - 2} more comments
+                  Load {meta.total - postState.comments.data.length} more{' '}
+                  {pluralize('comment', meta.total - postState.comments.data.length)}
                 </Button>
               )}
           </>

@@ -1,6 +1,6 @@
 import vine from '@vinejs/vine'
 
-export const MIN_POST_COMMENT_CONTENT_SIZE = 8
+export const MIN_POST_COMMENT_CONTENT_SIZE = 1
 export const MAX_POST_COMMENT_CONTENT_SIZE = 256
 
 /**

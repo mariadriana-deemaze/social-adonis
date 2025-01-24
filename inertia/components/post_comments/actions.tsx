@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { EllipsisVerticalIcon, Trash2 } from 'lucide-react'
+import { EllipsisVerticalIcon, Pencil, Trash2 } from 'lucide-react'
 import { PostCommentResponse } from '#interfaces/post_comment'
 import { DeletePostComment } from '@/components/post_comments/delete'
 import { Button } from '@/components/ui/button'
@@ -10,39 +10,66 @@ import {
   DropdownMenuItem,
 } from '@/components/ui/dropdown_menu'
 
-type PostCommentActions = 'delete' /* 'update' | 'report' | 'pin' */
+type PostCommentActions = 'delete' | 'update' // | 'report'
 
 export function PostCommentActions({
   comment,
-  //setPostState,
   abilities,
 }: {
   comment: PostCommentResponse
-  //setPostState: Dispatch<SetStateAction<PostCommentResponse>>
-  abilities: Partial<Array<PostCommentActions>>
+  abilities: Partial<
+    Record<
+      PostCommentActions,
+      {
+        onSuccess: () => void
+        onError: () => void
+        trigger?: () => void
+      }
+    >
+  >
 }) {
   const actions: Record<PostCommentActions, () => ReactElement> = {
-    // report: () => (),
     delete: () => (
       <DeletePostComment
         comment={comment}
         trigger={
           <div className="flex w-full flex-row items-center gap-3 hover:cursor-pointer">
-            <Button type="button" className="delete-post-trigger" variant="ghost" size="sm-icon">
+            <Button
+              type="button"
+              className="delete-post-comment-trigger"
+              variant="ghost"
+              size="sm-icon"
+            >
               <Trash2 size={15} />
             </Button>
             <p className="text-xs font-normal text-current">Delete</p>
           </div>
         }
-        onSuccess={(deletedComment) => console.log('deleted ->', deletedComment)}
+        onSuccess={() => abilities.delete?.onSuccess()}
       />
+    ),
+    update: () => (
+      <div
+        className="flex w-full flex-row items-center gap-3 hover:cursor-pointer"
+        onClick={() => abilities.update?.trigger && abilities.update?.trigger()}
+      >
+        <Button
+          type="button"
+          className="update-post-comment-trigger"
+          variant="ghost"
+          size="sm-icon"
+        >
+          <Pencil size={15} />
+        </Button>
+        <p className="text-xs font-normal text-current">Update</p>
+      </div>
     ),
   }
 
   const renderActions =
     Object.entries(actions)
-      .map(([action]) => abilities.includes(action as PostCommentActions))
-      .filter((permission) => permission === false).length === 0
+      .map(([action]) => Object.keys(abilities).includes(action as PostCommentActions))
+      .filter((permission) => permission === true).length > 0
 
   if (renderActions) {
     return (
@@ -54,7 +81,7 @@ export function PostCommentActions({
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-auto" align="end" forceMount>
           {Object.entries(actions).map(([action, Element], index) => {
-            if (abilities.includes(action as PostCommentActions)) {
+            if (Object.keys(abilities).includes(action as PostCommentActions)) {
               return (
                 <DropdownMenuItem
                   key={`${comment.id}_${action}_${index}`}

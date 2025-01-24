@@ -199,7 +199,7 @@ export default class PostsService {
     const mentions = await this.processMentions(post)
     const comments: PostCommentResponse[] = []
 
-    for (const comment of post.$preloaded['comments'] as PostComment[]) {
+    for (const comment of (post.$preloaded['comments'] || []) as PostComment[]) {
       const seralized = await this.postCommentsService.serialize(comment)
       comments.push(seralized)
     }
@@ -226,6 +226,7 @@ export default class PostsService {
         data: comments,
         totalCount: Number(post.$extras['total_comments'] || 0),
         meta: {
+          nextPageUrl: Number(post.$extras['total_root_comments'] || 0) > 2 ? '/?page=2' : null,
           total: Number(post.$extras['total_root_comments'] || 0),
         } as PaginatedResponse<PostCommentResponse>['meta'],
       },

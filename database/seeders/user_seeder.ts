@@ -3,7 +3,6 @@ import { PostCommentFactory } from '#database/factories/post_comment_factory'
 import User, { AccountRole } from '#models/user'
 import { BaseSeeder } from '@adonisjs/lucid/seeders'
 import { faker } from '@faker-js/faker/locale/en_GB'
-import { DateTime } from 'luxon'
 import PostComment from '#models/post_comment'
 import { PostReactionFactory } from '#database/factories/post_reaction_factory'
 import { PostFactory } from '#database/factories/post_factory'
@@ -49,26 +48,22 @@ export default class extends BaseSeeder {
     })
 
     const admin = {
-      name: 'Admin user',
+      name: 'Admin',
+      surname: 'User',
       email: 'admin_user@gmail.com',
       password: 'take1WildGuess!',
       role: AccountRole.ADMIN,
     }
 
-    await User.createMany([...users, admin])
-
-    const createdUsers = await User.query().where('role', AccountRole.USER)
-    return createdUsers
+    return User.createMany([...users, admin])
   }
 
   private async createUserPosts(user: User, amount: number = 5) {
-    const userPosts = await PostFactory.merge({ userId: user.id }).createMany(amount)
-    return userPosts
+    return PostFactory.merge({ userId: user.id }).createMany(amount)
   }
 
   private async createComments(postId: UUID, userId: UUID, amount: number = 5) {
-    const postComments = await PostCommentFactory.merge({ postId, userId }).createMany(amount)
-    return postComments
+    return PostCommentFactory.merge({ postId, userId }).createMany(amount)
   }
 
   private async createNestedComments(
@@ -77,14 +72,11 @@ export default class extends BaseSeeder {
     parentPostComment: PostComment,
     amount: number = 3
   ) {
-    const nestedReplies = await PostCommentFactory.merge({
+    return PostCommentFactory.merge({
       postId,
       userId,
       parentId: parentPostComment.id,
     }).createMany(amount)
-    const deletedComment = nestedReplies[this.maxInRange(nestedReplies.length)]
-    deletedComment.deletedAt = DateTime.now()
-    await deletedComment.save()
   }
 
   private async createPostReactions(postId: UUID, usersId: UUID[]) {

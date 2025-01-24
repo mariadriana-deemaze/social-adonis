@@ -14,7 +14,7 @@ export default class PostCommentsController {
   async index(ctx: HttpContext) {
     const postId = ctx.params.postId
     const page = ctx.request.qs().page || 1
-    const postComments = await this.service.index(postId, { currentPage: page, limit: 10 })
+    const postComments = await this.service.index(postId, { currentPage: page })
     return ctx.response.ok(postComments)
   }
 
@@ -37,7 +37,7 @@ export default class PostCommentsController {
       }
       const resource = await this.service.create(post.id, user.id, {
         content: body.content,
-        parentId: body.replyId ?? null,
+        parentId: body.parentId ?? null,
       })
       return ctx.response.created(resource)
     } catch (error) {

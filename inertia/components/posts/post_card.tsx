@@ -222,7 +222,7 @@ function PostGallery({ attachments }: { attachments: AttachmentResponse[] }) {
   )
 }
 
-function PostReaction({
+function PostReactionBadge({
   actions,
   post,
   currentUser,
@@ -462,15 +462,34 @@ function PostActions({
   )
 }
 
+function PostCommentsBadge({ count, disabled }: { count: number; disabled: boolean }) {
+  return (
+    <button
+      disabled={disabled}
+      className={cn(
+        disabled ? 'cursor-not-allowed' : 'cursor-pointer',
+        'flex flex-row items-center justify-center gap-1 rounded-full border border-slate-400 bg-slate-50 px-2'
+      )}
+    >
+      <MessageSquareMore size={14} />
+      <p id="post-total-comments-count" className="text-xs text-slate-500">
+        {count}
+      </p>
+    </button>
+  )
+}
+
 export default function PostCard({
   post,
   user,
   actions = true,
+  showComments = true,
   redirect = false,
 }: {
   post: PostResponse
   user: UserResponse | null
   actions?: boolean
+  showComments?: boolean
   redirect?: boolean
 }) {
   const [postState, setPostState] = useState<PostResponse>(post)
@@ -537,16 +556,13 @@ export default function PostCard({
       </div>
 
       <div className="flex flex-row gap-2 border-t border-t-gray-200 px-2 py-4 opacity-70">
-        <button className="flex cursor-pointer flex-row items-center justify-center gap-1 rounded-full border border-slate-400 bg-slate-50 px-2">
-          <MessageSquareMore size={14} />
-          <p id="post-total-comments-count" className="text-xs text-slate-500">
-            {postState.comments.totalCount}
-          </p>
-        </button>
-        <PostReaction actions={actions} post={post} currentUser={user} />
+        <PostCommentsBadge count={postState.comments.totalCount} disabled={!actions} />
+        <PostReactionBadge actions={actions} post={post} currentUser={user} />
       </div>
 
-      <PostComments currentUser={user} postState={postState} setPostState={setPostState} />
+      {showComments && (
+        <PostComments currentUser={user} postState={postState} setPostState={setPostState} />
+      )}
     </article>
   )
 }
