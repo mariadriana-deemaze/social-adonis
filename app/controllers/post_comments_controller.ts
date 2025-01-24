@@ -3,7 +3,6 @@ import PostComment from '#models/post_comment'
 import { PostCommentService } from '#services/post_comment_service'
 import { UserService } from '#services/user_service'
 import { errorsReducer } from '#utils/index'
-import { createPostCommentValidator, updatePostCommentValidator } from '#validators/post_comment'
 import { inject } from '@adonisjs/core'
 import { errors } from '@vinejs/vine'
 import type { HttpContext } from '@adonisjs/core/http'
@@ -21,7 +20,8 @@ export default class PostCommentsController {
 
   async show(ctx: HttpContext) {
     const postCommentId = ctx.params.id
-    const postComment = await this.service.show(postCommentId)
+    const page = ctx.request.qs().page || 1
+    const postComment = await this.service.show(postCommentId, { currentPage: page, limit: 10 })
     return ctx.response.ok(postComment)
   }
 
@@ -35,8 +35,10 @@ export default class PostCommentsController {
       if (await ctx.bouncer.with('PostCommentPolicy').denies('store')) {
         throw new Error('Not the author')
       }
-      const payload = await createPostCommentValidator.validate(body)
-      const resource = await this.service.create(post.id, user.id, payload)
+      const resource = await this.service.create(post.id, user.id, {
+        content: body.content,
+        parentId: body.replyId ?? null,
+      })
       return ctx.response.created(resource)
     } catch (error) {
       if (error instanceof errors.E_VALIDATION_ERROR) {
@@ -56,8 +58,7 @@ export default class PostCommentsController {
       if (await ctx.bouncer.with('PostCommentPolicy').denies('update', postComment)) {
         throw new Error('Not the author')
       }
-      const payload = await updatePostCommentValidator.validate(body)
-      const resource = await this.service.update(postComment.id, payload.content)
+      const resource = await this.service.update(postComment.id, { content: body.content })
       return ctx.response.ok(resource)
     } catch (error) {
       if (error instanceof errors.E_VALIDATION_ERROR) {

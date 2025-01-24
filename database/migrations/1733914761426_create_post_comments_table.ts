@@ -6,8 +6,8 @@ export default class extends BaseSchema {
   async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.uuid('id').primary().defaultTo(this.db.rawQuery('uuid_generate_v4()').knexQuery)
-      table.uuid('post_id').references('posts.id').notNullable()
-      table.uuid('user_id').references('users.id').notNullable()
+      table.uuid('post_id').references('posts.id').notNullable().onDelete('CASCADE')
+      table.uuid('user_id').references('users.id').notNullable().onDelete('CASCADE')
       table.uuid('parent_id').references(this.tableName + '.id').nullable()
       table.string('content')
       table.timestamp('created_at', { useTz: false }).notNullable()

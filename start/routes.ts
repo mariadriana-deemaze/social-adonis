@@ -42,6 +42,7 @@ router
 
     router
       .group(() => {
+        router.get(':id', [PostsController, 'show']).as('posts.show')
         router.get(':postId/comments', [PostCommentsController, 'index']).as('posts_comments.index')
         router
           .get(':postId/comments/:id', [PostCommentsController, 'show'])
@@ -112,7 +113,6 @@ router
     router
       .group(() => {
         router.post('/', [PostsController, 'store']).as('posts.store')
-        router.get(':id', [PostsController, 'show']).as('posts.show')
         router.patch(':id', [PostsController, 'update']).as('posts.update')
         router.delete(':id', [PostsController, 'destroy']).as('posts.destroy')
 

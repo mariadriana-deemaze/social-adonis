@@ -17,14 +17,14 @@ test.group('PostComment/show', (group) => {
   })
 
   test('Successfully returns a post comment from the provided params', async ({ assert }) => {
-    const query = await service.show(postComments[0].id)
+    const query = await service.show(postComments[0].id, { currentPage: 1, limit: 10 })
     assert.equal(query?.id, postComments[0].id)
   })
 
   test('Successfully fails to return a post comment from the provided params', async ({
     assert,
   }) => {
-    const query = await service.show(randomUUID())
+    const query = await service.show(randomUUID(), { currentPage: 1, limit: 10 })
     assert.equal(query, null)
   })
 
@@ -34,7 +34,7 @@ test.group('PostComment/show', (group) => {
     const comment = postComments[0]
     comment.deletedAt = DateTime.now()
     await comment.save()
-    const query = await service.show(postComments[0].id)
+    const query = await service.show(postComments[0].id, { currentPage: 1, limit: 10 })
     assert.equal(query?.id, postComments[0].id)
     assert.equal(query?.content, 'Comment deleted.')
   })

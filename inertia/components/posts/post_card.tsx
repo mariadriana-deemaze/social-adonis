@@ -411,7 +411,7 @@ function PostActions({
         onClick={updatePin}
         className="flex w-full flex-row items-center gap-3 hover:cursor-pointer"
       >
-        <Button type="button" className="pin-post-trigger" variant="ghost" size="sm-icon">
+        <Button type="button" variant="ghost" size="sm-icon" className="pin-post-trigger">
           <Pin
             className={cn('text-black', post.pinned ? 'fill-slate-400' : 'fill-white')}
             size={15}
@@ -539,7 +539,7 @@ export default function PostCard({
       <div className="flex flex-row gap-2 border-t border-t-gray-200 px-2 py-4 opacity-70">
         <button className="flex cursor-pointer flex-row items-center justify-center gap-1 rounded-full border border-slate-400 bg-slate-50 px-2">
           <MessageSquareMore size={14} />
-          <p className="user-post-react-status text-xs text-slate-500">
+          <p id="post-total-comments-count" className="text-xs text-slate-500">
             {postState.comments.totalCount}
           </p>
         </button>

@@ -5,7 +5,6 @@ import { createPostValidator, updatePostValidator } from '#validators/post'
 import { PostResponse } from 'app/interfaces/post'
 import LinkParserService from '#services/link_parser_service'
 import { PaginatedResponse } from 'app/interfaces/pagination'
-import { PostReactionType } from '#enums/post'
 import PostReaction from '#models/post_reaction'
 import { ModelObject } from '@adonisjs/lucid/types/model'
 import { UserService } from '#services/user_service'
@@ -14,6 +13,7 @@ import User from '#models/user'
 import { PostCommentService } from '#services/post_comment_service'
 import { PostCommentResponse } from '#interfaces/post_comment'
 import PostComment from '#models/post_comment'
+import PostReactionService from '#services/post_reaction_service'
 import type { HttpContext } from '@adonisjs/core/http'
 import type { UUID } from 'node:crypto'
 
@@ -22,11 +22,13 @@ export default class PostsService {
   private readonly linkService: LinkParserService
   private readonly attachmentService: AttachmentService
   private readonly postCommentsService: PostCommentService
+  private readonly postReactionService: PostReactionService
 
   constructor() {
     this.userService = new UserService()
     this.linkService = new LinkParserService()
     this.attachmentService = new AttachmentService()
+    this.postReactionService = new PostReactionService()
     this.postCommentsService = new PostCommentService(this.userService)
   }
 
@@ -197,28 +199,12 @@ export default class PostsService {
     const mentions = await this.processMentions(post)
     const comments: PostCommentResponse[] = []
 
-    console.log("post.$preloaded['comments'] ->", post.$preloaded['comments'])
-
     for (const comment of post.$preloaded['comments'] as PostComment[]) {
       const seralized = await this.postCommentsService.serialize(comment)
       comments.push(seralized)
     }
 
-    let accumulator: Record<PostReactionType, number> = {
-      [PostReactionType.LIKE]: 0,
-      [PostReactionType.THANKFUL]: 0,
-      [PostReactionType.FUNNY]: 0,
-      [PostReactionType.CONGRATULATIONS]: 0,
-      [PostReactionType.ANGRY]: 0,
-      [PostReactionType.LOVE]: 0,
-    }
-
-    const reactionsCounts: Record<PostReactionType, number> =
-      data?.reactions?.reduce((acc, next) => {
-        if (!next) return acc
-        acc[next.type] = acc[next.type] + 1
-        return acc
-      }, accumulator) || accumulator
+    const reactionsCounts = this.postReactionService.serialize(data.reactions)
 
     const resource: PostResponse = {
       id: data.id,

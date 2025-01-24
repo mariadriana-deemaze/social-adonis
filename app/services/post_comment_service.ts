@@ -2,7 +2,7 @@ import { UserService } from '#services/user_service'
 import PostComment from '#models/post_comment'
 import { ModelObject } from '@adonisjs/lucid/types/model'
 import { PostCommentResponse } from '#interfaces/post_comment'
-import { createPostCommentValidator } from '#validators/post_comment'
+import { createPostCommentValidator, updatePostCommentValidator } from '#validators/post_comment'
 import { PaginatedResponse } from '#interfaces/pagination'
 import { DateTime } from 'luxon'
 import type { UUID } from 'node:crypto'
@@ -33,14 +33,17 @@ export class PostCommentService {
     return { meta, data }
   }
 
-  // TODO: Probs paginate
   async show(
-    postCommentId: UUID
+    postCommentId: UUID,
+    { currentPage = 1, limit = 10 }: { currentPage: number; limit: number }
   ): Promise<(PostCommentResponse & { replies: PostCommentResponse[] }) | null> {
     const postComment = await PostComment.find(postCommentId)
     if (!postComment) return null
     const resource = await this.serialize(postComment)
-    const replies = await PostComment.findManyBy('parent_id', postCommentId)
+    const replies = await PostComment.query()
+      .where('parent_id', postCommentId)
+      .orderBy('created_at', 'desc')
+      .paginate(currentPage, limit)
     await this.countReplies(replies)
 
     const serializedReplies: PostCommentResponse[] = []
@@ -55,8 +58,11 @@ export class PostCommentService {
     }
   }
 
-  async create(postId: UUID, userId: UUID, payload: { content: string; replyTo?: string }) {
-    const data = (await createPostCommentValidator.validate(payload)) as {
+  async create(postId: UUID, userId: UUID, payload: { content: string; parentId?: string }) {
+    const data = (await createPostCommentValidator.validate({
+      content: payload.content,
+      parentId: null,
+    })) as {
       content: string
       parentId: UUID | null // FIX-ME: Vine seemingly does not apply the UUID type when piped with the UUID validator case. Need to investigate around this.
     }
@@ -64,15 +70,19 @@ export class PostCommentService {
       content: data.content,
       userId,
       postId,
-      parentId: data.parentId,
+      parentId: data.parentId || null,
     })
     return this.serialize(resource)
   }
 
-  async update(postCommentId: UUID, content: string): Promise<PostCommentResponse | null> {
+  async update(
+    postCommentId: UUID,
+    payload: { content: string }
+  ): Promise<PostCommentResponse | null> {
+    const data = await updatePostCommentValidator.validate(payload)
     const comment = await PostComment.find(postCommentId)
     if (!comment) return null
-    comment.content = content
+    comment.content = data.content
     await comment.save()
     return this.serialize(comment)
   }
