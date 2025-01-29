@@ -82,21 +82,29 @@ export class PostCommentService {
     const data = await updatePostCommentValidator.validate(payload)
     const comment = await PostComment.find(postCommentId)
     if (!comment) return null
+
+    // Update the comment content
     comment.content = data.content
     await comment.save()
+
+    // Recalculate repliesCount
+    await this.countReplies([comment])
+
+    // Load the updated comment with its replies and user
+    await comment.load('user')
+    await comment.load('replies', (query) => {
+      query.orderBy('created_at', 'desc')
+    })
+
+    // Serialize the updated comment
     return this.serialize(comment)
   }
 
   async destroy(postCommentId: UUID): Promise<PostCommentResponse | null> {
     const comment = await PostComment.find(postCommentId)
     if (!comment) return null
-
-    const hasReplies = await PostComment.query()
-      .select()
-      .where('parent_id', postCommentId)
-      .limit(1)
-      .then((result) => result.length > 0)
-
+    await this.countReplies([comment])
+    const hasReplies = comment.$extras['repliesCount'] || 0
     if (hasReplies) {
       comment.deletedAt = DateTime.now()
       await comment.save()
@@ -109,8 +117,11 @@ export class PostCommentService {
 
   async countReplies(comments: PostComment[]) {
     for (const comment of comments) {
-      const repliesCount = await PostComment.query().where('parent_id', comment.id).count('id')
-      comment.$extras['repliesCount'] = Number(repliesCount[0].$extras.count || 0)
+      const repliesCount = await PostComment.query()
+        .where('parent_id', comment.id)
+        .count('id as count')
+        .first()
+      comment.$extras['repliesCount'] = Number(repliesCount?.$extras.count ?? 0)
     }
   }
 
@@ -118,6 +129,13 @@ export class PostCommentService {
     await postComment.load('user')
     const data = postComment.toJSON() as ModelObject
     const user = await this.userService.serialize(postComment.user)
+
+    const replies = postComment.replies || []
+    const serializedReplies: PostCommentResponse[] = []
+    for (const reply of replies) {
+      const serialized = await this.serialize(reply)
+      serializedReplies.push(serialized)
+    }
 
     const resource: PostCommentResponse = {
       id: data.id,
@@ -128,8 +146,8 @@ export class PostCommentService {
       updatedAt: data.updatedAt,
       deletedAt: data.deletedAt,
       parentId: data.parentId || null,
-      replies: [],
-      repliesCount: postComment.$extras['repliesCount'],
+      replies: serializedReplies,
+      repliesCount: postComment.$extras['repliesCount'] || 0,
     }
 
     return resource

@@ -1,4 +1,4 @@
-import { Dispatch, useState } from 'react'
+import { Dispatch, useEffect, useState } from 'react'
 import { UUID } from 'node:crypto'
 import { Reply, Trash2, X } from 'lucide-react'
 import { PostCommentResponse } from '#interfaces/post_comment'
@@ -13,6 +13,7 @@ import { useToast } from '@/components/ui/use_toast'
 import { router } from '@inertiajs/react'
 import { pluralize } from '#utils/pluralize'
 import { UpdatePostComment } from '@/components/post_comments/update'
+import { formatDistanceToNow } from 'date-fns'
 
 export function PostComment({
   currentUser,
@@ -58,31 +59,67 @@ export function PostComment({
   }
 
   const commentAddSuccess = (newComment: PostCommentResponse) => {
-    setCommentState({
-      ...commentState,
-      replies: [...commentState.replies, newComment],
-      repliesCount: commentState.repliesCount + 1,
-    })
+    setCommentState((prevCommentState) => ({
+      ...prevCommentState,
+      replies: [...prevCommentState.replies, newComment],
+      repliesCount: prevCommentState.repliesCount + 1,
+    }))
     setIsReplying(false)
     setShowReplies(true)
   }
 
   const commentRemoveSuccess = (commentToRemove: PostCommentResponse) => {
-    if (removeRootComment) {
-      removeRootComment()
-    } else if (setParentState && parentState) {
-      setParentState({
-        ...parentState,
-        replies: [...parentState.replies].filter((reply) => reply.id !== commentToRemove.id),
-        repliesCount: parentState.repliesCount - 1,
-      })
+    if (commentToRemove.repliesCount === 0) {
+      if (removeRootComment) {
+        removeRootComment()
+      } else if (setParentState && parentState) {
+        setParentState({
+          ...parentState,
+          replies: parentState.replies.filter((reply) => reply.id !== commentToRemove.id),
+          repliesCount: parentState.repliesCount - 1,
+        })
+      }
     } else {
-      // Unexpected
+      if (removeRootComment) {
+        removeRootComment()
+      } else if (setParentState && parentState) {
+        setParentState({
+          ...parentState,
+          replies: parentState.replies.map((reply) =>
+            reply.id === commentToRemove.id
+              ? { ...reply, deletedAt: new Date().toISOString() }
+              : reply
+          ),
+        })
+      }
     }
   }
 
   const commentUpdateSuccess = (updatedComment: PostCommentResponse) => {
-    console.log('updated ->', updatedComment)
+    if (updatedComment.parentId) {
+      if (setParentState && parentState) {
+        setParentState({
+          ...parentState,
+          replies: parentState.replies.map((reply) =>
+            reply.id === updatedComment.id
+              ? {
+                  ...updatedComment,
+                  replies: comment.replies,
+                  repliesCount: comment.repliesCount,
+                }
+              : reply
+          ),
+        })
+      }
+    } else {
+      setCommentState((prevCommentState) => ({
+        ...prevCommentState,
+        ...updatedComment,
+        replies: comment.replies,
+        repliesCount: comment.repliesCount,
+      }))
+    }
+    setIsUpdating(false)
   }
 
   const replyToComment = (e: React.MouseEvent) => {
@@ -93,6 +130,10 @@ export function PostComment({
       router.visit(route('auth.show').path)
     }
   }
+
+  useEffect(() => {
+    setCommentState(comment)
+  }, [comment])
 
   return (
     <>
@@ -113,7 +154,7 @@ export function PostComment({
                         toast({ title: 'Error', description: 'Error deleting comment' }),
                     },
                     update: {
-                      onSuccess: () => {}, //commentUpdateSuccess(commentState),
+                      onSuccess: () => {},
                       onError: () =>
                         toast({ title: 'Error', description: 'Error updating comment' }),
                       trigger: () => setIsUpdating(!isUpdating),
@@ -158,6 +199,12 @@ export function PostComment({
                   </div>
                 )}
               </Button>
+
+              {Boolean(commentState.updatedAt) && (
+                <span className="flex flex-row items-center gap-2 text-[10px] text-gray-400">
+                  {`edited ${formatDistanceToNow(new Date(commentState.updatedAt))} ago`}
+                </span>
+              )}
             </div>
             {isReplying && (
               <CreatePostComment
