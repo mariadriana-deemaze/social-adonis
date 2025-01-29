@@ -1,4 +1,4 @@
-import { FormEvent, useMemo, useState } from 'react'
+import { FormEvent, useEffect, useMemo, useRef, useState } from 'react'
 import axios from 'axios'
 import { Send } from 'lucide-react'
 import { PostCommentResponse } from '#interfaces/post_comment'
@@ -23,6 +23,8 @@ export function CreatePostComment({
   replyToId?: UUID
 }) {
   const [focused, setFocused] = useState(false)
+
+  const textAreaRef = useRef<HTMLTextAreaElement>(null)
 
   const { toast } = useToast()
 
@@ -63,9 +65,17 @@ export function CreatePostComment({
     }
   }
 
+  // We are only focusing on the input for adding replies on the mount cycle
+  useEffect(() => {
+    if (replyToId) {
+      textAreaRef.current?.focus()
+    }
+  }, [])
+
   return (
     <form className="relative" onSubmit={commentPost}>
       <Textarea
+        ref={textAreaRef}
         value={data.content}
         onChange={(e) => setData('content', e.target.value)}
         placeholder="Write a comment here..."

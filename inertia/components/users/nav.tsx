@@ -7,7 +7,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuShortcut,
 } from '@/components/ui/dropdown_menu'
 import { Button } from '@/components/ui/button'
 import AdonisLogo from '@/components/svg/logo'
@@ -76,9 +75,6 @@ export default function UserNavBar({ user }: { user: UserResponse | null }) {
                             href={route('users.show', { params: { id: user?.id! } }).path}
                           >
                             Profile
-                            <DropdownMenuShortcut className="absolute right-0">
-                              ⇧⌘P
-                            </DropdownMenuShortcut>
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem
@@ -90,9 +86,6 @@ export default function UserNavBar({ user }: { user: UserResponse | null }) {
                             href={route('settings.show').path}
                           >
                             Settings
-                            <DropdownMenuShortcut className="absolute right-0">
-                              ⌘S
-                            </DropdownMenuShortcut>
                           </Link>
                         </DropdownMenuItem>
                       </DropdownMenuGroup>
@@ -108,9 +101,6 @@ export default function UserNavBar({ user }: { user: UserResponse | null }) {
                           method="delete"
                         >
                           Log out
-                          <DropdownMenuShortcut className="absolute right-0">
-                            ⇧⌘Q
-                          </DropdownMenuShortcut>
                         </Link>
                       </DropdownMenuItem>
                     </DropdownMenuContent>

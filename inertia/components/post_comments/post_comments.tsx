@@ -80,6 +80,27 @@ export function PostComments({
     })
   }
 
+  const updatePostCount = (operation: 'increment' | 'decrement', amount: number = 1): void => {
+    let value = postState.comments.totalCount
+    if (operation === 'increment') {
+      setPostState({
+        ...postState,
+        comments: {
+          ...postState.comments,
+          totalCount: value + amount,
+        },
+      })
+    } else {
+      setPostState({
+        ...postState,
+        comments: {
+          ...postState.comments,
+          totalCount: value - amount,
+        },
+      })
+    }
+  }
+
   return (
     <div className="mb-4 flex flex-col gap-8 rounded-md border border-gray-50 bg-gray-100/30 p-2">
       {currentUser && (
@@ -98,6 +119,7 @@ export function PostComments({
                     <PostComment
                       currentUser={currentUser}
                       comment={comment}
+                      updatePostCount={updatePostCount}
                       removeRootComment={() => removeRootComment(comment)}
                     />
                   </li>

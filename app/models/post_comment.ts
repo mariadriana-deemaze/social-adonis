@@ -1,8 +1,8 @@
 import { DateTime } from 'luxon'
-import { BaseModel, belongsTo, column, scope } from '@adonisjs/lucid/orm'
+import { BaseModel, belongsTo, column, hasMany, scope } from '@adonisjs/lucid/orm'
 import User from '#models/user'
 import Post from '#models/post'
-import type { BelongsTo } from '@adonisjs/lucid/types/relations'
+import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 import type { UUID } from 'node:crypto'
 
 export default class PostComment extends BaseModel {
@@ -29,6 +29,9 @@ export default class PostComment extends BaseModel {
   @belongsTo(() => PostComment)
   declare replyTo: BelongsTo<typeof PostComment>
 
+  @hasMany(() => PostComment, { foreignKey: 'parentId' })
+  declare replies: HasMany<typeof PostComment>
+
   @column({
     serialize(value, _attribute, model) {
       return model.$original['deletedAt'] ? 'Comment deleted.' : value
@@ -39,8 +42,8 @@ export default class PostComment extends BaseModel {
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
-  @column.dateTime({ autoCreate: true, autoUpdate: true })
-  declare updatedAt: DateTime
+  @column.dateTime()
+  declare updatedAt: DateTime | null
 
   @column.dateTime()
   declare deletedAt: DateTime | null

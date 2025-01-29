@@ -11,7 +11,7 @@ export default class extends BaseSchema {
       table.uuid('parent_id').references(this.tableName + '.id').nullable()
       table.string('content')
       table.timestamp('created_at', { useTz: false }).notNullable()
-      table.timestamp('updated_at', { useTz: false }).notNullable()
+      table.timestamp('updated_at', { useTz: false }).defaultTo(null).nullable()
       table.timestamp('deleted_at', { useTz: false })
     })
   }

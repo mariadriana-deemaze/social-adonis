@@ -20,19 +20,20 @@ export default class extends BaseSeeder {
           users[this.maxInRange(users.length)].id
         )
 
-        await this.createNestedComments(
-          post.id,
-          users[this.maxInRange(users.length)].id,
-          rootComments[this.maxInRange(rootComments.length)]
-        )
-
-        await this.createPostReactions(
-          post.id,
-          this.getRandomElements(
-            users.map((u) => u.id),
-            this.maxInRange(5)
-          )
-        )
+        await Promise.all([
+          this.createNestedComments(
+            post.id,
+            users[this.maxInRange(users.length)].id,
+            rootComments[this.maxInRange(rootComments.length)]
+          ),
+          this.createPostReactions(
+            post.id,
+            this.getRandomElements(
+              users.map((u) => u.id),
+              this.maxInRange(5)
+            )
+          ),
+        ])
       }
     }
   }

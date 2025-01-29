@@ -35,10 +35,8 @@ export default function NotificationsDropdown() {
     const request = await axios.get(route('notifications.index').path)
     if (request.status === 200) {
       const data: NotificationResponse[] = request.data
-      if (data.length !== notifications.length) {
-        setNotifications(data)
-        setNotificationsLoadState('loaded')
-      }
+      setNotifications(data)
+      setNotificationsLoadState('loaded')
     } else {
       setNotificationsLoadState('error')
     }

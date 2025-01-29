@@ -42,7 +42,7 @@ export function UpdatePostComment({
   const commentPost = async (e: FormEvent) => {
     e.preventDefault()
 
-    const request = await axios.post<PostCommentResponse>(
+    const request = await axios.patch<PostCommentResponse>(
       route('posts_comments.update', {
         params: {
           postId,
@@ -54,13 +54,13 @@ export function UpdatePostComment({
       }
     )
 
-    if (request.status === 201) {
+    if (request.status === 200) {
       onSuccess(request.data)
       reset()
     } else {
       toast({
         title: 'Error',
-        description: 'Error commenting',
+        description: 'Error in updating comment!',
       })
     }
   }

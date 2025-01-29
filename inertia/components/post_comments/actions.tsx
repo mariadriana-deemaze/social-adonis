@@ -1,7 +1,6 @@
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import { EllipsisVerticalIcon, Pencil, Trash2 } from 'lucide-react'
 import { PostCommentResponse } from '#interfaces/post_comment'
-import { DeletePostComment } from '@/components/post_comments/delete'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -9,8 +8,34 @@ import {
   DropdownMenuTrigger,
   DropdownMenuItem,
 } from '@/components/ui/dropdown_menu'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { DeletePostComment } from '@/components/post_comments/delete'
 
-type PostCommentActions = 'delete' | 'update' // | 'report'
+type PostCommentActions = 'delete' | 'update' // 'report'
+
+function DeleteDialog({
+  comment,
+  onSuccess,
+}: {
+  comment: PostCommentResponse
+  onSuccess: () => void
+}) {
+  return (
+    <DialogContent className="default-dialog">
+      <DialogHeader>
+        <DialogTitle>Are you sure?</DialogTitle>
+        <DialogDescription>This is irreversible.</DialogDescription>
+      </DialogHeader>
+      <DeletePostComment comment={comment} onSuccess={onSuccess} />
+    </DialogContent>
+  )
+}
 
 export function PostCommentActions({
   comment,
@@ -28,25 +53,24 @@ export function PostCommentActions({
     >
   >
 }) {
+  const [openModal, setOpenModal] = useState<'delete' | false>(false)
+
   const actions: Record<PostCommentActions, () => ReactElement> = {
     delete: () => (
-      <DeletePostComment
-        comment={comment}
-        trigger={
-          <div className="flex w-full flex-row items-center gap-3 hover:cursor-pointer">
-            <Button
-              type="button"
-              className="delete-post-comment-trigger"
-              variant="ghost"
-              size="sm-icon"
-            >
-              <Trash2 size={15} />
-            </Button>
-            <p className="text-xs font-normal text-current">Delete</p>
-          </div>
-        }
-        onSuccess={() => abilities.delete?.onSuccess()}
-      />
+      <div
+        className="flex w-full flex-row items-center gap-3 hover:cursor-pointer"
+        onClick={() => setOpenModal('delete')}
+      >
+        <Button
+          type="button"
+          className="delete-post-comment-trigger"
+          variant="ghost"
+          size="sm-icon"
+        >
+          <Trash2 size={15} />
+        </Button>
+        <p className="text-xs font-normal text-current">Delete</p>
+      </div>
     ),
     update: () => (
       <div
@@ -73,29 +97,46 @@ export function PostCommentActions({
 
   if (renderActions) {
     return (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button className="trigger-user-post-actions" variant="outline" size="sm-icon">
-            <EllipsisVerticalIcon className="h-4 w-4 text-gray-500" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-auto" align="end" forceMount>
-          {Object.entries(actions).map(([action, Element], index) => {
-            if (Object.keys(abilities).includes(action as PostCommentActions)) {
-              return (
-                <DropdownMenuItem
-                  key={`${comment.id}_${action}_${index}`}
-                  className="flex flex-row gap-4 p-0 text-gray-600"
-                  onSelect={(e) => e.preventDefault()}
-                  asChild
-                >
-                  <Element />
-                </DropdownMenuItem>
-              )
-            }
-          })}
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <>
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <Button className="trigger-user-post-actions" variant="outline" size="sm-icon">
+              <EllipsisVerticalIcon className="h-4 w-4 text-gray-500" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-auto" align="end">
+            {Object.entries(actions).map(([action, Element], index) => {
+              if (Object.keys(abilities).includes(action as PostCommentActions)) {
+                return (
+                  <DropdownMenuItem
+                    key={`${comment.id}_${action}_${index}`}
+                    className="flex flex-row gap-4 p-0 text-gray-600"
+                  >
+                    <Element />
+                  </DropdownMenuItem>
+                )
+              }
+            })}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <Dialog
+          open={openModal !== false}
+          onOpenChange={(open) => {
+            !open && setOpenModal(false)
+          }}
+        >
+          {openModal === 'delete' && (
+            <DeleteDialog
+              comment={comment}
+              onSuccess={() => {
+                abilities.delete?.onSuccess()
+                setOpenModal(false)
+              }}
+            />
+          )}
+        </Dialog>
+      </>
     )
   } else {
     return <></>
