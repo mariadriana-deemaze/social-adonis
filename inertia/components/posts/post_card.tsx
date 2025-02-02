@@ -1,9 +1,8 @@
 import { Dispatch, ReactElement, SetStateAction, useMemo, useState } from 'react'
-import { Link } from '@inertiajs/react'
+import axios from 'axios'
 import {
   ArrowLeft,
   ArrowRight,
-  Clock,
   Link as LinkIcon,
   EllipsisVerticalIcon,
   Loader2,
@@ -11,8 +10,9 @@ import {
   Trash2,
   Flag,
   Pin,
-  BadgeCheck,
+  MessageSquareMore,
 } from 'lucide-react'
+import { Link } from '@inertiajs/react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -23,18 +23,17 @@ import {
 import { UpdatePost } from '@/components/posts/update'
 import { DeletePost } from '@/components/posts/delete'
 import { ReportPost } from '@/components/posts/report'
-import { UserAvatar } from '@/components/generic/user_avatar'
 import PostReactionIcon, { POST_REACTION_ICONS } from '@/components/posts/post_reaction_icon'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover_card'
 import { PostResponse } from 'app/interfaces/post'
 import { AttachmentResponse } from 'app/interfaces/attachment'
-import { formatDistanceToNow } from 'date-fns'
 import { PostReactionType } from '#enums/post'
 import { UserResponse } from '#interfaces/user'
 import { route } from '@izzyjs/route/client'
 import { useToast } from '@/components/ui/use_toast'
 import { cn } from '@/lib/utils'
-import axios from 'axios'
+import { UserContentHeader } from '@/components/generic/user_content_header'
+import { PostComments } from '@/components/post_comments/post_comments'
 
 type PostActions = 'update' | 'delete' | 'report' | 'pin'
 
@@ -62,11 +61,13 @@ function PostContentParser({
       Object.entries(mentions).forEach(([username, info]) => {
         html = html.replace(
           '@' + username,
-          `<a class="text-cyan-600" href=${route('users.show', {
-            params: {
-              id: info.id,
-            },
-          })}>@${username}</a>`
+          `<a class="text-cyan-600" href=${
+            route('users.show', {
+              params: {
+                id: info.id,
+              },
+            }).path
+          }>@${username}</a>`
         )
       })
     }
@@ -221,7 +222,7 @@ function PostGallery({ attachments }: { attachments: AttachmentResponse[] }) {
   )
 }
 
-function PostReaction({
+function PostReactionBadge({
   actions,
   post,
   currentUser,
@@ -410,7 +411,7 @@ function PostActions({
         onClick={updatePin}
         className="flex w-full flex-row items-center gap-3 hover:cursor-pointer"
       >
-        <Button type="button" className="pin-post-trigger" variant="ghost" size="sm-icon">
+        <Button type="button" variant="ghost" size="sm-icon" className="pin-post-trigger">
           <Pin
             className={cn('text-black', post.pinned ? 'fill-slate-400' : 'fill-white')}
             size={15}
@@ -461,15 +462,34 @@ function PostActions({
   )
 }
 
+function PostCommentsBadge({ count, disabled }: { count: number; disabled: boolean }) {
+  return (
+    <button
+      disabled={disabled}
+      className={cn(
+        disabled ? 'cursor-not-allowed' : 'cursor-pointer',
+        'flex flex-row items-center justify-center gap-1 rounded-full border border-slate-400 bg-slate-50 px-2'
+      )}
+    >
+      <MessageSquareMore size={14} />
+      <p id="post-total-comments-count" className="text-xs text-slate-500">
+        {count}
+      </p>
+    </button>
+  )
+}
+
 export default function PostCard({
   post,
   user,
   actions = true,
+  showComments = true,
   redirect = false,
 }: {
   post: PostResponse
   user: UserResponse | null
   actions?: boolean
+  showComments?: boolean
   redirect?: boolean
 }) {
   const [postState, setPostState] = useState<PostResponse>(post)
@@ -486,23 +506,7 @@ export default function PostCard({
             }).path
           }
         >
-          <div className="flex flex-row gap-3">
-            <UserAvatar user={post.user} className="h-8 w-8" />
-            <div className="flex flex-col gap-1">
-              <div className="flex flex-row items-center gap-2">
-                <p className="max-w-40 truncate text-ellipsis text-xs text-gray-600 md:max-w-screen-lg">
-                  @{post.user.username}
-                </p>
-                {post.user.verified && (
-                  <BadgeCheck size={14} className="fill-blue-500 stroke-white" />
-                )}
-              </div>
-              <span className="flex items-center gap-1 text-xs text-gray-400">
-                <Clock size={10} />
-                {formatDistanceToNow(new Date(post.createdAt))} ago
-              </span>
-            </div>
-          </div>
+          <UserContentHeader user={post.user} createdAt={post.createdAt} />
         </Link>
 
         {postState.pinned && (
@@ -513,7 +517,7 @@ export default function PostCard({
           </div>
         )}
 
-        {/* // TODO: Review on how to best manage this, be wise. Explore habilities viewing send from the BE. */}
+        {/* // TODO: Review on how to best manage this, BE wise. Explore habilities viewing send from the BE. */}
         {actions && (
           <PostActions
             post={postState}
@@ -551,9 +555,14 @@ export default function PostCard({
         {post.link && <LinkPreview preview={post.link} />}
       </div>
 
-      <div className="border-t border-t-gray-200 py-4 opacity-70">
-        <PostReaction actions={actions} post={post} currentUser={user} />
+      <div className="flex flex-row gap-2 border-t border-t-gray-200 px-2 py-4 opacity-70">
+        <PostCommentsBadge count={postState.comments.totalCount} disabled={!actions} />
+        <PostReactionBadge actions={actions} post={post} currentUser={user} />
       </div>
+
+      {showComments && (
+        <PostComments currentUser={user} postState={postState} setPostState={setPostState} />
+      )}
     </article>
   )
 }

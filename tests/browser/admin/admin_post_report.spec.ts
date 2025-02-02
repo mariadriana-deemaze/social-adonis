@@ -9,6 +9,7 @@ test.group('Admin post report', (group) => {
 
   group.each.setup(() => testUtils.db().truncate())
 
+  // TODO: FIX
   test('Successfully filters the report complaint list', async ({
     browserContext,
     assert,
@@ -50,6 +51,7 @@ test.group('Admin post report', (group) => {
     assert.equal(firstRowPostContent, userPostReport.posts[0].content)
   })
 
+  // TODO: FIX
   test('Successfully accepts a report complaint', async ({ assert, browserContext, visit }) => {
     const adminUser = await UserFactory.apply('admin').create()!
     const reportingUser = await UserFactory.create()!
@@ -80,6 +82,7 @@ test.group('Admin post report', (group) => {
     assert.equal(reportStatus, PostReportStatus.ACCEPTED)
   })
 
+  // TODO: FIX
   test('Successfully rejects a report complaint', async ({ assert, browserContext, visit }) => {
     const adminUser = await UserFactory.apply('admin').create()!
     const reportingUser = await UserFactory.create()!

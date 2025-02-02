@@ -53,6 +53,29 @@ export default class PostReactionService {
   }
 
   /**
+   * Handles the process on serializing the reactions
+   */
+  serialize(reactions: PostReaction[]): Record<PostReactionType, number> {
+    let accumulator: Record<PostReactionType, number> = {
+      [PostReactionType.LIKE]: 0,
+      [PostReactionType.THANKFUL]: 0,
+      [PostReactionType.FUNNY]: 0,
+      [PostReactionType.CONGRATULATIONS]: 0,
+      [PostReactionType.ANGRY]: 0,
+      [PostReactionType.LOVE]: 0,
+    }
+
+    const reactionsCounts: Record<PostReactionType, number> =
+      reactions?.reduce((acc, next) => {
+        if (!next) return acc
+        acc[next.type] = acc[next.type] + 1
+        return acc
+      }, accumulator) || accumulator
+
+    return reactionsCounts
+  }
+
+  /**
    * Notifies the post owner of someone reacting to their post.
    */
   private async notify(userId: UUID, postId: UUID, type: PostReactionType) {

@@ -38,11 +38,15 @@ test.group('User settings', (group) => {
     await page.locator('input#email').fill(data.email)
     await page.locator('input#username').fill(data.username)
 
-    const responsePromise = page.waitForResponse(url)
+    const responsePromise = page.waitForRequest(
+      (request) =>
+        request.url().includes(route('users.update').path) && request.method() === 'PATCH'
+    )
     await page.getByRole('button', { name: 'Update' }).click()
-    const response = await responsePromise
+
     const json: { props: InferPageProps<UsersController, 'update'> & SharedProps } =
-      await response.json()
+      await responsePromise.then(async (request) => await request.response().then((r) => r?.json()))
+
     assert.equal(data.name, json.props.user?.name)
     assert.equal(data.surname, json.props.user?.surname)
     assert.equal(data.username, json.props.user?.username)

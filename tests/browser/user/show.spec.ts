@@ -103,14 +103,26 @@ test.group('Acessing user profile feed', (group) => {
       }).path
     )
 
-    const followButton = page.locator('button.follow-action').first()
-    const followersCount = page.locator('user-profile-card-total-followers').first()
+    const followButton = page.locator('button.follow-action').nth(1)
+    const followersCount = page.locator('p.user-profile-card-total-followers').nth(1)
 
-    await page.isEnabled('button.follow-action:nth-child(1)')
     page.assertText(followButton, 'Follow')
-    page.assertText(followersCount, '1')
+    page.assertText(followersCount, 'Followers 0')
+
+    const followPromise = page.waitForRequest(
+      (request) =>
+        request.url().includes(
+          route('users_follows.store', {
+            params: {
+              userId: otherUser.id,
+            },
+          }).path
+        ) && request.method() === 'POST'
+    )
     await followButton.click()
+    await followPromise.then(async (request) => await request.response())
+
     page.assertText(followButton, 'Unfollow')
-    page.assertText(followersCount, '0')
+    page.assertText(followersCount, 'Followers 1')
   })
 })

@@ -13,6 +13,7 @@
 */
 
 export const policies = {
+  PostCommentPolicy: () => import('#policies/post_comment_policy'),
   PostPolicy: () => import('#policies/posts_policy'),
   PostReportPolicy: () => import('#policies/post_report_policy'),
 }

@@ -1,5 +1,6 @@
 import { UserFactory } from '#database/factories/user_factory'
 import testUtils from '@adonisjs/core/services/test_utils'
+import mail from '@adonisjs/mail/services/main'
 import { route } from '@izzyjs/route/client'
 import { test } from '@japa/runner'
 
@@ -34,7 +35,7 @@ test.group('Acessing feed', (group) => {
     await page.locator('button.create-post').click()
 
     const postContent = 'Lets get dat bread! 🍞'
-    await page.locator('textarea').fill(postContent)
+    await page.locator('textarea#content').fill(postContent)
     await page.getByText('Publish').click()
     const locator = page.locator('.feed-list > article:nth-child(1) > .post-content')
     await page.assertElementsText(locator, [postContent])
@@ -57,7 +58,7 @@ test.group('Acessing feed', (group) => {
     const updateButton = page.locator('button.update-post-trigger')
     updateButton.click()
     const postContent = 'Lets get dat bread! 🍞'
-    await page.locator('textarea').fill(postContent)
+    await page.locator('textarea#content').fill(postContent)
     await page.getByRole('button', { name: 'Update' }).click()
     const locator = page.locator('.post-content')
     await page.assertElementsText(locator, [postContent])
@@ -104,7 +105,9 @@ test.group('Acessing feed', (group) => {
     await page.assertNotExists(deleteAction)
   })
 
-  test('Successfully reacts to a post', async ({ visit, browserContext }) => {
+  test('Successfully reacts to a post', async ({ visit, browserContext, cleanup }) => {
+    mail.fake()
+
     const user = await UserFactory.with('posts', 1).create()
     const otherUser = await UserFactory.with('posts', 8).create()
 
@@ -123,15 +126,41 @@ test.group('Acessing feed', (group) => {
     const funnyCount = page.locator('button.react-funny > span')
 
     // React
+    const funnyReactionPromise = page.waitForRequest(
+      (request) =>
+        request.url().includes(
+          route('posts_reactions.store', {
+            params: {
+              id: otherUser.posts[0].id,
+            },
+          }).path
+        ) && request.method() === 'POST'
+    )
     await funnyReaction.click()
+    await funnyReactionPromise.then(async (request) => await request.response())
     const status = page.locator('p.user-post-react-status')
     await page.assertElementsText(status, ['You reacted.'])
     await page.assertElementsText(funnyCount, ['1'])
 
     // Unreact
     await reactButton.hover()
+    const funnyUnreactionPromise = page.waitForRequest(
+      (request) =>
+        request.url().includes(
+          route('posts_reactions.store', {
+            params: {
+              id: otherUser.posts[0].id,
+            },
+          }).path
+        ) && request.method() === 'DELETE'
+    )
     await funnyReaction.click()
+    await funnyUnreactionPromise.then(async (request) => await request.response())
     await page.assertElementsText(status, ['No reactions.'])
     await page.assertElementsText(funnyCount, ['0'])
+
+    cleanup(() => {
+      mail.restore()
+    })
   })
 })

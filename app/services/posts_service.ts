@@ -5,12 +5,15 @@ import { createPostValidator, updatePostValidator } from '#validators/post'
 import { PostResponse } from 'app/interfaces/post'
 import LinkParserService from '#services/link_parser_service'
 import { PaginatedResponse } from 'app/interfaces/pagination'
-import { PostReactionType } from '#enums/post'
 import PostReaction from '#models/post_reaction'
 import { ModelObject } from '@adonisjs/lucid/types/model'
 import { UserService } from '#services/user_service'
 import { UserResponse } from '#interfaces/user'
 import User from '#models/user'
+import { PostCommentService } from '#services/post_comment_service'
+import { PostCommentResponse } from '#interfaces/post_comment'
+import PostComment from '#models/post_comment'
+import PostReactionService from '#services/post_reaction_service'
 import type { HttpContext } from '@adonisjs/core/http'
 import type { UUID } from 'node:crypto'
 
@@ -18,11 +21,15 @@ export default class PostsService {
   private readonly userService: UserService
   private readonly linkService: LinkParserService
   private readonly attachmentService: AttachmentService
+  private readonly postCommentsService: PostCommentService
+  private readonly postReactionService: PostReactionService
 
   constructor() {
     this.userService = new UserService()
     this.linkService = new LinkParserService()
     this.attachmentService = new AttachmentService()
+    this.postReactionService = new PostReactionService()
+    this.postCommentsService = new PostCommentService(this.userService)
   }
 
   /**
@@ -57,13 +64,27 @@ export default class PostsService {
    * Finds a post and it's author, by record id.
    */
   async findOne(id: UUID, visibleOnly?: boolean): Promise<Post | null> {
-    const query = Post.query().where('id', id).preload('user').preload('reactions')
+    const query = Post.query()
+      .where('id', id)
+      .preload('user')
+      .preload('reactions')
+      .preload('comments', (comments) =>
+        comments
+          .withScopes((scope) => scope.rootComment())
+          .limit(2)
+          .orderBy('created_at', 'desc')
+      )
+      .withCount('comments', (q) =>
+        q.withScopes((scope) => scope.rootComment()).as('total_root_comments')
+      )
+      .withCount('comments', (q) => q.as('total_comments'))
 
     if (visibleOnly) {
       query.withScopes((scope) => scope.visible())
     }
 
     const result = await query
+    await this.postCommentsService.countReplies(result[0].comments)
     return result ? result[0] : null
   }
 
@@ -82,12 +103,23 @@ export default class PostsService {
       .orderBy('updated_at', 'desc')
       .preload('user')
       .preload('reactions')
+      .preload('comments', (comments) =>
+        comments
+          .withScopes((scope) => scope.rootComment())
+          .limit(2)
+          .orderBy('created_at', 'desc')
+      )
+      .withCount('comments', (q) =>
+        q.withScopes((scope) => scope.rootComment()).as('total_root_comments')
+      )
+      .withCount('comments', (q) => q.as('total_comments'))
       .paginate(page, limit)
 
     const { meta } = result.toJSON()
 
     const data: PostResponse[] = []
     for (const post of result) {
+      await this.postCommentsService.countReplies(post.comments)
       const resource = await this.serialize(currentUserId, post)
       data.push(resource)
     }
@@ -157,27 +189,22 @@ export default class PostsService {
    * Handles the process on serializing the post data, and aggregating it's many associations.
    */
   async serialize(currentUserId: UUID, post: Post): Promise<PostResponse> {
-    const data = post.toJSON() as ModelObject & { reactions: PostReaction[] }
+    const data = post.toJSON() as ModelObject & {
+      reactions: PostReaction[]
+      comments: PostComment[]
+    }
     const user = await this.userService.serialize(post.user)
     const attachments = await this.attachmentService.findMany(AttachmentModel.POST, post.id)
     const link = await this.linkService.show(post.link)
     const mentions = await this.processMentions(post)
+    const comments: PostCommentResponse[] = []
 
-    let accumulator: Record<PostReactionType, number> = {
-      [PostReactionType.LIKE]: 0,
-      [PostReactionType.THANKFUL]: 0,
-      [PostReactionType.FUNNY]: 0,
-      [PostReactionType.CONGRATULATIONS]: 0,
-      [PostReactionType.ANGRY]: 0,
-      [PostReactionType.LOVE]: 0,
+    for (const comment of (post.$preloaded['comments'] || []) as PostComment[]) {
+      const seralized = await this.postCommentsService.serialize(comment)
+      comments.push(seralized)
     }
 
-    const reactionsCounts: Record<PostReactionType, number> =
-      data?.reactions?.reduce((acc, next) => {
-        if (!next) return acc
-        acc[next.type] = acc[next.type] + 1
-        return acc
-      }, accumulator) || accumulator
+    const reactionsCounts = this.postReactionService.serialize(data.reactions)
 
     const resource: PostResponse = {
       id: data.id,
@@ -194,6 +221,14 @@ export default class PostsService {
             ?.type || null,
         reactionsCounts,
         total: Object.values(reactionsCounts).reduce((prev, next) => prev + next, 0),
+      },
+      comments: {
+        data: comments,
+        totalCount: Number(post.$extras['total_comments'] || 0),
+        meta: {
+          nextPageUrl: Number(post.$extras['total_root_comments'] || 0) > 2 ? '/?page=2' : null,
+          total: Number(post.$extras['total_root_comments'] || 0),
+        } as PaginatedResponse<PostCommentResponse>['meta'],
       },
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
