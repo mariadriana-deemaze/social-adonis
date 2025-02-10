@@ -12,7 +12,7 @@ const SOCIALS = [
   {
     provider: 'Google',
     Icon: Chrome,
-    enabled: false,
+    enabled: true,
   },
   {
     provider: 'GitHub',
