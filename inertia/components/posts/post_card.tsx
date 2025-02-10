@@ -298,6 +298,18 @@ function PostReactionBadge({
     return accCounts
   }, [reaction.type])
 
+  const reactionsRender = useMemo(() => {
+    return Object.entries(post.reactions.reactionsCounts).reduce(
+      (acc, [reaction, count]) => {
+        if (Object.keys(acc).length === 3 || count === 0) return acc
+        if (count === 0) return acc
+        acc[reaction as PostReactionType] = count
+        return acc
+      },
+      {} as Partial<Record<PostReactionType, number>>
+    )
+  }, [reaction.type])
+
   return (
     <div className="flex flex-row items-center gap-2">
       {actions ? (
@@ -340,6 +352,35 @@ function PostReactionBadge({
           {reaction.type ? <PostReactionIcon type={reaction.type} /> : '+'}
         </button>
       )}
+
+      <div className='flex flex-row justify-center'>
+        {Object.entries(reactionsRender).map(([reaction, count], index) => {
+          const maxZIndex = Object.entries(reactionsRender).length
+          if (count === 0) return <></>
+          return (
+            <HoverCard key={`${post.id}_reaction_${reaction}`}>
+              <HoverCardTrigger>
+                <span
+                  className={cn(
+                    'relative h-6 w-6 rounded-full bg-white',
+                    `z-[${maxZIndex - index}]`,
+                    index > 0 && '-ml-1'
+                  )}
+                >
+                  {POST_REACTION_ICONS[reaction as PostReactionType]}
+                </span>
+              </HoverCardTrigger>
+              <HoverCardContent
+                align="start"
+                side="top"
+                className="flex w-auto flex-row gap-2 divide-x divide-dashed px-2 py-1"
+              >
+                {count} {reaction.toLowerCase()} reaction.
+              </HoverCardContent>
+            </HoverCard>
+          )
+        })}
+      </div>
       <p className="user-post-react-status text-xs text-slate-500">{countStatus}</p>
     </div>
   )
