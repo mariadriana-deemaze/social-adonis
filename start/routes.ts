@@ -38,6 +38,7 @@ router
         router.get('/', [UsersController, 'index']).as('users.index')
         router.get(':id', [FeedController, 'show']).as('users.show')
       })
+      .where('id', router.matchers.uuid())
       .prefix('users')
 
     router
@@ -48,6 +49,8 @@ router
           .get(':postId/comments/:id', [PostCommentsController, 'show'])
           .as('posts_comments.show')
       })
+      .where('id', router.matchers.uuid())
+      .where('postId', router.matchers.uuid())
       .prefix('posts')
   })
   .use(middleware.guest())
@@ -106,6 +109,7 @@ router
           .delete('follow/:userId', [UserFollowsController, 'destroy'])
           .as('users_follows.destroy')
       })
+      .where('userId', router.matchers.uuid())
       .prefix('users')
 
     router.get('settings', [UsersController, 'show']).as('settings.show')
@@ -138,6 +142,8 @@ router
         router.put(':id/report', [PostReportsController, 'update']).as('posts_reports.update')
         router.delete(':id/report', [PostReportsController, 'destroy']).as('posts_reports.destroy')
       })
+      .where('id', router.matchers.uuid())
+      .where('postId', router.matchers.uuid())
       .prefix('posts')
   })
   .use(middleware.auth())
@@ -172,6 +178,7 @@ router
               .put('reports/:id', [AdminPostReportsController, 'update'])
               .as('admin_posts_reports.update')
           })
+          .where('id', router.matchers.uuid())
           .prefix('posts')
       })
       .use(middleware.auth({ guards: ['admin-web'] }))
