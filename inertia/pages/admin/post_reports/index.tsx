@@ -91,7 +91,7 @@ function Update({
         <hr />
 
         <div className="w-full pb-4 pt-8">
-          <PostCard post={report.post} user={currentUser} actions={false} />
+          <PostCard post={report.post} user={currentUser} actions={false} showComments={false} />
         </div>
 
         <form

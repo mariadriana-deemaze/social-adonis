@@ -11,6 +11,7 @@ import {
 } from '@adonisjs/lucid/orm'
 import User from '#models/user'
 import { extractFirstLink, REGEX, sanitizePostContent } from '#utils/index'
+import PostComment from '#models/post_comment'
 import PostReaction from '#models/post_reaction'
 import PostReport from '#models/post_report'
 import { PostStatus } from '#enums/post'
@@ -19,6 +20,8 @@ import type { UUID } from 'node:crypto'
 import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 
 export default class Post extends BaseModel {
+  static visible = scope((query) => query.where('status', PostStatus.PUBLISHED))
+
   @column({ isPrimary: true })
   declare id: UUID
 
@@ -40,6 +43,9 @@ export default class Post extends BaseModel {
   @hasMany(() => PostReaction)
   declare reactions: HasMany<typeof PostReaction>
 
+  @hasMany(() => PostComment)
+  declare comments: HasMany<typeof PostComment>
+
   @hasMany(() => PostReport)
   declare reports: HasMany<typeof PostReport>
 
@@ -48,10 +54,6 @@ export default class Post extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
-
-  static visible = scope((query) => {
-    query.where('status', PostStatus.PUBLISHED)
-  })
 
   @computed()
   get link(): string | null {

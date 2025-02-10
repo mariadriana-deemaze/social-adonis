@@ -21,6 +21,7 @@
     "#exceptions/*": "./app/exceptions/*.js",
     "#utils/*": "./app/utils/*.js",
     "#models/*": "./app/models/*.js",
+    "#factories/*": "./database/factories/*.js",
     "#enums/*": "./app/enums/*.js",
     "#interfaces/*": "./app/interfaces/*.js",
     "#types/*": "./app/types/*.js",

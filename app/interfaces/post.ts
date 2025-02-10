@@ -3,6 +3,8 @@ import { UUID } from 'node:crypto'
 import { UserResponse } from './user'
 import { AttachmentResponse } from 'app/interfaces/attachment'
 import { PostReactionType, PostReportReason, PostReportStatus, PostStatus } from '#enums/post'
+import { PostCommentResponse } from '#interfaces/post_comment'
+import { PaginatedResponse } from '#interfaces/pagination'
 
 export interface LinkMetadataJSONResponse {
   title: string
@@ -32,6 +34,7 @@ export interface PostResponse extends BaseEntity {
     reactionsCounts: Record<PostReactionType, number>
     total: number
   }
+  comments: { totalCount: number } & PaginatedResponse<PostCommentResponse>
 }
 
 export interface PostReportResponse extends BaseEntity {

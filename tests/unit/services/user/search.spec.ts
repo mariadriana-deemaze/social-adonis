@@ -12,7 +12,10 @@ test.group('User/search', (group) => {
   let service: UserService = new UserService()
 
   group.each.setup(async () => {
-    await testUtils.db().truncate()
+    await testUtils
+      .db()
+      .truncate()
+      .then(async (trunc) => await trunc())
     users = await UserFactory.createMany(20)
   })
 
