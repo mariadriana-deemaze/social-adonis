@@ -33,7 +33,7 @@ export default function UserNavBar({ user }: { user: UserResponse | null }) {
       <div className="border-b">
         <div className="flex h-16 items-center px-4">
           <nav className={cn('flex items-center space-x-4 lg:space-x-6')}>
-            <AdonisLogo className="h-6 w-6" />
+            <AdonisLogo />
             {LINKS.map(({ title, link }, index) => (
               <Link
                 key={`link-${index}`}

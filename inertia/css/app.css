@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Climate+Crisis&family=Gantari:ital,wght@0,100..900;1,100..900');
 
 * {
   margin: 0;
@@ -9,7 +9,7 @@ html,
 body,
 #app {
   background-color: #f7f8fa;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Gantari', sans-serif;
   color: #46444c;
   height: 100%;
   width: 100%;
