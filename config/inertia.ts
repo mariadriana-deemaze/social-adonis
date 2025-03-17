@@ -33,7 +33,7 @@ const inertiaConfig = defineConfig({
    * Options for the server-side rendering
    */
   ssr: {
-    enabled: true,
+    enabled: false,
     pages: (_ctx, page) => !page.startsWith('admin'),
   },
 })

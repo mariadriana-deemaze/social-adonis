@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import HeadOG from '@/components/generic/head_og'
 import { Link } from '@inertiajs/react'
 import { route } from '@izzyjs/route/client'
@@ -6,6 +6,9 @@ import { Button } from '@/components/ui/button'
 import { Boxes, LucideProps, Rabbit, Shield } from 'lucide-react'
 import { faker } from '@faker-js/faker'
 import { Card } from '@/components/ui/card'
+import gsap from 'gsap'
+import { useGSAP } from '@gsap/react'
+gsap.registerPlugin(useGSAP)
 
 function FeatureCard({
   Icon,
@@ -60,7 +63,7 @@ function TestimonialCard({
   )
 }
 
-export default function Home() {
+export default function HomeClient() {
   const STATS = [
     {
       title: 'Active Users',
@@ -68,7 +71,7 @@ export default function Home() {
     },
     {
       title: 'Countries',
-      value: '10M+',
+      value: '150',
     },
     {
       title: 'Posts',
@@ -128,6 +131,30 @@ export default function Home() {
   const loremParagraphs =
     'Totus debilito depono ipsa aeternus caput deserunt. Catena cariosus arbitro depopulo cinis. Vulgivagus saepe astrum. \nAnimadverto tersus caritas. Conservo copia clarus cariosus vir arbitro conicio volup curatio. Sit currus vilis iste ars reprehenderit sursum unus cum.'
 
+  const container = useRef<HTMLElement | null>(null)
+  const tl = useRef<GSAPTimeline>()
+
+  useGSAP(
+    () => {
+      const statements: gsap.TweenTarget[] = gsap.utils.toArray('.social-adonis-statement')
+      const blurredIn: gsap.TweenTarget[] = gsap.utils.toArray('.blurred-in')
+      tl.current = gsap
+        .timeline()
+        .from(blurredIn, { opacity: 0, filter: 'blur(20px)' })
+        .delay(1)
+        .to(statements[0], { y: 0, delay: 0 })
+        .to(statements[1], { y: 0, delay: 0.5 })
+        .to(statements[2], { y: 0, delay: 1 })
+        .to(blurredIn, { opacity: 1, filter: 'blur(0px)', delay: 2 })
+    },
+    { scope: container }
+  )
+
+  useEffect(() => {
+    if (!tl?.current) return
+    tl.current.play()
+  }, [tl])
+
   return (
     <>
       <HeadOG
@@ -136,14 +163,26 @@ export default function Home() {
         url={route('home.show').path}
       />
 
-      <section className="mb-64 flex w-full flex-col items-center">
+      <section className="mb-64 flex w-full flex-col items-center" ref={container}>
         <div className="flex min-h-[80vh] w-full flex-col justify-center gap-4 rounded-[3rem] bg-gradient-to-b from-[#D3CFC2] from-40% to-[#C4BEB0] p-20 text-center">
-          <h1 className="relative flex w-full flex-wrap justify-center gap-x-4 gap-y-0 font-climate text-[45px]">
-            <span className="text-blue-200">Connect.</span>
-            <span className="text-red-600">Share.</span>
-            <span className="text-blue-950">Thrive.</span>
+          <h1 className="relative flex w-full flex-row flex-wrap justify-center gap-x-4 gap-y-0 font-climate text-[45px]">
+            <span className="relative h-16 min-w-80 overflow-hidden">
+              <span className="social-adonis-statement absolute left-0 translate-y-12 text-blue-200">
+                Connect.
+              </span>
+            </span>
+            <span className="relative h-16 min-w-56 overflow-hidden">
+              <span className="social-adonis-statement absolute left-0 translate-y-12 text-red-600">
+                Share.
+              </span>
+            </span>
+            <span className="relative h-16 min-w-56 overflow-hidden">
+              <span className="social-adonis-statement absolute left-0 translate-y-12 text-blue-950">
+                Thrive.
+              </span>
+            </span>
           </h1>
-          <div>
+          <div className="blurred-in">
             <p>Social networking reimagined.</p>
             <p>
               Join our ten users in creating meaningful connections in our vibrant and small
@@ -151,9 +190,9 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid grid-cols-3 rounded-lg border border-gray-400 bg-white/10 py-4 backdrop-blur-xl">
-            {STATS.map((stat) => (
-              <div key={stat.value}>
+          <div className="blurred-in mt-10 grid grid-cols-3 rounded-lg border border-gray-400 bg-white/10 py-4 backdrop-blur-xl">
+            {STATS.map((stat, index) => (
+              <div key={stat.value + index}>
                 <h3 className="font-climate text-[3rem] text-black">{stat.value}</h3>
                 <p>{stat.title}</p>
               </div>
@@ -218,7 +257,7 @@ export default function Home() {
         </div>
         <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-3">
           {TESTEMONIALS.map((testemonial) => (
-            <TestimonialCard key={`testemonial_${testemonial.author}`} {...testemonial} />
+            <TestimonialCard key={`testemonial_${testemonial.author.name}`} {...testemonial} />
           ))}
         </div>
       </section>
