@@ -7,8 +7,11 @@ import { Boxes, LucideProps, Rabbit, Shield } from 'lucide-react'
 import { faker } from '@faker-js/faker'
 import { Card } from '@/components/ui/card'
 import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
+import { cn } from '@/lib/utils'
 gsap.registerPlugin(useGSAP)
+gsap.registerPlugin(ScrollTrigger)
 
 function FeatureCard({
   Icon,
@@ -25,16 +28,18 @@ function FeatureCard({
   onClick: () => void
   selected: boolean
 }) {
-  console.log('selected', selected)
   return (
     <div
-      className="flex flex-row gap-6 rounded-lg border border-gray-300 px-6 py-5"
+      className={cn(
+        'flex cursor-pointer flex-row gap-6 rounded-2xl border border-gray-300 px-6 py-5 transition-all delay-200 ease-in-out',
+        selected ? 'bg-white' : 'bg-[#F2F2F2]'
+      )}
       onClick={onClick}
     >
       <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border">
         <Icon />
       </div>
-      <div>
+      <div className={cn(selected ? 'opacity-100' : 'opacity-70')}>
         <h6 className="text-lg font-semibold">{title}</h6>
         <p>{description}</p>
       </div>
@@ -50,7 +55,7 @@ function TestimonialCard({
   testimonial: string
 }) {
   return (
-    <Card className="flex w-full flex-col gap-6 p-4">
+    <Card className="fade-in-up flex w-full flex-col gap-6 p-4">
       <div className="flex flex-row gap-4">
         <img className="h-12 w-12" src={author.picture} alt="Author picture" />
         <div className="flex flex-col self-center">
@@ -138,14 +143,51 @@ export default function HomeClient() {
     () => {
       const statements: gsap.TweenTarget[] = gsap.utils.toArray('.social-adonis-statement')
       const blurredIn: gsap.TweenTarget[] = gsap.utils.toArray('.blurred-in')
+      const fadeInUp: gsap.TweenTarget[] = gsap.utils.toArray('.fade-in-up')
+      // const scaleReveal: gsap.TweenTarget[] = gsap.utils.toArray('.scale-reveal')
+
+      console.log('fadeInUp', fadeInUp)
+
       tl.current = gsap
         .timeline()
         .from(blurredIn, { opacity: 0, filter: 'blur(20px)' })
         .delay(1)
-        .to(statements[0], { y: 0, delay: 0 })
-        .to(statements[1], { y: 0, delay: 0.5 })
-        .to(statements[2], { y: 0, delay: 1 })
-        .to(blurredIn, { opacity: 1, filter: 'blur(0px)', delay: 2 })
+        .to(statements[0], { y: 0, duration: 0.2, ease: 'bounce.in' })
+        .to(statements[1], { y: 0, delay: 0.5, duration: 0.2, ease: 'bounce.in' })
+        .to(statements[2], { y: 0, delay: 1, duration: 0.2, ease: 'bounce.in' })
+        .to(blurredIn, { opacity: 1, filter: 'blur(0px)', delay: 2, duration: 2 })
+
+      console.log('tl ->', tl.current)
+
+      fadeInUp.map((item) => {
+        gsap.fromTo(
+          item,
+          {
+            y: -100,
+            opacity: 0,
+            scrollTrigger: {
+              // @ts-ignore
+              trigger: item,
+              start: 'bottom bottom',
+              end: 'top 20%',
+              scrub: true,
+              // markers: true,
+            },
+          },
+          {
+            y: 0,
+            opacity: 1,
+            scrollTrigger: {
+              // @ts-ignore
+              trigger: item,
+              start: 'bottom bottom',
+              end: 'top 20%',
+              scrub: true,
+              // markers: true,
+            },
+          }
+        )
+      })
     },
     { scope: container }
   )
@@ -156,14 +198,14 @@ export default function HomeClient() {
   }, [tl])
 
   return (
-    <>
+    <section ref={container}>
       <HeadOG
         title="Homepage"
         description="Homepage of social adonis."
         url={route('home.show').path}
       />
 
-      <section className="mb-64 flex w-full flex-col items-center" ref={container}>
+      <section className="mb-64 flex w-full flex-col items-center">
         <div className="flex min-h-[80vh] w-full flex-col justify-center gap-4 rounded-[3rem] bg-gradient-to-b from-[#D3CFC2] from-40% to-[#C4BEB0] p-20 text-center">
           <h1 className="relative flex w-full flex-row flex-wrap justify-center gap-x-4 gap-y-0 font-climate text-[45px]">
             <span className="relative h-16 min-w-80 overflow-hidden">
@@ -211,13 +253,13 @@ export default function HomeClient() {
 
       <section className="mb-64 flex w-full flex-col items-center gap-10">
         <div className="flex w-full flex-col items-center gap-6">
-          <h1 className="flex gap-4 text-center font-climate text-[45px] leading-10 text-blue-950">
+          <h1 className="fade-in-up flex gap-4 text-center font-climate text-[45px] leading-10 text-blue-950">
             Features that set us apart
           </h1>
           <p className="max-w-screen-sm text-center">{loremParagraphs}</p>
         </div>
-        <div className="mt-20 flex w-full flex-col gap-4 md:flex-row">
-          <ul className="flex min-w-[22rem] flex-col gap-4">
+        <div className="mt-20 flex w-full flex-col gap-8 md:flex-row">
+          <ul className="mt-10 flex min-w-[22rem] flex-col gap-4 rounded-2xl border-l border-r border-t bg-gradient-to-b from-black/5 to-transparent p-2">
             {FEATURES.map(({ preview, ...feature }, index) => (
               <li key={`feature_${index}_${feature.title.toLowerCase().replace(' ', '_')}`}>
                 <FeatureCard
@@ -263,7 +305,7 @@ export default function HomeClient() {
       </section>
 
       <section className="mb-28 flex w-full flex-col items-center">
-        <div className="relative h-16 w-32 bg-[#C4BEB0]">
+        <div className="scale-reveal relative h-16 w-32 bg-[#C4BEB0]">
           <div className="absolute -top-16 left-16 h-32 w-32 rounded-full bg-[#F7F8FA]" />
           <div className="absolute -top-16 right-16 h-32 w-32 rounded-full bg-[#F7F8FA]" />
         </div>
@@ -280,6 +322,6 @@ export default function HomeClient() {
           </Button>
         </div>
       </section>
-    </>
+    </section>
   )
 }

@@ -58,8 +58,9 @@ function Footer() {
           </ul>
         </div>
       </div>
-      <hr />
-      <p className="text-center">© 2025 Social Adonis. All rights reserved.</p>
+      <p className="w-full border-t pt-4 text-center">
+        © 2025 Social Adonis. All rights reserved.
+      </p>
     </footer>
   )
 }
