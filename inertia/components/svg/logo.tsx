@@ -6,14 +6,7 @@ export default function AdonisLogo({ className }: { className?: string }) {
   const style = cn(`w-32 ${className}`)
   return (
     <Link href={route('home.show').path}>
-      <svg
-        width="113"
-        height="35"
-        viewBox="0 0 113 35"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        className={style}
-      >
+      <svg viewBox="0 0 113 35" fill="none" xmlns="http://www.w3.org/2000/svg" className={style}>
         <path d="M0 0H112.49V34.9692H0V0Z" />
         <path
           d="M17.434 12.2116C15.2495 14.5867 4.3005 17.8596 4.3005 17.8596C4.3005 17.8596 6.64829 6.67573 8.83284 4.30058C11.0174 1.92544 14.7138 1.77093 17.0889 3.95549C19.4641 6.14004 19.6186 9.83641 17.434 12.2116Z"

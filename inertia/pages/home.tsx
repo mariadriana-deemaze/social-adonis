@@ -5,15 +5,17 @@ import { route } from '@izzyjs/route/client'
 import { Button } from '@/components/ui/button'
 import { faker } from '@faker-js/faker'
 import { Card } from '@/components/ui/card'
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { useGSAP } from '@gsap/react'
 import FeatureSlider from '@/components/home/feature_slider'
 import CTABlock from '@/components/home/cta_block'
 import TextCutReveal from '@/components/generic/text_cut_reveal'
 import TextReveal from '@/components/generic/text_reveal'
+import { InferPageProps } from '@adonisjs/inertia/types'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useGSAP } from '@gsap/react'
 gsap.registerPlugin(useGSAP)
 gsap.registerPlugin(ScrollTrigger)
+import type HomeController from '#controllers/home_controller'
 
 function TestimonialCard({
   author,
@@ -36,11 +38,11 @@ function TestimonialCard({
   )
 }
 
-export default function HomeClient() {
+export default function Home(props: InferPageProps<HomeController, 'index'>) {
   const STATS = [
     {
       title: 'Active Users',
-      value: '10M+',
+      value: String(props.users_count),
     },
     {
       title: 'Countries',
@@ -48,7 +50,7 @@ export default function HomeClient() {
     },
     {
       title: 'Posts',
-      value: '120',
+      value: String(props.posts_count),
     },
   ]
 
@@ -95,7 +97,7 @@ export default function HomeClient() {
           },
         })
         .delay(1)
-        .from('.hero', { scale: 2, duration: 1, ease: 'bounce.inOut' })
+        .from('.hero', { scale: 2, duration: 1, delay: 1, ease: 'bounce.inOut' })
         .to(statements[0], { y: 0, duration: 0.2, ease: 'bounce.in' })
         .to(statements[1], { y: 0, delay: 0.5, duration: 0.2, ease: 'bounce.in' })
         .to(statements[2], { y: 0, delay: 0.7, duration: 0.2, ease: 'bounce.in' })
@@ -163,7 +165,7 @@ export default function HomeClient() {
                 />
               </div>
 
-              <div className="blurred-in z-10 mt-10 grid grid-cols-3 rounded-lg border border-gray-400 bg-white/10 py-4 backdrop-blur-xl">
+              <div className="blurred-in border-lightgray-400/50 bg-white/05 z-10 mt-10 grid grid-cols-3 rounded-lg border py-4 backdrop-blur-lg">
                 {STATS.map((stat, index) => (
                   <div key={stat.value + index}>
                     <h3 className="font-climate text-[3rem] text-black">{stat.value}</h3>
@@ -172,11 +174,11 @@ export default function HomeClient() {
                 ))}
               </div>
 
-              <Button className="cta-button text-[1.2rem z-10 h-auto w-auto self-center rounded-full px-6 font-climate">
+              <Button className="cta-button z-10 h-auto w-auto self-center rounded-full px-6 font-climate text-[1.2rem]">
                 <Link href={route('auth.show').path}>Join us</Link>
               </Button>
 
-              {/* REPLACE ME FOR VIDEO */}
+              {/* TODO: REPLACE ME FOR VIDEO */}
               <img
                 src="../../../public/assets/images/dummy_hero.png"
                 className="absolute bottom-0 left-0 w-3/4 mix-blend-lighten delay-700 duration-700 animate-in fade-in-35"
@@ -190,7 +192,7 @@ export default function HomeClient() {
           </div>
         </section>
 
-        <section className="relative mb-64 flex w-full flex-col items-center gap-10">
+        <section className="features-section relative mb-64 flex w-full flex-col items-center gap-10">
           <FeatureSlider />
         </section>
 

@@ -3,6 +3,11 @@ import { Boxes, LucideProps, Rabbit, Shield } from 'lucide-react'
 import TextCutReveal from '@/components/generic/text_cut_reveal'
 import { cn } from '@/lib/utils'
 import TextReveal from '@/components/generic/text_reveal'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useGSAP } from '@gsap/react'
+gsap.registerPlugin(useGSAP)
+gsap.registerPlugin(ScrollTrigger)
 
 const loremParagraphs =
   'Totus debilito depono ipsa aeternus caput deserunt. Catena cariosus arbitro depopulo cinis. Vulgivagus saepe astrum. \nAnimadverto tersus caritas. Conservo copia clarus cariosus vir arbitro conicio volup curatio. Sit currus vilis iste ars reprehenderit sursum unus cum.'
@@ -72,8 +77,33 @@ function FeatureCard({
 export default function FeatureSlider() {
   const [selectedFeatureIndex, setSelectedFeatureIndex] = useState(0)
 
+  useGSAP(() => {
+    const items: gsap.TweenTarget[] = gsap.utils.toArray('.feature-card')
+
+    items.forEach((item, i) => {
+      ScrollTrigger.create({
+        id: 'feature_card' + String(i + 1),
+        // @ts-expect-error
+        trigger: item,
+        start: `center+=200px center`,
+        end: `center center`,
+        pinnedContainer: '.features-section',
+        pin: '.features-slider',
+        pinSpacing: '800px',
+        pinType: 'fixed',
+        // @ts-ignore
+        endTrigger: items[items.length - 1]?.current,
+        scrub: true,
+        markers: { indent: 180 * i },
+        onUpdate: () => setSelectedFeatureIndex(i),
+      })
+    })
+  }, [])
+
   return (
-    <>
+    <div
+      className={`features-slider flex w-full flex-col items-center gap-6 min-h-[${FEATURES.length}00vh]`}
+    >
       <div className="flex w-full flex-col items-center gap-6">
         <TextCutReveal
           text="Features that set us apart"
@@ -84,7 +114,10 @@ export default function FeatureSlider() {
       <div className="mt-20 flex w-full flex-col gap-8 md:flex-row">
         <ul className="mt-10 flex min-w-[22rem] flex-col gap-4 rounded-2xl border-l border-r border-t bg-gradient-to-b from-black/5 to-transparent p-2">
           {FEATURES.map(({ preview, ...feature }, index) => (
-            <li key={`feature_${index}_${feature.title.toLowerCase().replace(' ', '_')}`}>
+            <li
+              className="feature-card"
+              key={`feature_${index}_${feature.title.toLowerCase().replace(' ', '_')}`}
+            >
               <FeatureCard
                 selected={index === selectedFeatureIndex}
                 onClick={() => setSelectedFeatureIndex(index)}
@@ -106,11 +139,11 @@ export default function FeatureSlider() {
               backgroundImage: 'radial-gradient(#D3CFC2 0%, transparent 60%)',
             }}
           />
-          <div className="relative h-full w-full rounded-2xl bg-[#F7F8FA] p-4">
+          <div className="relative h-full w-full rounded-2xl bg-white p-4">
             {FEATURES[selectedFeatureIndex].preview}
           </div>
         </div>
       </div>
-    </>
+    </div>
   )
 }

@@ -1,49 +1,97 @@
 import AdonisLogo from '@/components/svg/logo'
-import { Facebook, InstagramIcon, Linkedin } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { Facebook, InstagramIcon, Linkedin, SparklesIcon } from 'lucide-react'
+
+type LinkAvailability = 'ON' | 'OFF' | 'COMING_SOON'
+
+type NavigationLink = {
+  status: LinkAvailability
+  title: string
+  href: string
+}
+
+function NavigationList({
+  links,
+  className,
+}: {
+  links: NavigationLink[]
+  className?: HTMLUListElement['className']
+}) {
+  return (
+    <ul className={className}>
+      {links.map((link) => {
+        const linkStyle = cn(
+          'relative',
+          link.status === 'COMING_SOON' ? 'text-gray-400' : 'text-gray-600'
+        )
+
+        return (
+          <li className="relative" key={`links_product_${link.title}`}>
+            <a className={linkStyle} href={link.href}>
+              {link.title}
+              {link.status === 'COMING_SOON' && (
+                <span className="absolute -right-full -top-[2px] flex w-max flex-row items-center gap-2 rounded-full bg-orange-500/10 px-2 py-[1px] text-[10px] font-bold text-orange-500">
+                  <SparklesIcon className="w-3" />
+                  SOON
+                </span>
+              )}
+            </a>
+          </li>
+        )
+      })}
+    </ul>
+  )
+}
 
 function Footer() {
-  const LINKS = {
+  const year = new Date().getFullYear()
+
+  const LINKS: Record<'product' | 'company', NavigationLink[]> = {
     product: [
-      { title: 'Features', href: '#' },
-      { title: 'Community', href: '#' },
+      {
+        status: 'ON',
+        title: 'Features',
+        href: '#',
+      },
+      {
+        status: 'COMING_SOON',
+        title: 'Community',
+        href: '#',
+      },
     ],
     company: [
-      { title: 'About', href: '#' },
-      { title: 'Contact', href: '#' },
+      {
+        status: 'ON',
+        title: 'About',
+        href: '#',
+      },
+      {
+        status: 'ON',
+        title: 'Contact',
+        href: '#',
+      },
     ],
   }
 
   const SOCIALS = [
-    { Icon: Facebook, href: '#' },
-    { Icon: InstagramIcon, href: '#' },
-    { Icon: Linkedin, href: '#' },
+    { Icon: () => <Facebook className="w-4" />, href: '#' },
+    { Icon: () => <InstagramIcon className="w-4" />, href: '#' },
+    { Icon: () => <Linkedin className="w-4" />, href: '#' },
   ]
 
   return (
-    <footer className="flex w-full flex-col items-center gap-4 border-t bg-white pb-5 pt-14">
+    <footer className="sticky bottom-0 flex w-full flex-col items-center gap-4 border-t bg-white pb-5 pt-14">
       <div className="grid w-full max-w-screen-lg grid-cols-1 place-items-center gap-8 pb-20 text-center md:grid-cols-4 md:place-items-start md:text-left">
         <div>
-          <AdonisLogo className="w-36" />
+          <AdonisLogo className="w-44" />
         </div>
         <div>
           <h6 className="font-bold">Product</h6>
-          <ul className="mt-2">
-            {LINKS.product.map((link) => (
-              <li key={`links_product_${link.title}`}>
-                <a href={link.href}>{link.title}</a>
-              </li>
-            ))}
-          </ul>
+          <NavigationList className="mt-2 flex flex-col gap-2" links={LINKS.product} />
         </div>
         <div>
           <h6 className="font-bold">Company</h6>
-          <ul className="mt-2">
-            {LINKS.company.map((link) => (
-              <li key={`links_company_${link.title}`}>
-                <a href={link.href}>{link.title}</a>
-              </li>
-            ))}
-          </ul>
+          <NavigationList className="mt-2 flex flex-col gap-2" links={LINKS.company} />
         </div>
         <div>
           <h6 className="font-bold">Follow Us</h6>
@@ -59,7 +107,7 @@ function Footer() {
         </div>
       </div>
       <p className="w-full border-t pt-4 text-center">
-        © 2025 Social Adonis. All rights reserved.
+        © {year} Social Adonis. All rights reserved.
       </p>
     </footer>
   )
