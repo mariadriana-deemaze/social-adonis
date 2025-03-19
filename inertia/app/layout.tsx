@@ -1,4 +1,4 @@
-import { ReactNode } from 'react'
+import { ReactNode, Suspense } from 'react'
 import { Toaster } from '@/components/ui/toaster'
 import { usePage } from '@inertiajs/react'
 import UserNavBar from '@/components/users/nav'
@@ -11,12 +11,16 @@ export default function Layout({ children }: { children: ReactNode }) {
     props: { user },
   } = usePage<SharedProps>()
   return (
-    <div>
-      <link rel="icon" type="image/svg+xml" href={favicon} />
-      <UserNavBar user={user} />
-      <main className="container m-auto mt-20 flex max-w-screen-lg justify-start">{children}</main>
-      <Footer />
-      <Toaster />
-    </div>
+    <Suspense fallback={<>Loading...</>}>
+      <div>
+        <link rel="icon" type="image/svg+xml" href={favicon} />
+        <UserNavBar user={user} />
+        <main className="container m-auto mt-20 flex max-w-screen-lg justify-start">
+          {children}
+        </main>
+        <Footer />
+        <Toaster />
+      </div>
+    </Suspense>
   )
 }

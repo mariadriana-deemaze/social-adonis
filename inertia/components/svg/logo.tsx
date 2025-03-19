@@ -36,9 +36,9 @@ export default function AdonisLogo({ className }: { className?: string }) {
             y2="18.7441"
             gradientUnits="userSpaceOnUse"
           >
-            <stop stop-color="#EDE4D7" />
-            <stop offset="0.391666" stop-color="#D3A899" />
-            <stop offset="1" stop-color="#B2A69D" />
+            <stop stopColor="#EDE4D7" />
+            <stop offset="0.391666" stopColor="#D3A899" />
+            <stop offset="1" stopColor="#B2A69D" />
           </linearGradient>
           <linearGradient
             id="paint1_linear_87_915"
@@ -48,8 +48,8 @@ export default function AdonisLogo({ className }: { className?: string }) {
             y2="40.587"
             gradientUnits="userSpaceOnUse"
           >
-            <stop stop-color="#B6A69C" />
-            <stop offset="1" stop-color="#99A8A5" />
+            <stop stopColor="#B6A69C" />
+            <stop offset="1" stopColor="#99A8A5" />
           </linearGradient>
           <linearGradient
             id="paint2_linear_87_915"
@@ -59,9 +59,9 @@ export default function AdonisLogo({ className }: { className?: string }) {
             y2="34.4837"
             gradientUnits="userSpaceOnUse"
           >
-            <stop stop-color="#051C2C" />
-            <stop offset="0.62" stop-color="#07263C" />
-            <stop offset="1" stop-color="#115D92" />
+            <stop stopColor="#051C2C" />
+            <stop offset="0.62" stopColor="#07263C" />
+            <stop offset="1" stopColor="#115D92" />
           </linearGradient>
         </defs>
       </svg>

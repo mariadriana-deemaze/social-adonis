@@ -1,51 +1,19 @@
-import { useEffect, useRef, useState } from 'react'
+import { Suspense, useEffect, useRef } from 'react'
 import HeadOG from '@/components/generic/head_og'
 import { Link } from '@inertiajs/react'
 import { route } from '@izzyjs/route/client'
 import { Button } from '@/components/ui/button'
-import { Boxes, LucideProps, Rabbit, Shield } from 'lucide-react'
 import { faker } from '@faker-js/faker'
 import { Card } from '@/components/ui/card'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
-import { cn } from '@/lib/utils'
+import FeatureSlider from '@/components/home/feature_slider'
+import CTABlock from '@/components/home/cta_block'
+import TextCutReveal from '@/components/generic/text_cut_reveal'
+import TextReveal from '@/components/generic/text_reveal'
 gsap.registerPlugin(useGSAP)
 gsap.registerPlugin(ScrollTrigger)
-
-function FeatureCard({
-  Icon,
-  title,
-  description,
-  onClick,
-  selected,
-}: {
-  Icon: React.ForwardRefExoticComponent<
-    Omit<LucideProps, 'ref'> & React.RefAttributes<SVGSVGElement>
-  >
-  title: string
-  description: string
-  onClick: () => void
-  selected: boolean
-}) {
-  return (
-    <div
-      className={cn(
-        'flex cursor-pointer flex-row gap-6 rounded-2xl border border-gray-300 px-6 py-5 transition-all delay-200 ease-in-out',
-        selected ? 'bg-white' : 'bg-[#F2F2F2]'
-      )}
-      onClick={onClick}
-    >
-      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border">
-        <Icon />
-      </div>
-      <div className={cn(selected ? 'opacity-100' : 'opacity-70')}>
-        <h6 className="text-lg font-semibold">{title}</h6>
-        <p>{description}</p>
-      </div>
-    </div>
-  )
-}
 
 function TestimonialCard({
   author,
@@ -103,36 +71,6 @@ export default function HomeClient() {
     }
   })
 
-  const FEATURES: {
-    Icon: React.ForwardRefExoticComponent<
-      Omit<LucideProps, 'ref'> & React.RefAttributes<SVGSVGElement>
-    >
-    title: string
-    description: string
-    preview: string
-  }[] = [
-    {
-      Icon: Boxes,
-      title: 'Community Driven',
-      description: 'Build meaningful connection with like-minded individuals.',
-      preview: 'preview_feature_1',
-    },
-    {
-      Icon: Rabbit,
-      title: 'Lightning Fast',
-      description: 'Experience seamless interactions with our optimized platform.',
-      preview: 'preview_feature_2',
-    },
-    {
-      Icon: Shield,
-      title: 'Secure by Design',
-      description: 'Your privacy and security are our top priorities.',
-      preview: 'preview_feature_3',
-    },
-  ]
-
-  const [selectedFeatureIndex, setSelectedFeatureIndex] = useState(0)
-
   const loremParagraphs =
     'Totus debilito depono ipsa aeternus caput deserunt. Catena cariosus arbitro depopulo cinis. Vulgivagus saepe astrum. \nAnimadverto tersus caritas. Conservo copia clarus cariosus vir arbitro conicio volup curatio. Sit currus vilis iste ars reprehenderit sursum unus cum.'
 
@@ -144,49 +82,39 @@ export default function HomeClient() {
       const statements: gsap.TweenTarget[] = gsap.utils.toArray('.social-adonis-statement')
       const blurredIn: gsap.TweenTarget[] = gsap.utils.toArray('.blurred-in')
       const fadeInUp: gsap.TweenTarget[] = gsap.utils.toArray('.fade-in-up')
-      // const scaleReveal: gsap.TweenTarget[] = gsap.utils.toArray('.scale-reveal')
-
-      console.log('fadeInUp', fadeInUp)
 
       tl.current = gsap
-        .timeline()
-        .from(blurredIn, { opacity: 0, filter: 'blur(20px)' })
+        .timeline({
+          onStart: () => {
+            gsap.set(document.body, { overflow: 'hidden' })
+            gsap.set('.hero', { zIndex: 999 })
+          },
+          onComplete: () => {
+            gsap.set(document.body, { overflow: 'auto' })
+            gsap.set('.hero', { zIndex: 1 })
+          },
+        })
         .delay(1)
+        .from('.hero', { scale: 2, duration: 1, ease: 'bounce.inOut' })
         .to(statements[0], { y: 0, duration: 0.2, ease: 'bounce.in' })
         .to(statements[1], { y: 0, delay: 0.5, duration: 0.2, ease: 'bounce.in' })
-        .to(statements[2], { y: 0, delay: 1, duration: 0.2, ease: 'bounce.in' })
-        .to(blurredIn, { opacity: 1, filter: 'blur(0px)', delay: 2, duration: 2 })
-
-      console.log('tl ->', tl.current)
+        .to(statements[2], { y: 0, delay: 0.7, duration: 0.2, ease: 'bounce.in' })
+        .from(blurredIn, { opacity: 0, filter: 'blur(20px)', delay: 1, duration: 2 })
+        .from('.cta-button', { opacity: 0, delay: 1, scale: 0.5 })
 
       fadeInUp.map((item) => {
-        gsap.fromTo(
-          item,
-          {
-            y: -100,
-            opacity: 0,
-            scrollTrigger: {
-              // @ts-ignore
-              trigger: item,
-              start: 'bottom bottom',
-              end: 'top 20%',
-              scrub: true,
-              // markers: true,
-            },
+        gsap.from(item, {
+          y: -100,
+          opacity: 0,
+          scrollTrigger: {
+            // @ts-expect-error
+            trigger: item,
+            start: 'bottom bottom',
+            end: 'top 20%',
+            scrub: true,
+            // markers: true,
           },
-          {
-            y: 0,
-            opacity: 1,
-            scrollTrigger: {
-              // @ts-ignore
-              trigger: item,
-              start: 'bottom bottom',
-              end: 'top 20%',
-              scrub: true,
-              // markers: true,
-            },
-          }
-        )
+        })
       })
     },
     { scope: container }
@@ -198,130 +126,100 @@ export default function HomeClient() {
   }, [tl])
 
   return (
-    <section ref={container}>
-      <HeadOG
-        title="Homepage"
-        description="Homepage of social adonis."
-        url={route('home.show').path}
-      />
+    <Suspense fallback={<>Loading...</>}>
+      <section ref={container}>
+        <HeadOG
+          title="Homepage"
+          description="Homepage of social adonis."
+          url={route('home.show').path}
+        />
+        <section className="relative mb-64 flex min-h-[800px] w-full flex-col items-center">
+          <div className="hero absolute z-50 mb-64 flex w-full flex-col items-center">
+            <div className="relative flex min-h-[80vh] w-full flex-col justify-center gap-4 overflow-hidden rounded-[3rem] bg-gradient-to-b from-[#D3CFC2] from-40% to-[#C4BEB0] p-20 text-center">
+              <h1 className="relative z-10 flex w-full flex-row flex-wrap justify-center gap-x-4 gap-y-0 font-climate text-[45px]">
+                <span className="relative h-16 min-w-80 overflow-hidden">
+                  <span className="social-adonis-statement absolute left-0 translate-y-12 text-blue-200">
+                    Connect.
+                  </span>
+                </span>
+                <span className="relative h-16 min-w-56 overflow-hidden">
+                  <span className="social-adonis-statement absolute left-0 translate-y-12 text-red-600">
+                    Share.
+                  </span>
+                </span>
+                <span className="relative h-16 min-w-56 overflow-hidden">
+                  <span className="social-adonis-statement absolute left-0 translate-y-12 text-blue-950">
+                    Thrive.
+                  </span>
+                </span>
+              </h1>
 
-      <section className="mb-64 flex w-full flex-col items-center">
-        <div className="flex min-h-[80vh] w-full flex-col justify-center gap-4 rounded-[3rem] bg-gradient-to-b from-[#D3CFC2] from-40% to-[#C4BEB0] p-20 text-center">
-          <h1 className="relative flex w-full flex-row flex-wrap justify-center gap-x-4 gap-y-0 font-climate text-[45px]">
-            <span className="relative h-16 min-w-80 overflow-hidden">
-              <span className="social-adonis-statement absolute left-0 translate-y-12 text-blue-200">
-                Connect.
-              </span>
-            </span>
-            <span className="relative h-16 min-w-56 overflow-hidden">
-              <span className="social-adonis-statement absolute left-0 translate-y-12 text-red-600">
-                Share.
-              </span>
-            </span>
-            <span className="relative h-16 min-w-56 overflow-hidden">
-              <span className="social-adonis-statement absolute left-0 translate-y-12 text-blue-950">
-                Thrive.
-              </span>
-            </span>
-          </h1>
-          <div className="blurred-in">
-            <p>Social networking reimagined.</p>
-            <p>
-              Join our ten users in creating meaningful connections in our vibrant and small
-              community.
-            </p>
-          </div>
-
-          <div className="blurred-in mt-10 grid grid-cols-3 rounded-lg border border-gray-400 bg-white/10 py-4 backdrop-blur-xl">
-            {STATS.map((stat, index) => (
-              <div key={stat.value + index}>
-                <h3 className="font-climate text-[3rem] text-black">{stat.value}</h3>
-                <p>{stat.title}</p>
-              </div>
-            ))}
-          </div>
-
-          <Button className="h-auto w-auto self-center rounded-full px-6 font-climate text-[1.2rem]">
-            <Link href={route('auth.show').path}>Join us</Link>
-          </Button>
-        </div>
-        <div className="relative h-16 w-32 bg-[#C4BEB0]">
-          <div className="absolute -bottom-16 left-16 h-32 w-32 rounded-full bg-[#F7F8FA]" />
-          <div className="absolute -bottom-16 right-16 h-32 w-32 rounded-full bg-[#F7F8FA]" />
-        </div>
-      </section>
-
-      <section className="mb-64 flex w-full flex-col items-center gap-10">
-        <div className="flex w-full flex-col items-center gap-6">
-          <h1 className="fade-in-up flex gap-4 text-center font-climate text-[45px] leading-10 text-blue-950">
-            Features that set us apart
-          </h1>
-          <p className="max-w-screen-sm text-center">{loremParagraphs}</p>
-        </div>
-        <div className="mt-20 flex w-full flex-col gap-8 md:flex-row">
-          <ul className="mt-10 flex min-w-[22rem] flex-col gap-4 rounded-2xl border-l border-r border-t bg-gradient-to-b from-black/5 to-transparent p-2">
-            {FEATURES.map(({ preview, ...feature }, index) => (
-              <li key={`feature_${index}_${feature.title.toLowerCase().replace(' ', '_')}`}>
-                <FeatureCard
-                  selected={index === selectedFeatureIndex}
-                  onClick={() => setSelectedFeatureIndex(index)}
-                  {...feature}
+              <div className="blurred-in z-10">
+                <TextReveal as="p" text="Social networking reimagined." />
+                <TextReveal
+                  as="p"
+                  text="Join our ten users in creating meaningful connections in our vibrant and small
+                community."
                 />
-              </li>
-            ))}
-          </ul>
-          <div className="relative flex w-full flex-grow">
-            <div
-              className="bg-radial absolute -bottom-24 -right-24 h-48 w-64 rotate-180 scale-150 from-blue-600 from-40% to-transparent opacity-40" // NOTE: Only on tw v4 👀
-              style={{
-                backgroundImage: 'radial-gradient(#D3CFC2 0%, transparent 60%)',
-              }}
-            />
-            <div
-              className="bg-radial absolute -top-24 left-0 h-48 w-64 rotate-180 scale-150 from-blue-600 from-40% to-transparent opacity-20" // NOTE: Only on tw v4 👀
-              style={{
-                backgroundImage: 'radial-gradient(#D3CFC2 0%, transparent 60%)',
-              }}
-            />
-            <div className="relative h-full w-full rounded-2xl bg-[#F7F8FA] p-4">
-              {FEATURES[selectedFeatureIndex].preview}
+              </div>
+
+              <div className="blurred-in z-10 mt-10 grid grid-cols-3 rounded-lg border border-gray-400 bg-white/10 py-4 backdrop-blur-xl">
+                {STATS.map((stat, index) => (
+                  <div key={stat.value + index}>
+                    <h3 className="font-climate text-[3rem] text-black">{stat.value}</h3>
+                    <p>{stat.title}</p>
+                  </div>
+                ))}
+              </div>
+
+              <Button className="cta-button text-[1.2rem z-10 h-auto w-auto self-center rounded-full px-6 font-climate">
+                <Link href={route('auth.show').path}>Join us</Link>
+              </Button>
+
+              {/* REPLACE ME FOR VIDEO */}
+              <img
+                src="../../../public/assets/images/dummy_hero.png"
+                className="absolute bottom-0 left-0 w-3/4 mix-blend-lighten delay-700 duration-700 animate-in fade-in-35"
+                alt="REPLACE ME"
+              />
+            </div>
+            <div className="relative h-16 w-32 bg-[#C4BEB0]">
+              <div className="absolute -bottom-16 left-16 h-32 w-32 rounded-full bg-[#F7F8FA]" />
+              <div className="absolute -bottom-16 right-16 h-32 w-32 rounded-full bg-[#F7F8FA]" />
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section className="mb-64 flex w-full flex-col items-center gap-20">
-        <div className="flex w-full flex-col items-center gap-6 text-center">
-          <h1 className="flex gap-4 font-climate text-[45px] leading-10 text-blue-950">
-            What our users say
-          </h1>
-          <p className="max-w-screen-sm text-center">{loremParagraphs}</p>
-        </div>
-        <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-3">
-          {TESTEMONIALS.map((testemonial) => (
-            <TestimonialCard key={`testemonial_${testemonial.author.name}`} {...testemonial} />
-          ))}
-        </div>
-      </section>
+        <section className="relative mb-64 flex w-full flex-col items-center gap-10">
+          <FeatureSlider />
+        </section>
 
-      <section className="mb-28 flex w-full flex-col items-center">
-        <div className="scale-reveal relative h-16 w-32 bg-[#C4BEB0]">
-          <div className="absolute -top-16 left-16 h-32 w-32 rounded-full bg-[#F7F8FA]" />
-          <div className="absolute -top-16 right-16 h-32 w-32 rounded-full bg-[#F7F8FA]" />
-        </div>
-        <div className="flex w-full flex-col gap-4 rounded-[3rem] bg-gradient-to-t from-[#D3CFC2] from-40% to-[#C4BEB0] py-20">
+        <section className="relative mb-64 flex w-full flex-col items-center gap-20">
           <div className="flex w-full flex-col items-center gap-6 text-center">
-            <h1 className="flex gap-4 font-climate text-[45px] leading-10 text-blue-950">
-              Ready to join us?
-            </h1>
-            <p className="max-w-screen-sm text-center">{loremParagraphs}</p>
+            <TextCutReveal
+              text="What our users say"
+              className="flex gap-4 text-center font-climate text-[45px] leading-10 text-blue-950"
+            />
+            <TextReveal as="p" text={loremParagraphs} className="max-w-screen-sm text-center" />
           </div>
+          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-3">
+            {TESTEMONIALS.map((testemonial) => (
+              <TestimonialCard key={`testemonial_${testemonial.author.name}`} {...testemonial} />
+            ))}
+          </div>
+        </section>
 
-          <Button className="h-auto w-auto self-center rounded-full px-6 font-climate text-[1.2rem]">
-            <Link href={route('auth.show').path}>Join us</Link>
-          </Button>
-        </div>
+        <section className="relative mb-28 flex w-full flex-col items-center">
+          <CTABlock
+            title="Ready to join us?"
+            description={loremParagraphs}
+            cta={{
+              text: 'Join Us',
+              link: route('auth.show').path,
+            }}
+          />
+        </section>
       </section>
-    </section>
+    </Suspense>
   )
 }
