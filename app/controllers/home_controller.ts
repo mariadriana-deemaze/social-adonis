@@ -11,9 +11,10 @@ export default class HomeController {
   ) {}
 
   async index(ctx: HttpContext) {
-    const totalUsersCount = await this.userService.countActiveUsers()
-    const totalPostsCount = await this.postsService.countTotalPosts()
-
+    const [totalUsersCount, totalPostsCount] = await Promise.all([
+      await this.userService.countActiveUsers(),
+      await this.postsService.countTotalPosts(),
+    ])
     return ctx.inertia.render('home', {
       users_count: totalUsersCount,
       posts_count: totalPostsCount,
