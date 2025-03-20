@@ -133,7 +133,7 @@ export default class PostsService {
 
   async countTotalPosts(): Promise<number> {
     const totalPostsCount = (await db.from('posts').count('*')) as [{ count: number }]
-    return totalPostsCount[0].count
+    return totalPostsCount[0].count ? Number(totalPostsCount[0].count) : 0
   }
 
   /**

@@ -17,7 +17,7 @@ export class UserService {
 
   async countActiveUsers(): Promise<number> {
     const totalUsersCount = (await db.from('users').count('*')) as [{ count: number }]
-    return totalUsersCount[0].count
+    return totalUsersCount[0].count ? Number(totalUsersCount[0].count) : 0
   }
 
   async search(
