@@ -1,9 +1,9 @@
-import { useRef } from 'react'
+import { /* useEffect, useLayoutEffect,  */ useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+// import SplitType from 'split-type'
 import { useGSAP } from '@gsap/react'
 import { cn } from '@/lib/utils'
-gsap.registerPlugin(useGSAP)
 gsap.registerPlugin(ScrollTrigger)
 
 export default function TextCutReveal({
@@ -20,17 +20,41 @@ export default function TextCutReveal({
     if (trigger === null) return
     gsap.from(trigger, {
       y: 100,
-      opacity: 0,
       duration: 2,
       ease: 'expo.inOut',
       scrollTrigger: {
         trigger,
         start: 'bottom bottom',
-        end: 'top 20%',
-        scrub: 0.5,
+        end: 'bottom bottom+=150',
+        scrub: 3,
       },
     })
-  }, [])
+  }, {})
+
+  // TODO: Improve by split type
+  /* useEffect(() => {
+    if (textElement?.current) {
+      const element = SplitType.create(textElement.current, {
+        types: 'lines',
+        tagName: 'span',
+      })
+      console.log('element ->', element)
+
+      const trigger = textElement?.current
+      if (trigger === null) return
+      gsap.from(trigger, {
+        y: 100,
+        duration: 2,
+        ease: 'expo.inOut',
+        scrollTrigger: {
+          trigger,
+          start: 'bottom bottom',
+          end: 'bottom bottom+=150',
+          scrub: 3,
+        },
+      })
+    }
+  }, [textElement?.current]) */
 
   return (
     <div

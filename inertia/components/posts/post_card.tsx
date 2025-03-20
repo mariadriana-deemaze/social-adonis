@@ -497,17 +497,7 @@ export default function PostCard({
   return (
     <article className="flex w-full flex-col rounded-sm border bg-white px-6 pt-6">
       <div className="relative flex flex-row justify-between border-b border-b-gray-200 pb-3">
-        <Link
-          href={
-            route('users.show', {
-              params: {
-                id: post.user.id,
-              },
-            }).path
-          }
-        >
-          <UserContentHeader user={post.user} createdAt={post.createdAt} />
-        </Link>
+        <UserContentHeader user={post.user} createdAt={post.createdAt} />
 
         {postState.pinned && (
           <div id="pinned-post-icon" className="absolute -left-4 -top-4 -rotate-45">

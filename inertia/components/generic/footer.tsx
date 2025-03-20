@@ -21,16 +21,16 @@ function NavigationList({
     <ul className={className}>
       {links.map((link) => {
         const linkStyle = cn(
-          'relative',
+          'relative w-full flex gap-2 justify-center',
           link.status === 'COMING_SOON' ? 'text-gray-400' : 'text-gray-600'
         )
 
         return (
-          <li className="relative" key={`links_product_${link.title}`}>
+          <li className="relative w-full text-center" key={`links_product_${link.title}`}>
             <a className={linkStyle} href={link.href}>
               {link.title}
               {link.status === 'COMING_SOON' && (
-                <span className="absolute -right-full -top-[2px] flex w-max flex-row items-center gap-2 rounded-full bg-orange-500/10 px-2 py-[1px] text-[10px] font-bold text-orange-500">
+                <span className="flex w-max flex-row items-center gap-2 rounded-full bg-orange-500/10 px-2 py-[1px] text-[10px] font-bold text-orange-500">
                   <SparklesIcon className="w-3" />
                   SOON
                 </span>
@@ -80,22 +80,22 @@ function Footer() {
   ]
 
   return (
-    <footer className="sticky bottom-0 flex w-full flex-col items-center gap-4 border-t bg-white pb-5 pt-14">
+    <footer className="sticky bottom-0 flex w-full flex-col items-center gap-4 border-t bg-white pb-5 pt-14 md:min-h-[none]">
       <div className="grid w-full max-w-screen-lg grid-cols-1 place-items-center gap-8 pb-20 text-center md:grid-cols-4 md:place-items-start md:text-left">
-        <div>
+        <div className="flex w-full flex-col items-center">
           <AdonisLogo className="w-44" />
         </div>
-        <div>
-          <h6 className="font-bold">Product</h6>
+        <div className="flex w-full flex-col items-center">
+          <h6 className="font-bold text-blue-950">Product</h6>
           <NavigationList className="mt-2 flex flex-col gap-2" links={LINKS.product} />
         </div>
-        <div>
-          <h6 className="font-bold">Company</h6>
+        <div className="flex w-full flex-col items-center">
+          <h6 className="font-bold text-blue-950">Company</h6>
           <NavigationList className="mt-2 flex flex-col gap-2" links={LINKS.company} />
         </div>
-        <div>
-          <h6 className="font-bold">Follow Us</h6>
-          <ul className="mt-2 flex flex-row gap-4">
+        <div className="flex w-full flex-col items-center">
+          <h6 className="font-bold text-blue-950">Follow Us</h6>
+          <ul className="mt-2 flex w-full flex-row justify-center gap-4">
             {SOCIALS.map(({ Icon, href }, index) => (
               <li key={`links_socials_${index}`}>
                 <a href={href}>
@@ -106,7 +106,7 @@ function Footer() {
           </ul>
         </div>
       </div>
-      <p className="w-full border-t pt-4 text-center">
+      <p className="w-full border-t pt-4 text-center text-sm">
         © {year} Social Adonis. All rights reserved.
       </p>
     </footer>

@@ -28,7 +28,7 @@ export default function UserNavBar({ user }: { user: UserResponse | null }) {
   ]
 
   return (
-    <nav className="fixed top-0 z-10 w-full border-b bg-white">
+    <nav className="fixed top-0 z-10 w-screen border-b bg-white">
       <div className="m-auto flex h-16 max-w-screen-lg items-center justify-center gap-6 px-4 align-middle">
         <AdonisLogo />
         <ul className="flex w-full justify-center gap-8 text-center">

@@ -11,11 +11,11 @@
 html,
 body,
 #app {
-  @apply h-full w-full bg-[##f7f8fa] font-garanti text-[#46444c];
+  @apply h-full w-full bg-gray-200 font-garanti text-gray-500;
 }
 
 body {
-  @apply bg-background text-foreground;
+  @apply overflow-x-hidden bg-background text-foreground;
 }
 
 .title {
@@ -102,7 +102,7 @@ body {
   }
 
   .brand-beige-gradient {
-    @apply bg-gradient-to-b from-brand-beige-500 from-40% to-brand-beige-700;
+    @apply bg-gradient-to-t from-[#C4BEB0] to-[#D3CFC2];
   }
 
   .brand-blue-gradient {
