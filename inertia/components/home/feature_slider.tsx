@@ -107,7 +107,7 @@ export default function FeatureSlider() {
       <div className="flex w-full flex-col items-center gap-6">
         <TextCutReveal
           text="Features that set us apart"
-          className="flex gap-4 text-center font-climate text-[45px] leading-10 text-blue-950"
+          className="brand-blue-text-gradient flex gap-4 text-center font-climate text-[45px] leading-10"
         />
         <TextReveal as="p" text={loremParagraphs} className="max-w-screen-sm text-center" />
       </div>

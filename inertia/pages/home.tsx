@@ -137,7 +137,7 @@ export default function Home(props: InferPageProps<HomeController, 'index'>) {
         />
         <section className="relative mb-64 flex min-h-[800px] w-full flex-col items-center">
           <div className="hero absolute z-50 mb-64 flex w-full flex-col items-center">
-            <div className="relative flex min-h-[80vh] w-full flex-col justify-center gap-4 overflow-hidden rounded-[3rem] bg-gradient-to-b from-[#D3CFC2] from-40% to-[#C4BEB0] p-20 text-center">
+            <div className="brand-beige-gradient relative flex min-h-[80vh] w-full flex-col justify-center gap-4 overflow-hidden rounded-[3rem] p-20 text-center">
               <h1 className="relative z-10 flex w-full flex-row flex-wrap justify-center gap-x-4 gap-y-0 font-climate text-[45px]">
                 <span className="relative h-16 min-w-80 overflow-hidden">
                   <span className="social-adonis-statement absolute left-0 translate-y-12 text-blue-200">
@@ -150,7 +150,7 @@ export default function Home(props: InferPageProps<HomeController, 'index'>) {
                   </span>
                 </span>
                 <span className="relative h-16 min-w-56 overflow-hidden">
-                  <span className="social-adonis-statement absolute left-0 translate-y-12 text-blue-950">
+                  <span className="social-adonis-statement brand-blue-text-gradient absolute left-0 translate-y-12">
                     Thrive.
                   </span>
                 </span>
@@ -174,7 +174,7 @@ export default function Home(props: InferPageProps<HomeController, 'index'>) {
                 ))}
               </div>
 
-              <Button className="cta-button z-10 h-auto w-auto self-center rounded-full px-6 font-climate text-[1.2rem]">
+              <Button className="cta-button z-10 h-auto w-auto self-center rounded-full bg-brand-blue-950 px-6 font-climate text-[1.2rem]">
                 <Link href={route('auth.show').path}>Join us</Link>
               </Button>
 
@@ -185,7 +185,7 @@ export default function Home(props: InferPageProps<HomeController, 'index'>) {
                 alt="REPLACE ME"
               />
             </div>
-            <div className="relative h-16 w-32 bg-[#C4BEB0]">
+            <div className="relative h-16 w-32 bg-brand-beige-500">
               <div className="absolute -bottom-16 left-16 h-32 w-32 rounded-full bg-[#F7F8FA]" />
               <div className="absolute -bottom-16 right-16 h-32 w-32 rounded-full bg-[#F7F8FA]" />
             </div>
@@ -200,7 +200,7 @@ export default function Home(props: InferPageProps<HomeController, 'index'>) {
           <div className="flex w-full flex-col items-center gap-6 text-center">
             <TextCutReveal
               text="What our users say"
-              className="flex gap-4 text-center font-climate text-[45px] leading-10 text-blue-950"
+              className="brand-blue-text-gradient flex gap-4 text-center font-climate text-[45px] leading-10"
             />
             <TextReveal as="p" text={loremParagraphs} className="max-w-screen-sm text-center" />
           </div>

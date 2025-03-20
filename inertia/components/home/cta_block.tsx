@@ -25,13 +25,13 @@ export default function CTABlock({
         <div className="flex w-full flex-col items-center gap-6 text-center">
           <TextCutReveal
             text={title}
-            className="flex gap-4 text-center font-climate text-[45px] leading-10 text-blue-950"
+            className="brand-blue-text-gradient flex gap-4 text-center font-climate text-[45px] leading-10"
           />
           {description && (
             <TextReveal as="p" text={description} className="max-w-screen-sm text-center" />
           )}
         </div>
-        <Button className="h-auto w-auto self-center rounded-full px-6 font-climate text-[1.2rem]">
+        <Button className="h-auto w-auto self-center rounded-full bg-brand-blue-950 px-6 font-climate text-[1.2rem]">
           <Link href={cta.link}>{cta.text}</Link>
         </Button>
       </div>
