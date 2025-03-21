@@ -1,11 +1,22 @@
 import { UserResponse } from '#interfaces/user'
 import { UserAvatar } from '@/components/generic/user_avatar'
+import { Link } from '@inertiajs/react'
+import { route } from '@izzyjs/route/client'
 import { formatDistanceToNow } from 'date-fns'
 import { BadgeCheck, Clock } from 'lucide-react'
 
 export function UserContentHeader({ user, createdAt }: { user: UserResponse; createdAt: string }) {
   return (
-    <div className="flex flex-row gap-3">
+    <Link
+      href={
+        route('users.show', {
+          params: {
+            id: user.id,
+          },
+        }).path
+      }
+      className="flex flex-row gap-3"
+    >
       <UserAvatar user={user} className="h-8 w-8" />
       <div className="flex flex-col gap-1">
         <div className="flex flex-row items-center gap-2">
@@ -19,6 +30,6 @@ export function UserContentHeader({ user, createdAt }: { user: UserResponse; cre
           {formatDistanceToNow(new Date(createdAt))} ago
         </span>
       </div>
-    </div>
+    </Link>
   )
 }

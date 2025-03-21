@@ -10,6 +10,7 @@
 import router from '@adonisjs/core/services/router'
 import { middleware } from '#start/kernel'
 
+const HomeController = () => import('#controllers/home_controller')
 const AuthController = () => import('#controllers/auth_controller')
 const OAuthController = () => import('#controllers/o_auth_controller')
 const UsersController = () => import('#controllers/users_controller')
@@ -31,7 +32,7 @@ const AdminPostReportsController = () => import('#controllers/admin_post_reports
  **/
 router
   .group(() => {
-    router.on('/').renderInertia('home').as('home.show')
+    router.get('/', [HomeController, 'index']).as('home.show')
     router.get('/feed', [FeedController, 'index']).as('feed.show')
     router
       .group(() => {

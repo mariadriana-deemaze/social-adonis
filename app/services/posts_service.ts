@@ -16,6 +16,7 @@ import PostComment from '#models/post_comment'
 import PostReactionService from '#services/post_reaction_service'
 import type { HttpContext } from '@adonisjs/core/http'
 import type { UUID } from 'node:crypto'
+import db from '@adonisjs/lucid/services/db'
 
 export default class PostsService {
   private readonly userService: UserService
@@ -128,6 +129,11 @@ export default class PostsService {
       data,
       meta,
     }
+  }
+
+  async countTotalPosts(): Promise<number> {
+    const totalPostsCount = (await db.from('posts').count('*')) as [{ count: number }]
+    return totalPostsCount[0].count ? Number(totalPostsCount[0].count) : 0
   }
 
   /**

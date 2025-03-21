@@ -22,37 +22,67 @@ module.exports = {
       },
     },
     extend: {
+      fontFamily: {
+        climate: ['Climate Crisis', 'sans-serif'],
+        garanti: ['Gantari', 'sans-serif'],
+      },
       colors: {
-        border: 'hsl(var(--border))',
-        input: 'hsl(var(--input))',
-        ring: 'hsl(var(--ring))',
-        background: 'hsl(var(--background))',
-        foreground: 'hsl(var(--foreground))',
-        primary: {
+        'brand-blue': {
+          50: '#BADDF5',
+          100: '#95CAEF',
+          200: '#7ABCEB',
+          300: '#5FAFE7',
+          400: '#48A4E3',
+          500: '#2B95DE',
+          600: '#237BB8',
+          700: '#1D6698',
+          800: '#154C72',
+          900: '#0E324C',
+          950: '#05141E',
+        },
+        'brand-beige': {
+          50: '#F3F2EC',
+          100: '#E7E5DA',
+          200: '#E0DCCE',
+          300: '#D7D2C1',
+          400: '#CEC8B3',
+          500: '#C5BEA6',
+          600: '#AEA893',
+          700: '#95917F',
+          800: '#7C796B',
+          900: '#646357',
+          950: '#46443F',
+        },
+        'border': 'hsl(var(--border))',
+        'input': 'hsl(var(--input))',
+        'ring': 'hsl(var(--ring))',
+        'background': 'hsl(var(--background))',
+        'foreground': 'hsl(var(--foreground))',
+        'primary': {
           DEFAULT: 'hsl(var(--primary))',
           foreground: 'hsl(var(--primary-foreground))',
         },
-        secondary: {
+        'secondary': {
           DEFAULT: 'hsl(var(--secondary))',
           foreground: 'hsl(var(--secondary-foreground))',
         },
-        destructive: {
+        'destructive': {
           DEFAULT: 'hsl(var(--destructive))',
           foreground: 'hsl(var(--destructive-foreground))',
         },
-        muted: {
+        'muted': {
           DEFAULT: 'hsl(var(--muted))',
           foreground: 'hsl(var(--muted-foreground))',
         },
-        accent: {
+        'accent': {
           DEFAULT: 'hsl(var(--accent))',
           foreground: 'hsl(var(--accent-foreground))',
         },
-        popover: {
+        'popover': {
           DEFAULT: 'hsl(var(--popover))',
           foreground: 'hsl(var(--popover-foreground))',
         },
-        card: {
+        'card': {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },

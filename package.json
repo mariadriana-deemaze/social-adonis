@@ -85,6 +85,7 @@
     "@aws-sdk/client-s3": "^3.686.0",
     "@aws-sdk/client-ses": "^3.699.0",
     "@aws-sdk/s3-request-presigner": "^3.686.0",
+    "@gsap/react": "^2.1.2",
     "@inertiajs/react": "^1.2.0",
     "@izzyjs/route": "^1.2.0",
     "@osenco/adonisjs-notifications": "^0.0.3",
@@ -107,6 +108,7 @@
     "cmdk": "^1.0.4",
     "date-fns": "^4.1.0",
     "edge.js": "^6.0.2",
+    "gsap": "^3.12.7",
     "lucide-react": "^0.400.0",
     "luxon": "^3.4.4",
     "pg": "^8.12.0",
@@ -114,6 +116,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "reflect-metadata": "^0.2.2",
+    "split-type": "^0.3.4",
     "tailwind-merge": "^2.3.0",
     "tailwindcss": "^3.4.4",
     "tailwindcss-animate": "^1.0.7"

@@ -6,12 +6,18 @@ import User from '#models/user'
 import AttachmentService from '#services/attachment_service'
 import { HttpContext } from '@adonisjs/core/http'
 import { UUID } from 'node:crypto'
+import db from '@adonisjs/lucid/services/db'
 
 export class UserService {
   private readonly attachmentService: AttachmentService
 
   constructor() {
     this.attachmentService = new AttachmentService()
+  }
+
+  async countActiveUsers(): Promise<number> {
+    const totalUsersCount = (await db.from('users').count('*')) as [{ count: number }]
+    return totalUsersCount[0].count ? Number(totalUsersCount[0].count) : 0
   }
 
   async search(

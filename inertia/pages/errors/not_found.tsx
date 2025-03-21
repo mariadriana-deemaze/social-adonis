@@ -7,7 +7,7 @@ export default function NotFound({
   }
 }) {
   return (
-    <div className="container">
+    <div className="container min-h-screen">
       <div className="title">{title}</div>
       <span>{message}</span>
     </div>
